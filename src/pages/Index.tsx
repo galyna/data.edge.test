@@ -17,11 +17,11 @@ const Index = () => {
         <Header />
 
         {/* Dashboard Content */}
-        <main className="flex-1 p-4 overflow-auto">
-          <div className="max-w-[2000px] mx-auto space-y-4">
+        <main className="flex-1 p-3 overflow-auto">
+          <div className="max-w-[2000px] mx-auto space-y-3">
             
             {/* Main Grid Layout */}
-            <div className="grid grid-cols-12 gap-4">
+            <div className="grid grid-cols-12 gap-3">
               {/* Multi-Source Odds Comparison - Full Width */}
               <div className="col-span-12">
                 <MultiSourceTable />
@@ -33,22 +33,9 @@ const Index = () => {
               </div>
 
               {/* Value Radar - 4 columns */}
-              <div className="col-span-4">
+              <div className="col-span-4 flex flex-col gap-3">
                 <ValueRadar />
-              </div>
-
-              {/* Source Status - 4 columns */}
-              <div className="col-span-4">
                 <SourceStatus />
-              </div>
-
-              {/* Additional space for future widgets */}
-              <div className="col-span-8">
-                <div className="terminal-card p-4 h-64 flex items-center justify-center">
-                  <span className="text-xs text-muted-foreground uppercase tracking-wider">
-                    Additional Analytics Module
-                  </span>
-                </div>
               </div>
             </div>
 

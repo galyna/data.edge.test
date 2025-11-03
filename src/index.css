@@ -144,6 +144,27 @@ All colors MUST be HSL.
   .terminal-card {
     @apply bg-card border border-border;
     border-radius: 0;
+    position: relative;
+  }
+
+  .terminal-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, hsl(var(--primary) / 0.3), transparent);
+  }
+
+  .terminal-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, hsl(var(--primary) / 0.2), transparent);
   }
 
   .hover-lift {
