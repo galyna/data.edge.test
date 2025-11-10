@@ -174,4 +174,38 @@ All colors MUST be HSL.
   .hover-lift:hover {
     background-color: hsl(var(--muted) / 0.5);
   }
+
+  /* Source indicators */
+  .source-sportradar {
+    border-left: 2px solid hsl(220 90% 60%);
+  }
+
+  .source-sportsdata {
+    border-left: 2px solid hsl(280 70% 60%);
+  }
+
+  .source-apisports {
+    border-left: 2px solid hsl(30 90% 60%);
+  }
+
+  .source-thesportsdb {
+    border-left: 2px solid hsl(150 70% 50%);
+  }
+
+  .source-pandascore {
+    border-left: 2px solid hsl(330 70% 60%);
+  }
+
+  /* Quality indicators */
+  .quality-excellent {
+    @apply text-primary;
+  }
+
+  .quality-good {
+    color: hsl(45 100% 60%);
+  }
+
+  .quality-poor {
+    @apply text-destructive;
+  }
 }
