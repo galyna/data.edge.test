@@ -3,8 +3,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { AlertTriangle, Database, TrendingUp } from "lucide-react";
 import { Match } from "@/types/match";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from "@/components/ui/chart";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
+import React from "react";
 
 interface MultiSourceComparisonProps {
   match: Match | null;
@@ -131,12 +132,14 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
   const chartConfig = useMemo(() => ({
     aggregate: {
       label: "Aggregate",
-      color: "hsl(var(--primary))",
+      color: "#00ff88",
     },
     ...match.sources.reduce((acc, source, index) => {
+      // Light grey-blue colors for individual sources
+      const sourceColors = ["#9ca3af", "#a5b4c3", "#b0c4d6", "#9db5d0", "#a8c0d8"];
       acc[source.sourceName] = {
         label: source.sourceName,
-        color: `hsl(${200 + index * 40}, 70%, 55%)`,
+        color: sourceColors[index % sourceColors.length],
       };
       return acc;
     }, {} as Record<string, { label: string; color: string }>),
@@ -246,6 +249,42 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
           </div>
           
           <ChartContainer config={chartConfig} className="h-[280px] w-full">
+            <defs>
+              {/* Intense lightning-like glow filters for aggregated line */}
+              <filter id="glow-aggregate-outer" x="-100%" y="-100%" width="300%" height="300%">
+                <feGaussianBlur stdDeviation="12" result="coloredBlur"/>
+                <feMerge>
+                  <feMergeNode in="coloredBlur"/>
+                </feMerge>
+              </filter>
+              <filter id="glow-aggregate-large" x="-100%" y="-100%" width="300%" height="300%">
+                <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+                <feMerge>
+                  <feMergeNode in="coloredBlur"/>
+                </feMerge>
+              </filter>
+              <filter id="glow-aggregate-medium" x="-100%" y="-100%" width="300%" height="300%">
+                <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
+                <feMerge>
+                  <feMergeNode in="coloredBlur"/>
+                </feMerge>
+              </filter>
+              <filter id="glow-aggregate-close" x="-100%" y="-100%" width="300%" height="300%">
+                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                <feMerge>
+                  <feMergeNode in="coloredBlur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+              {/* Subtle glow for source lines */}
+              <filter id="glow-source" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                <feMerge>
+                  <feMergeNode in="coloredBlur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
             <LineChart data={chartData} margin={{ top: 10, right: 20, left: 10, bottom: 20 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
               <XAxis
@@ -260,26 +299,106 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
                 style={{ fontSize: "11px", fontWeight: 500 }}
                 tick={{ fill: "hsl(var(--foreground))" }}
               />
-              <ChartTooltip content={<ChartTooltipContent />} />
+              <ChartLegend 
+                verticalAlign="top"
+                align="right"
+                content={<ChartLegendContent />}
+              />
+              <ChartTooltip 
+                content={(props) => {
+                  if (!props.active || !props.payload) return null;
+                  // Filter out duplicate entries by dataKey (keep only the first occurrence)
+                  const seen = new Set();
+                  const uniquePayload = props.payload.filter((item) => {
+                    const key = item.dataKey || item.name;
+                    if (seen.has(key)) return false;
+                    seen.add(key);
+                    return true;
+                  });
+                  return <ChartTooltipContent {...props} payload={uniquePayload} />;
+                }} 
+              />
+              {/* Aggregated line with intense lightning-like glow - multiple layers */}
               <Line
                 type="monotone"
                 dataKey="aggregate"
-                stroke="hsl(var(--primary))"
+                stroke="#00ff88"
+                strokeWidth={10}
+                dot={false}
+                strokeOpacity={0.12}
+                filter="url(#glow-aggregate-outer)"
+              />
+              <Line
+                type="monotone"
+                dataKey="aggregate"
+                stroke="#00ff88"
+                strokeWidth={8}
+                dot={false}
+                strokeOpacity={0.2}
+                filter="url(#glow-aggregate-large)"
+              />
+              <Line
+                type="monotone"
+                dataKey="aggregate"
+                stroke="#00ff88"
+                strokeWidth={6}
+                dot={false}
+                strokeOpacity={0.3}
+                filter="url(#glow-aggregate-medium)"
+              />
+              <Line
+                type="monotone"
+                dataKey="aggregate"
+                stroke="#00ff88"
+                strokeWidth={5}
+                dot={false}
+                strokeOpacity={0.5}
+                filter="url(#glow-aggregate-close)"
+              />
+              <Line
+                type="monotone"
+                dataKey="aggregate"
+                stroke="#00ff88"
+                strokeWidth={4}
+                dot={false}
+                strokeOpacity={0.7}
+              />
+              <Line
+                type="monotone"
+                dataKey="aggregate"
+                stroke="#00ff88"
                 strokeWidth={3}
                 dot={false}
                 strokeOpacity={1}
               />
-              {match.sources.map((source) => (
-                <Line
-                  key={source.sourceId}
-                  type="monotone"
-                  dataKey={source.sourceName}
-                  stroke={chartConfig[source.sourceName]?.color || "hsl(var(--muted-foreground))"}
-                  strokeWidth={2}
-                  dot={false}
-                  strokeOpacity={0.7}
-                />
-              ))}
+              {match.sources.map((source) => {
+                const sourceColor = chartConfig[source.sourceName]?.color || "#9ca3af";
+                return (
+                  <React.Fragment key={source.sourceId}>
+                    {/* Glow layer - visual effect only, duplicates filtered in tooltip */}
+                    <Line
+                      type="monotone"
+                      dataKey={source.sourceName}
+                      stroke={sourceColor}
+                      strokeWidth={3}
+                      dot={false}
+                      strokeOpacity={0.25}
+                      filter="url(#glow-source)"
+                      isAnimationActive={false}
+                    />
+                    {/* Main line - visible in chart and tooltip */}
+                    <Line
+                      type="monotone"
+                      dataKey={source.sourceName}
+                      stroke={sourceColor}
+                      strokeWidth={1.5}
+                      dot={false}
+                      strokeOpacity={0.85}
+                      isAnimationActive={false}
+                    />
+                  </React.Fragment>
+                );
+              })}
             </LineChart>
           </ChartContainer>
         </div>

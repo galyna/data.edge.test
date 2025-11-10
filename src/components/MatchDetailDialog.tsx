@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Match } from "@/types/match";
 import { Clock, TrendingUp, Database, AlertCircle } from "lucide-react";
@@ -133,6 +134,42 @@ const MatchDetailDialog = ({ match, open, onOpenChange }: MatchDetailDialogProps
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={spreadHistory}>
+                  <defs>
+                    {/* Intense lightning-like glow filters for aggregated line */}
+                    <filter id="glow-aggregate-dialog-outer" x="-100%" y="-100%" width="300%" height="300%">
+                      <feGaussianBlur stdDeviation="12" result="coloredBlur"/>
+                      <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                      </feMerge>
+                    </filter>
+                    <filter id="glow-aggregate-dialog-large" x="-100%" y="-100%" width="300%" height="300%">
+                      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+                      <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                      </feMerge>
+                    </filter>
+                    <filter id="glow-aggregate-dialog-medium" x="-100%" y="-100%" width="300%" height="300%">
+                      <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
+                      <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                      </feMerge>
+                    </filter>
+                    <filter id="glow-aggregate-dialog-close" x="-100%" y="-100%" width="300%" height="300%">
+                      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                      <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                      </feMerge>
+                    </filter>
+                    {/* Subtle glow for source lines */}
+                    <filter id="glow-source-dialog" x="-50%" y="-50%" width="200%" height="200%">
+                      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                      <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                      </feMerge>
+                    </filter>
+                  </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                   <XAxis 
                     dataKey="time" 
@@ -154,23 +191,84 @@ const MatchDetailDialog = ({ match, open, onOpenChange }: MatchDetailDialogProps
                   <Legend 
                     wrapperStyle={{ fontSize: '11px' }}
                   />
+                  {/* Aggregated line with intense lightning-like glow - multiple layers */}
                   <Line 
                     type="monotone" 
                     dataKey="aggregate" 
-                    stroke="hsl(var(--primary))" 
-                    strokeWidth={3}
-                    dot={{ fill: 'hsl(var(--primary))', r: 4 }}
+                    stroke="#00ff88" 
+                    strokeWidth={10}
+                    dot={false}
+                    strokeOpacity={0.12}
+                    filter="url(#glow-aggregate-dialog-outer)"
                   />
-                  {match.sources.map((source, index) => (
-                    <Line 
-                      key={source.sourceId}
-                      type="monotone" 
-                      dataKey={source.sourceName} 
-                      stroke={`hsl(${180 + index * 40}, 60%, 50%)`}
-                      strokeWidth={1}
-                      dot={false}
-                    />
-                  ))}
+                  <Line 
+                    type="monotone" 
+                    dataKey="aggregate" 
+                    stroke="#00ff88" 
+                    strokeWidth={8}
+                    dot={false}
+                    strokeOpacity={0.2}
+                    filter="url(#glow-aggregate-dialog-large)"
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="aggregate" 
+                    stroke="#00ff88" 
+                    strokeWidth={6}
+                    dot={false}
+                    strokeOpacity={0.3}
+                    filter="url(#glow-aggregate-dialog-medium)"
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="aggregate" 
+                    stroke="#00ff88" 
+                    strokeWidth={5}
+                    dot={false}
+                    strokeOpacity={0.5}
+                    filter="url(#glow-aggregate-dialog-close)"
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="aggregate" 
+                    stroke="#00ff88" 
+                    strokeWidth={4}
+                    dot={false}
+                    strokeOpacity={0.7}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="aggregate" 
+                    stroke="#00ff88" 
+                    strokeWidth={3}
+                    dot={{ fill: '#00ff88', r: 4 }}
+                    strokeOpacity={1}
+                  />
+                  {match.sources.map((source, index) => {
+                    // Light grey-blue colors for individual sources
+                    const sourceColors = ["#9ca3af", "#a5b4c3", "#b0c4d6", "#9db5d0", "#a8c0d8"];
+                    return (
+                      <Fragment key={source.sourceId}>
+                        <Line 
+                          type="monotone" 
+                          dataKey={source.sourceName} 
+                          stroke={sourceColors[index % sourceColors.length]}
+                          strokeWidth={2}
+                          dot={false}
+                          strokeOpacity={0.4}
+                          filter="url(#glow-source-dialog)"
+                        />
+                        <Line 
+                          type="monotone" 
+                          dataKey={source.sourceName} 
+                          stroke={sourceColors[index % sourceColors.length]}
+                          strokeWidth={1.5}
+                          dot={false}
+                          strokeOpacity={0.8}
+                        />
+                      </Fragment>
+                    );
+                  })}
                 </LineChart>
               </ResponsiveContainer>
             </div>

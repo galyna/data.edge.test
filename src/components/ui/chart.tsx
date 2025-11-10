@@ -233,20 +233,43 @@ const ChartLegendContent = React.forwardRef<
     Pick<RechartsPrimitive.LegendProps, "payload" | "verticalAlign"> & {
       hideIcon?: boolean;
       nameKey?: string;
+      align?: "center" | "start" | "end";
     }
->(({ className, hideIcon = false, payload, verticalAlign = "bottom", nameKey }, ref) => {
+>(({ className, hideIcon = false, payload, verticalAlign = "bottom", nameKey, align = "center" }, ref) => {
   const { config } = useChart();
 
-  if (!payload?.length) {
+  const filteredPayload = React.useMemo(() => {
+    if (!payload) return [];
+    const seen = new Set();
+    return payload.filter((item) => {
+      // Use the 'value' property which holds the name of the series for uniqueness.
+      if (!item.value || seen.has(item.value)) {
+        return false;
+      }
+      seen.add(item.value);
+      return true;
+    });
+  }, [payload]);
+
+  if (!filteredPayload.length) {
     return null;
   }
 
   return (
     <div
       ref={ref}
-      className={cn("flex items-center justify-center gap-4", verticalAlign === "top" ? "pb-3" : "pt-3", className)}
+      className={cn(
+        "flex items-center gap-4",
+        {
+          "justify-center": align === "center",
+          "justify-start": align === "start",
+          "justify-end": align === "end",
+        },
+        verticalAlign === "top" ? "pb-3" : "pt-3",
+        className,
+      )}
     >
-      {payload.map((item) => {
+      {filteredPayload.map((item) => {
         const key = `${nameKey || item.dataKey || "value"}`;
         const itemConfig = getPayloadConfigFromPayload(config, item, key);
 
@@ -265,7 +288,7 @@ const ChartLegendContent = React.forwardRef<
                 }}
               />
             )}
-            {itemConfig?.label}
+            <span style={{ color: item.color }}>{itemConfig?.label || item.value}</span>
           </div>
         );
       })}
