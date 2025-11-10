@@ -96,17 +96,17 @@ const UnifiedSportsFeed = ({ matches, onMatchClick }: UnifiedSportsFeedProps) =>
   };
 
   return (
-    <div className="terminal-card p-4">
-      <div className="flex items-center justify-between mb-4">
+    <div className="terminal-card p-3">
+      <div className="flex items-center justify-between mb-3">
         <div>
-          <h2 className="text-sm font-semibold uppercase tracking-wide">Unified Sports Feed</h2>
-          <p className="text-xs text-muted-foreground mt-0.5">
+          <h2 className="text-sm font-bold uppercase tracking-wide text-foreground">UNIFIED SPORTS FEED</h2>
+          <p className="text-[10px] text-muted-foreground mt-0.5">
             Live scores and data from all sources
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground">Matches:</span>
-          <span className="text-xs font-mono text-signal">{filteredMatches.length}</span>
+          <span className="text-[10px] text-muted-foreground">Matches:</span>
+          <span className="text-[10px] font-mono text-signal font-bold">{filteredMatches.length}</span>
         </div>
       </div>
 
@@ -150,23 +150,23 @@ const UnifiedSportsFeed = ({ matches, onMatchClick }: UnifiedSportsFeedProps) =>
               <Table>
                 <TableHeader>
                   <TableRow className="border-border hover:bg-transparent">
-                    <TableHead className="text-muted-foreground font-semibold text-xs uppercase h-9 px-3 w-[30%]">
-                      Match
+                    <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2 w-[30%]">
+                      MATCH
                     </TableHead>
-                    <TableHead className="text-muted-foreground font-semibold text-xs uppercase h-9 px-3 text-center">
-                      Score
+                    <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2 text-center">
+                      SCORE
                     </TableHead>
-                    <TableHead className="text-muted-foreground font-semibold text-xs uppercase h-9 px-3 text-center">
-                      Status
+                    <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2 text-center">
+                      STATUS
                     </TableHead>
-                    <TableHead className="text-muted-foreground font-semibold text-xs uppercase h-9 px-3 text-center">
-                      Odds
+                    <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2 text-center">
+                      ODDS
                     </TableHead>
-                    <TableHead className="text-muted-foreground font-semibold text-xs uppercase h-9 px-3 text-center">
-                      Source
+                    <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2 text-center">
+                      SOURCE
                     </TableHead>
-                    <TableHead className="text-muted-foreground font-semibold text-xs uppercase h-9 px-3 text-right">
-                      Time
+                    <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2 text-right">
+                      TIME
                     </TableHead>
                   </TableRow>
                 </TableHeader>

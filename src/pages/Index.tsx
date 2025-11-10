@@ -48,18 +48,19 @@ const Index = () => {
         <Header />
 
         {/* Dashboard Content */}
-        <main className="flex-1 p-3 overflow-auto">
-          <div className="max-w-[2000px] mx-auto space-y-3">
+        <main className="flex-1 p-2 overflow-auto">
+          <div className="max-w-[2000px] mx-auto space-y-2">
             
             {/* Hero: Unified Sports Feed */}
             <div className="col-span-12">
               <UnifiedSportsFeed matches={matches} onMatchClick={handleMatchClick} />
             </div>
 
-            {/* Main Grid Layout */}
-            <div className="grid grid-cols-12 gap-3">
+            {/* Main Grid Layout - Optimized for data analytics */}
+            <div className="grid grid-cols-12 gap-2">
               
-              {/* Multi-Source Comparison - 8 columns */}
+              {/* Row 1: Priority Components - Data Analysis */}
+              {/* Multi-Source Comparison - 8 columns (PRIORITY: Core analytics) */}
               <div className="col-span-8">
                 <MultiSourceComparison 
                   match={selectedMatch} 
@@ -68,19 +69,24 @@ const Index = () => {
                 />
               </div>
               
-              {/* Odds Aggregator - 4 columns */}
+              {/* Odds Aggregator - 4 columns (PRIORITY: Odds comparison) */}
               <div className="col-span-4">
                 <OddsAggregator match={selectedMatch} />
               </div>
               
-              {/* Schedule Calendar - 8 columns */}
-              <div className="col-span-8">
+              {/* Row 2: Secondary Components - Efficient space usage */}
+              {/* Schedule Calendar - 5 columns (Compact) */}
+              <div className="col-span-5">
                 <ScheduleCalendar matches={matches} />
               </div>
               
-              {/* Data Quality Indicator + Value Radar - 4 columns */}
-              <div className="col-span-4 flex flex-col gap-3">
+              {/* Data Quality Indicator - 4 columns (PRIORITY: Source monitoring) */}
+              <div className="col-span-4">
                 <DataQualityIndicator sources={dataSources} />
+              </div>
+              
+              {/* Value Radar - 3 columns (Compact signals) */}
+              <div className="col-span-3">
                 <ValueRadar signals={mockValueSignals} />
               </div>
               

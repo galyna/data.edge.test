@@ -71,34 +71,34 @@ const OddsAggregator = ({ match }: OddsAggregatorProps) => {
   };
 
   return (
-    <div className="terminal-card p-4">
-      <div className="flex items-center gap-2 mb-3">
-        <TrendingUp className="h-4 w-4 text-primary" />
-        <h3 className="text-sm font-semibold uppercase tracking-wide">
-          Odds Comparison: {match.homeTeam.shortName} vs {match.awayTeam.shortName}
-        </h3>
-      </div>
+    <div className="terminal-card p-3">
+        <div className="flex items-center gap-2 mb-3">
+          <TrendingUp className="h-4 w-4 text-primary" />
+          <h3 className="text-sm font-bold uppercase tracking-wide text-foreground">
+            ODDS: {match.homeTeam.shortName} vs {match.awayTeam.shortName}
+          </h3>
+        </div>
 
       <Table>
         <TableHeader>
           <TableRow className="border-border hover:bg-transparent">
-            <TableHead className="text-muted-foreground font-semibold text-xs uppercase h-9 px-3">
-              Source
-            </TableHead>
-            <TableHead className="text-muted-foreground font-semibold text-xs uppercase h-9 px-3 text-center">
-              Home
-            </TableHead>
-            {match.aggregatedOdds.draw && (
-              <TableHead className="text-muted-foreground font-semibold text-xs uppercase h-9 px-3 text-center">
-                Draw
-              </TableHead>
-            )}
-            <TableHead className="text-muted-foreground font-semibold text-xs uppercase h-9 px-3 text-center">
-              Away
-            </TableHead>
-            <TableHead className="text-muted-foreground font-semibold text-xs uppercase h-9 px-3 text-center">
-              Best
-            </TableHead>
+                <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2">
+                  SOURCE
+                </TableHead>
+                <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2 text-center">
+                  HOME
+                </TableHead>
+                {match.aggregatedOdds.draw && (
+                  <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2 text-center">
+                    DRAW
+                  </TableHead>
+                )}
+                <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2 text-center">
+                  AWAY
+                </TableHead>
+                <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2 text-center">
+                  BEST
+                </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -110,42 +110,42 @@ const OddsAggregator = ({ match }: OddsAggregatorProps) => {
             return (
               <TableRow
                 key={source.sourceId}
-                className="border-border hover-lift"
+                className="border-border hover:bg-muted/20 h-8"
               >
-                <TableCell className="font-medium text-xs px-3">
-                  {source.sourceName}
-                </TableCell>
-                <TableCell
-                  className={`text-center font-mono text-xs px-3 ${
-                    isBestHome ? "text-signal font-semibold" : ""
-                  }`}
-                >
-                  {source.odds.home.toFixed(2)}
-                </TableCell>
+                      <TableCell className="font-semibold text-[10px] px-2 text-foreground">
+                        {source.sourceName}
+                      </TableCell>
+                      <TableCell
+                        className={`text-center font-mono text-[10px] px-2 font-semibold ${
+                          isBestHome ? "text-signal" : "text-foreground"
+                        }`}
+                      >
+                        {source.odds.home.toFixed(2)}
+                      </TableCell>
                 {match.aggregatedOdds.draw && (
-                  <TableCell className="text-center font-mono text-xs px-3">
+                  <TableCell className="text-center font-mono text-[10px] px-2">
                     {source.odds.draw?.toFixed(2) || "-"}
                   </TableCell>
                 )}
                 <TableCell
-                  className={`text-center font-mono text-xs px-3 ${
+                  className={`text-center font-mono text-[10px] px-2 ${
                     isBestAway ? "text-signal font-semibold" : ""
                   }`}
                 >
                   {source.odds.away.toFixed(2)}
                 </TableCell>
-                <TableCell className="text-center px-3">
+                <TableCell className="text-center px-2">
                   {isBestHome && (
-                    <Badge variant="default" className="text-[10px]">Home</Badge>
+                    <Badge variant="default" className="text-[9px] px-1.5 py-0">H</Badge>
                   )}
                   {isBestDraw && (
-                    <Badge variant="default" className="text-[10px]">Draw</Badge>
+                    <Badge variant="default" className="text-[9px] px-1.5 py-0">D</Badge>
                   )}
                   {isBestAway && (
-                    <Badge variant="default" className="text-[10px]">Away</Badge>
+                    <Badge variant="default" className="text-[9px] px-1.5 py-0">A</Badge>
                   )}
                   {!isBestHome && !isBestAway && !isBestDraw && (
-                    <span className="text-xs text-muted-foreground">-</span>
+                    <span className="text-[10px] text-muted-foreground">-</span>
                   )}
                 </TableCell>
               </TableRow>
@@ -156,63 +156,72 @@ const OddsAggregator = ({ match }: OddsAggregatorProps) => {
 
       {/* Value Alert */}
       {match.value > 5 && (
-        <div className="mt-4 border border-border bg-muted/10 p-3">
-          <div className="flex items-start gap-2">
-            <AlertCircle className="h-3.5 w-3.5 text-muted-foreground mt-0.5 flex-shrink-0" />
+        <div className="mt-2 border border-border bg-muted/10 p-2">
+          <div className="flex items-start gap-1.5">
+            <AlertCircle className="h-3 w-3 text-muted-foreground mt-0.5 flex-shrink-0" />
             <div className="flex-1 min-w-0">
-              <div className="text-xs font-medium text-foreground mb-1">
-                Value opportunity detected
+              <div className="text-[10px] font-medium text-foreground mb-0.5">
+                Value: +{match.value.toFixed(1)}%
               </div>
-              <div className="text-xs text-muted-foreground font-mono">
-                +{match.value.toFixed(1)}% | Best: {getBestSource("home")} {bestHome.toFixed(2)} vs avg {match.aggregatedOdds.home.toFixed(2)}
+              <div className="text-[10px] text-muted-foreground font-mono">
+                Best: {getBestSource("home")} {bestHome.toFixed(2)} vs avg {match.aggregatedOdds.home.toFixed(2)}
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Line Movement Chart */}
-      <div className="mt-4">
-        <h4 className="text-xs font-semibold uppercase tracking-wide mb-2 text-muted-foreground">
-          Odds Movement (Last 6 Hours)
-        </h4>
-        <ChartContainer config={chartConfig} className="h-[200px]">
-          <LineChart data={oddsHistory}>
-            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-            <XAxis
-              dataKey="time"
-              stroke="hsl(var(--muted-foreground))"
-              style={{ fontSize: "10px" }}
-            />
-            <YAxis
-              stroke="hsl(var(--muted-foreground))"
-              style={{ fontSize: "10px" }}
-            />
-            <ChartTooltip content={<ChartTooltipContent />} />
-            <Line
-              type="monotone"
-              dataKey="aggregate"
-              stroke="hsl(var(--primary))"
-              strokeWidth={3}
-              dot={false}
-            />
-            <Line
-              type="monotone"
-              dataKey="home"
-              stroke="hsl(var(--primary))"
-              strokeWidth={1}
-              dot={false}
-            />
-            <Line
-              type="monotone"
-              dataKey="away"
-              stroke="hsl(var(--muted-foreground))"
-              strokeWidth={1}
-              dot={false}
-            />
-          </LineChart>
-        </ChartContainer>
-      </div>
+        {/* Line Movement Chart */}
+        <div className="mt-3 pt-3 border-t border-border">
+          <div className="flex items-center gap-2 mb-3">
+            <TrendingUp className="h-4 w-4 text-primary" />
+            <h4 className="text-xs font-semibold uppercase tracking-wide text-foreground">
+              ODDS MOVEMENT
+            </h4>
+            <span className="text-[10px] text-muted-foreground ml-auto">Last 6 hours</span>
+          </div>
+          <ChartContainer config={chartConfig} className="h-[240px]">
+            <LineChart data={oddsHistory} margin={{ top: 10, right: 20, left: 10, bottom: 20 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
+              <XAxis
+                dataKey="time"
+                stroke="hsl(var(--foreground))"
+                style={{ fontSize: "11px", fontWeight: 500 }}
+                tick={{ fill: "hsl(var(--foreground))" }}
+              />
+              <YAxis
+                stroke="hsl(var(--foreground))"
+                style={{ fontSize: "11px", fontWeight: 500 }}
+                tick={{ fill: "hsl(var(--foreground))" }}
+              />
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <Line
+                type="monotone"
+                dataKey="aggregate"
+                stroke="hsl(var(--primary))"
+                strokeWidth={3}
+                dot={false}
+                strokeOpacity={1}
+              />
+              <Line
+                type="monotone"
+                dataKey="home"
+                stroke="hsl(var(--primary))"
+                strokeWidth={2}
+                dot={false}
+                strokeOpacity={0.8}
+              />
+              <Line
+                type="monotone"
+                dataKey="away"
+                stroke="hsl(var(--muted-foreground))"
+                strokeWidth={2}
+                dot={false}
+                strokeOpacity={0.7}
+              />
+            </LineChart>
+          </ChartContainer>
+        </div>
     </div>
   );
 };

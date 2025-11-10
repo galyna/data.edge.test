@@ -64,17 +64,12 @@ const ScheduleCalendar = ({ matches }: ScheduleCalendarProps) => {
   };
 
   return (
-    <div className="terminal-card p-4">
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <h3 className="text-sm font-semibold uppercase tracking-wide">Match Schedule</h3>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Upcoming and past matches
-          </p>
-        </div>
-        <div className="flex gap-2">
+    <div className="terminal-card p-3">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-sm font-bold uppercase tracking-wide text-foreground">MATCH SCHEDULE</h3>
+        <div className="flex gap-2 items-center">
           <Select value={selectedSport} onValueChange={setSelectedSport}>
-            <SelectTrigger className="w-[150px] h-8 text-xs">
+            <SelectTrigger className="w-[120px] h-7 text-[10px]">
               <SelectValue placeholder="All Sports" />
             </SelectTrigger>
             <SelectContent>
@@ -89,110 +84,93 @@ const ScheduleCalendar = ({ matches }: ScheduleCalendarProps) => {
       </div>
 
       <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as "calendar" | "list")}>
-        <TabsList className="mb-4">
-          <TabsTrigger value="calendar" className="text-xs">
-            <CalendarIcon className="w-3 h-3 mr-1.5" />
-            Calendar
+        <TabsList className="h-7 mb-2">
+          <TabsTrigger value="calendar" className="text-[10px] px-2">
+            <CalendarIcon className="w-3 h-3 mr-1" />
+            Cal
           </TabsTrigger>
-          <TabsTrigger value="list" className="text-xs">
+          <TabsTrigger value="list" className="text-[10px] px-2">
             List
           </TabsTrigger>
         </TabsList>
-
+        
         <TabsContent value="calendar" className="mt-0">
-          <div className="flex gap-4">
-            <div className="flex-1">
+          {viewMode === "calendar" ? (
+            <div className="space-y-2">
               <Calendar
                 mode="single"
                 selected={selectedDate}
                 onSelect={setSelectedDate}
-                className="rounded-md border border-border bg-card"
+                className="border border-border bg-card"
                 modifiers={{
                   hasMatches: getDatesWithMatches(),
                 }}
                 modifiersClassNames={{
-                  hasMatches: "bg-primary/20 border border-primary/50 rounded-md",
+                  hasMatches: "bg-primary/20 border border-primary/50",
                 }}
               />
-            </div>
-            <div className="flex-1 space-y-2">
-              {selectedDate ? (
-                <>
-                  <div className="text-xs text-muted-foreground mb-2">
-                    {getMatchesForDate(selectedDate).length} matches on{" "}
-                    {format(selectedDate, "MMM dd, yyyy")}
+              {selectedDate && (
+                <div className="space-y-1.5 max-h-[200px] overflow-y-auto">
+                  <div className="text-[10px] text-muted-foreground mb-1 font-mono">
+                    {getMatchesForDate(selectedDate).length} matches on {format(selectedDate, "MMM dd")}
                   </div>
-                  <div className="space-y-2 max-h-[400px] overflow-y-auto">
-                    {getMatchesForDate(selectedDate).map((match) => (
-                      <Card
-                        key={match.id}
-                        className="p-3 hover-lift cursor-pointer border-border"
-                      >
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center gap-2">
-                            <span className="text-lg">{match.homeTeam.logo}</span>
-                            <div className="text-xs">
-                              <div className="font-medium">{match.homeTeam.name}</div>
-                              <div className="text-muted-foreground">vs {match.awayTeam.name}</div>
-                            </div>
+                  {getMatchesForDate(selectedDate).map((match) => (
+                    <div
+                      key={match.id}
+                      className="p-1.5 border border-border hover:bg-muted/20 cursor-pointer transition-colors"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                          <span className="text-xs">{match.homeTeam.logo}</span>
+                          <div className="text-[9px] min-w-0">
+                            <div className="font-medium truncate">{match.homeTeam.shortName} vs {match.awayTeam.shortName}</div>
+                            <div className="text-muted-foreground truncate">{match.league}</div>
                           </div>
+                        </div>
+                        <div className="flex items-center gap-1.5">
                           {getStatusBadge(match.status)}
-                        </div>
-                        <div className="flex items-center justify-between text-xs text-muted-foreground">
-                          <span>{match.league}</span>
-                          <div className="flex items-center gap-1">
-                            <Clock className="w-3 h-3" />
-                            <span>
-                              {format(new Date(match.startTime), "HH:mm")}
-                            </span>
+                          <div className="flex items-center gap-0.5 text-[9px] text-muted-foreground font-mono">
+                            <Clock className="w-2 h-2" />
+                            {format(new Date(match.startTime), "HH:mm")}
                           </div>
                         </div>
-                      </Card>
-                    ))}
-                  </div>
-                </>
-              ) : (
-                <div className="text-sm text-muted-foreground text-center py-8">
-                  Select a date to view matches
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
-          </div>
+          ) : null}
         </TabsContent>
 
         <TabsContent value="list" className="mt-0">
-          <div className="space-y-2 max-h-[500px] overflow-y-auto">
+          <div className="space-y-1 max-h-[400px] overflow-y-auto">
             {filteredMatches.length === 0 ? (
-              <div className="text-center py-8">
-                <p className="text-sm text-muted-foreground">No matches found</p>
+              <div className="text-center py-4">
+                <p className="text-[10px] text-muted-foreground">No matches found</p>
               </div>
             ) : (
               filteredMatches.map((match) => (
-                <Card
+                <div
                   key={match.id}
-                  className="p-3 hover-lift cursor-pointer border-border"
+                  className="p-1.5 border border-border hover:bg-muted/20 cursor-pointer transition-colors"
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3 flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xl">{match.homeTeam.logo}</span>
-                        <div className="text-xs">
-                          <div className="font-medium">{match.homeTeam.name}</div>
-                          <div className="text-muted-foreground">vs {match.awayTeam.name}</div>
-                        </div>
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {match.league}
+                    <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                      <span className="text-sm">{match.homeTeam.logo}</span>
+                      <div className="text-[9px] min-w-0">
+                        <div className="font-medium truncate">{match.homeTeam.shortName} vs {match.awayTeam.shortName}</div>
+                        <div className="text-muted-foreground truncate">{match.league}</div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1.5">
                       {getStatusBadge(match.status)}
-                      <div className="text-xs font-mono text-muted-foreground">
+                      <div className="text-[9px] font-mono text-muted-foreground">
                         {format(new Date(match.startTime), "MMM dd, HH:mm")}
                       </div>
                     </div>
                   </div>
-                </Card>
+                </div>
               ))
             )}
           </div>
