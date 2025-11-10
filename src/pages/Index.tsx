@@ -4,8 +4,11 @@ import MultiSourceTable from "@/components/MultiSourceTable";
 import LineMovementChart from "@/components/LineMovementChart";
 import ValueRadar from "@/components/ValueRadar";
 import SourceStatus from "@/components/SourceStatus";
+import { mockMatches, mockDataSources, mockValueSignals, mockAnomalies } from "@/data/mockMatches";
+import { useRealtimeData } from "@/hooks/useRealtimeData";
 
 const Index = () => {
+  const { matches, dataSources, lastUpdate } = useRealtimeData(mockMatches, mockDataSources, 8000);
   return (
     <div className="min-h-screen bg-background grid-pattern flex">
       {/* Sidebar */}
@@ -24,7 +27,7 @@ const Index = () => {
             <div className="grid grid-cols-12 gap-3">
               {/* Multi-Source Odds Comparison - Full Width */}
               <div className="col-span-12">
-                <MultiSourceTable />
+                <MultiSourceTable matches={matches} lastUpdate={lastUpdate} />
               </div>
 
               {/* Line Movement Chart - 8 columns */}
@@ -34,8 +37,8 @@ const Index = () => {
 
               {/* Value Radar - 4 columns */}
               <div className="col-span-4 flex flex-col gap-3">
-                <ValueRadar />
-                <SourceStatus />
+                <ValueRadar signals={mockValueSignals} />
+                <SourceStatus sources={dataSources} anomalies={mockAnomalies} />
               </div>
             </div>
 

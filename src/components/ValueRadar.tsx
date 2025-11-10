@@ -1,64 +1,12 @@
-import { TrendingUp, Circle } from "lucide-react";
+import { TrendingUp, Circle, TrendingDown } from "lucide-react";
+import { ValueSignal } from "@/types/match";
+import AnimatedValue from "./AnimatedValue";
 
-interface ValueSignal {
-  id: string;
-  match: string;
-  avg: number;
-  best: number;
-  edge: number;
-  sources: number;
-  spread: "Low" | "Medium" | "High";
+interface ValueRadarProps {
+  signals: ValueSignal[];
 }
 
-const signals: ValueSignal[] = [
-  {
-    id: "1",
-    match: "Arsenal vs Chelsea",
-    avg: 2.15,
-    best: 2.25,
-    edge: 4.7,
-    sources: 5,
-    spread: "Low",
-  },
-  {
-    id: "2",
-    match: "Man City vs Liverpool",
-    avg: 1.85,
-    best: 1.92,
-    edge: 3.8,
-    sources: 4,
-    spread: "Low",
-  },
-  {
-    id: "3",
-    match: "Barcelona vs Real Madrid",
-    avg: 2.45,
-    best: 2.58,
-    edge: 5.3,
-    sources: 5,
-    spread: "Medium",
-  },
-  {
-    id: "4",
-    match: "Bayern vs Dortmund",
-    avg: 1.75,
-    best: 1.81,
-    edge: 3.4,
-    sources: 3,
-    spread: "Low",
-  },
-  {
-    id: "5",
-    match: "PSG vs Marseille",
-    avg: 1.55,
-    best: 1.62,
-    edge: 4.5,
-    sources: 4,
-    spread: "Medium",
-  },
-];
-
-const ValueRadar = () => {
+const ValueRadar = ({ signals }: ValueRadarProps) => {
   return (
     <div className="terminal-card p-4">
       <div className="flex items-center gap-2 mb-3">
@@ -70,22 +18,24 @@ const ValueRadar = () => {
         {signals.map((signal) => (
           <div 
             key={signal.id} 
-            className="border border-border p-3 hover-lift cursor-pointer"
+            className="border border-border p-3 hover-lift cursor-pointer transition-all hover:border-primary/50"
           >
             <div className="flex items-start justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <Circle className="w-2 h-2 fill-primary text-primary" />
+              <div className="flex items-center gap-2 flex-1">
+                <Circle className="w-2 h-2 fill-primary text-primary flex-shrink-0" />
                 <span className="text-xs font-medium">{signal.match}</span>
               </div>
-              <span className={`text-[10px] px-1.5 py-0.5 ${
-                signal.spread === "Low" 
-                  ? "bg-positive text-primary-foreground" 
-                  : signal.spread === "High"
-                  ? "bg-negative text-destructive-foreground"
-                  : "bg-muted text-muted-foreground"
-              }`}>
-                {signal.spread}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className={`text-[10px] px-1.5 py-0.5 ${
+                  signal.spread === "Low" 
+                    ? "bg-positive text-primary-foreground" 
+                    : signal.spread === "High"
+                    ? "bg-negative text-destructive-foreground"
+                    : "bg-muted text-muted-foreground"
+                }`}>
+                  {signal.spread}
+                </span>
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs">
@@ -95,15 +45,40 @@ const ValueRadar = () => {
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Best:</span>
-                <span className="font-mono text-signal">{signal.best.toFixed(2)}</span>
+                <AnimatedValue 
+                  value={signal.best}
+                  format={(val) => val.toFixed(2)}
+                  className="font-mono text-signal"
+                />
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Edge:</span>
-                <span className="font-mono text-positive font-semibold">+{signal.edge.toFixed(1)}%</span>
+                <AnimatedValue 
+                  value={signal.edge}
+                  format={(val) => `+${val.toFixed(1)}%`}
+                  className="font-mono text-positive font-semibold"
+                />
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Sources:</span>
                 <span className="font-mono">{signal.sources}</span>
+              </div>
+            </div>
+
+            {/* Confidence bar */}
+            <div className="mt-2.5 pt-2.5 border-t border-border/50">
+              <div className="flex items-center justify-between text-[10px] mb-1">
+                <span className="text-muted-foreground uppercase">Confidence</span>
+                <span className="font-mono text-foreground">{signal.confidence}%</span>
+              </div>
+              <div className="h-1.5 bg-muted/30 overflow-hidden">
+                <div 
+                  className={`h-full transition-all duration-500 ${
+                    signal.confidence >= 90 ? 'bg-signal' : 
+                    signal.confidence >= 80 ? 'bg-primary' : 'bg-muted-foreground'
+                  }`}
+                  style={{ width: `${signal.confidence}%` }}
+                />
               </div>
             </div>
           </div>
