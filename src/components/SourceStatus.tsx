@@ -1,67 +1,27 @@
-import { Circle, AlertTriangle } from "lucide-react";
+import { Circle, AlertTriangle, Activity, TrendingUp } from "lucide-react";
+import { DataSource, Anomaly } from "@/types/match";
 
-interface DataSource {
-  id: string;
-  name: string;
-  provider: string;
-  status: "online" | "slow" | "offline";
-  latency: number;
-  lastUpdate: string;
+interface SourceStatusProps {
+  sources: DataSource[];
+  anomalies: Anomaly[];
 }
 
-interface Anomaly {
-  id: string;
-  sport: string;
-  match: string;
-  description: string;
-  severity: "high" | "medium" | "low";
-}
-
-const sources: DataSource[] = [
-  { id: "1", name: "Source A", provider: "BetAPI", status: "online", latency: 120, lastUpdate: "3s ago" },
-  { id: "2", name: "Source B", provider: "StatsPro", status: "online", latency: 95, lastUpdate: "4s ago" },
-  { id: "3", name: "Source C", provider: "OddsFeed", status: "slow", latency: 450, lastUpdate: "12s ago" },
-  { id: "4", name: "Source D", provider: "LiveData", status: "offline", latency: 0, lastUpdate: "2m ago" },
-  { id: "5", name: "Source E", provider: "QuickOdds", status: "online", latency: 180, lastUpdate: "5s ago" },
-];
-
-const anomalies: Anomaly[] = [
-  {
-    id: "1",
-    sport: "Football",
-    match: "Arsenal vs Chelsea",
-    description: "Source C deviates +0.15 from aggregate",
-    severity: "high",
-  },
-  {
-    id: "2",
-    sport: "NBA",
-    match: "Lakers vs Warriors",
-    description: "Unusual volume spike detected",
-    severity: "medium",
-  },
-  {
-    id: "3",
-    sport: "Football",
-    match: "Bayern vs Dortmund",
-    description: "Source A late update (45s delay)",
-    severity: "low",
-  },
-];
-
-const SourceStatus = () => {
+const SourceStatus = ({ sources, anomalies }: SourceStatusProps) => {
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {/* Data Sources */}
       <div className="terminal-card p-4">
-        <h3 className="text-sm font-semibold uppercase tracking-wide mb-3">Data Sources</h3>
+        <div className="flex items-center gap-2 mb-3">
+          <Activity className="w-4 h-4 text-primary" />
+          <h3 className="text-sm font-semibold uppercase tracking-wide">Data Sources</h3>
+        </div>
         <div className="space-y-2.5">
           {sources.map((source) => (
-            <div key={source.id} className="flex items-start gap-2 text-xs">
+            <div key={source.id} className="flex items-start gap-2 text-xs hover:bg-muted/20 p-2 -mx-2 transition-colors">
               <Circle 
                 className={`w-2 h-2 mt-0.5 flex-shrink-0 ${
                   source.status === "online" 
-                    ? "fill-primary text-primary" 
+                    ? "fill-primary text-primary animate-pulse" 
                     : source.status === "slow"
                     ? "fill-yellow-500 text-yellow-500"
                     : "fill-destructive text-destructive"
@@ -71,6 +31,9 @@ const SourceStatus = () => {
                 <div className="flex items-baseline justify-between mb-0.5">
                   <span className="font-medium">
                     {source.name} <span className="text-muted-foreground">({source.provider})</span>
+                  </span>
+                  <span className="text-[10px] text-muted-foreground font-mono ml-2">
+                    {source.reliability}%
                   </span>
                 </div>
                 <div className="flex items-center gap-3 text-muted-foreground">
@@ -97,27 +60,35 @@ const SourceStatus = () => {
           {anomalies.map((anomaly) => (
             <div 
               key={anomaly.id} 
-              className="border border-border p-2.5 hover-lift cursor-pointer"
+              className="border border-border p-2.5 hover-lift cursor-pointer transition-all hover:border-primary/30"
             >
               <div className="flex items-start justify-between mb-1">
-                <span className="text-xs font-medium text-muted-foreground uppercase">
-                  [{anomaly.sport}]
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-medium text-muted-foreground uppercase">
+                    [{anomaly.sport}]
+                  </span>
+                  <Circle 
+                    className={`w-2 h-2 ${
+                      anomaly.severity === "high" 
+                        ? "fill-primary text-primary animate-pulse" 
+                        : anomaly.severity === "medium"
+                        ? "fill-yellow-500 text-yellow-500"
+                        : "fill-muted-foreground text-muted-foreground"
+                    }`} 
+                  />
+                </div>
+                <span className="text-[10px] text-muted-foreground font-mono">
+                  {new Date(anomaly.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </span>
-                <Circle 
-                  className={`w-2 h-2 mt-0.5 ${
-                    anomaly.severity === "high" 
-                      ? "fill-primary text-primary" 
-                      : "fill-muted-foreground text-muted-foreground"
-                  }`} 
-                />
               </div>
-              <div className="text-xs mb-1.5">{anomaly.match}</div>
+              <div className="text-xs mb-1.5 font-medium">{anomaly.match}</div>
               <div className="text-xs text-muted-foreground leading-relaxed">
                 {anomaly.description}
               </div>
               {anomaly.severity === "high" && (
-                <div className="mt-1.5 text-xs text-signal">
-                  Possible inefficiency detected
+                <div className="mt-1.5 text-xs text-signal flex items-center gap-1">
+                  <TrendingUp className="w-3 h-3" />
+                  <span>Possible value opportunity detected</span>
                 </div>
               )}
             </div>

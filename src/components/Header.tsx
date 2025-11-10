@@ -1,4 +1,5 @@
 import { Search, Bell, User, Circle } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 
 const leagues = [
   { name: "Football", active: true },
@@ -9,14 +10,43 @@ const leagues = [
 ];
 
 const Header = () => {
+  const location = useLocation();
+  const isActive = (path: string) => location.pathname === path;
+  
   return (
     <header className="h-14 border-b border-border bg-card flex items-center justify-between px-6">
-      {/* Left: Logo */}
+      {/* Left: Logo + Navigation */}
       <div className="flex items-center gap-6">
-        <h1 className="text-base font-bold text-signal tracking-tight">DATA EDGE</h1>
+        <Link to="/" className="hover:opacity-80 transition-opacity">
+          <h1 className="text-base font-bold text-signal tracking-tight">DATA EDGE</h1>
+        </Link>
         
-        {/* Center: League Filters */}
-        <div className="flex items-center gap-2">
+        {/* Navigation Links */}
+        <nav className="flex items-center gap-1">
+          <Link
+            to="/"
+            className={`px-3 py-1 text-xs font-medium uppercase tracking-wider transition-all ${
+              isActive('/') 
+                ? "bg-primary/20 text-primary border border-primary/50" 
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-transparent"
+            }`}
+          >
+            Dashboard
+          </Link>
+          <Link
+            to="/live-scores"
+            className={`px-3 py-1 text-xs font-medium uppercase tracking-wider transition-all ${
+              isActive('/live-scores') 
+                ? "bg-primary/20 text-primary border border-primary/50" 
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-transparent"
+            }`}
+          >
+            Live Scores
+          </Link>
+        </nav>
+        
+        {/* League Filters */}
+        <div className="flex items-center gap-2 ml-4">
           {leagues.map((league) => (
             <button
               key={league.name}
