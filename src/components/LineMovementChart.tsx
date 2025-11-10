@@ -49,16 +49,14 @@ const LineMovementChart = () => {
     };
 
     const sources = [
-      { data: generateLine(2.1, 0.08), color: "#4a5568", width: 1.5, label: "Source A" },
-      { data: generateLine(2.15, 0.06), color: "#5a6c7d", width: 1.5, label: "Source B" },
-      { data: generateLine(2.08, 0.1), color: "#6b7b8c", width: 1.5, label: "Source C" },
+      { data: generateLine(2.1, 0.08), color: "#9ca3af", width: 1.5, label: "Source A" },
+      { data: generateLine(2.15, 0.06), color: "#a5b4c3", width: 1.5, label: "Source B" },
+      { data: generateLine(2.08, 0.1), color: "#b0c4d6", width: 1.5, label: "Source C" },
       { data: generateLine(2.12, 0.05), color: "#00ff88", width: 2.5, label: "Aggregated" },
     ];
 
-    // Draw lines
+    // Draw lines with glow effects
     sources.forEach((source) => {
-      ctx.strokeStyle = source.color;
-      ctx.lineWidth = source.width;
       ctx.beginPath();
       
       source.data.forEach((value, index) => {
@@ -71,15 +69,102 @@ const LineMovementChart = () => {
           ctx.lineTo(x, y);
         }
       });
-      
-      ctx.stroke();
 
-      // Add glow to aggregated line
+      // For aggregated line, create dramatic "lightning bolt" effect with intense glow
       if (source.label === "Aggregated") {
-        ctx.shadowBlur = 8;
+        // Rebuild path for each layer
+        const rebuildPath = () => {
+          ctx.beginPath();
+          source.data.forEach((value, index) => {
+            const x = (width / (source.data.length - 1)) * index;
+            const y = height - ((value - 1.5) / 2.0) * height;
+            if (index === 0) {
+              ctx.moveTo(x, y);
+            } else {
+              ctx.lineTo(x, y);
+            }
+          });
+        };
+
+        // Layer 1: Massive outer glow (very wide, very blurred)
+        rebuildPath();
+        ctx.strokeStyle = source.color;
+        ctx.lineWidth = source.width + 16;
+        ctx.shadowBlur = 40;
         ctx.shadowColor = source.color;
+        ctx.globalAlpha = 0.15;
         ctx.stroke();
+        
+        // Layer 2: Large outer glow
+        rebuildPath();
+        ctx.lineWidth = source.width + 12;
+        ctx.shadowBlur = 30;
+        ctx.globalAlpha = 0.25;
+        ctx.stroke();
+        
+        // Layer 3: Medium outer glow
+        rebuildPath();
+        ctx.lineWidth = source.width + 8;
+        ctx.shadowBlur = 20;
+        ctx.globalAlpha = 0.35;
+        ctx.stroke();
+        
+        // Layer 4: Medium glow
+        rebuildPath();
+        ctx.lineWidth = source.width + 6;
+        ctx.shadowBlur = 15;
+        ctx.globalAlpha = 0.45;
+        ctx.stroke();
+        
+        // Layer 5: Inner glow
+        rebuildPath();
+        ctx.lineWidth = source.width + 4;
+        ctx.shadowBlur = 10;
+        ctx.globalAlpha = 0.6;
+        ctx.stroke();
+        
+        // Layer 6: Close glow
+        rebuildPath();
+        ctx.lineWidth = source.width + 2;
+        ctx.shadowBlur = 6;
+        ctx.globalAlpha = 0.75;
+        ctx.stroke();
+        
+        // Layer 7: Tight glow
+        rebuildPath();
+        ctx.lineWidth = source.width + 1;
+        ctx.shadowBlur = 3;
+        ctx.globalAlpha = 0.9;
+        ctx.stroke();
+        
+        // Main line (sharp, bright)
+        rebuildPath();
         ctx.shadowBlur = 0;
+        ctx.globalAlpha = 1;
+        ctx.lineWidth = source.width;
+        ctx.strokeStyle = "#00ff88";
+        ctx.stroke();
+        
+        // Reset
+        ctx.shadowBlur = 0;
+        ctx.globalAlpha = 1;
+      } else {
+        // For source lines, add subtle glow
+        ctx.strokeStyle = source.color;
+        ctx.lineWidth = source.width + 1;
+        ctx.shadowBlur = 4;
+        ctx.shadowColor = source.color;
+        ctx.globalAlpha = 0.4;
+        ctx.stroke();
+        
+        // Main line
+        ctx.lineWidth = source.width;
+        ctx.shadowBlur = 0;
+        ctx.globalAlpha = 0.8;
+        ctx.stroke();
+        
+        ctx.shadowBlur = 0;
+        ctx.globalAlpha = 1;
       }
     });
 
@@ -104,7 +189,7 @@ const LineMovementChart = () => {
               <div 
                 className="w-3 h-0.5" 
                 style={{ 
-                  backgroundColor: i === 3 ? "#00ff88" : ["#4a5568", "#5a6c7d", "#6b7b8c"][i],
+                  backgroundColor: i === 3 ? "#00ff88" : ["#9ca3af", "#a5b4c3", "#b0c4d6"][i],
                   height: i === 3 ? "2px" : "1.5px"
                 }}
               />
