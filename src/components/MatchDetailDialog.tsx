@@ -12,6 +12,23 @@ interface MatchDetailDialogProps {
 const MatchDetailDialog = ({ match, open, onOpenChange }: MatchDetailDialogProps) => {
   if (!match) return null;
 
+  if (!match.sources || match.sources.length === 0) {
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-card border-border">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-semibold uppercase tracking-wide">
+              {match.homeTeam.name} vs {match.awayTeam.name}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="text-center py-8">
+            <p className="text-sm text-muted-foreground">No source data available</p>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
   // Generate historical data for spread visualization
   const spreadHistory = match.sources.map((source, index) => ({
     time: `T-${(match.sources.length - index) * 5}m`,

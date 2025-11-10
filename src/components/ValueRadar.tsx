@@ -8,37 +8,35 @@ interface ValueRadarProps {
 
 const ValueRadar = ({ signals }: ValueRadarProps) => {
   return (
-    <div className="terminal-card p-4">
+    <div className="terminal-card p-2.5">
       <div className="flex items-center gap-2 mb-3">
         <TrendingUp className="w-4 h-4 text-signal" />
-        <h3 className="text-sm font-semibold uppercase tracking-wide">Value Signals from Aggregation</h3>
+        <h3 className="text-sm font-bold uppercase tracking-wide text-foreground">VALUE SIGNALS</h3>
       </div>
 
-      <div className="space-y-3">
-        {signals.map((signal) => (
+      <div className="space-y-1.5">
+        {signals.slice(0, 4).map((signal) => (
           <div 
             key={signal.id} 
-            className="border border-border p-3 hover-lift cursor-pointer transition-all hover:border-primary/50"
+            className="border border-border p-1.5 hover:bg-muted/20 cursor-pointer transition-colors"
           >
-            <div className="flex items-start justify-between mb-2">
-              <div className="flex items-center gap-2 flex-1">
-                <Circle className="w-2 h-2 fill-primary text-primary flex-shrink-0" />
-                <span className="text-xs font-medium">{signal.match}</span>
+            <div className="flex items-start justify-between mb-1">
+              <div className="flex items-center gap-1 flex-1 min-w-0">
+                <Circle className="w-1 h-1 fill-primary text-primary flex-shrink-0 mt-1" />
+                <span className="text-[9px] font-medium truncate">{signal.match}</span>
               </div>
-              <div className="flex items-center gap-2">
-                <span className={`text-[10px] px-1.5 py-0.5 ${
-                  signal.spread === "Low" 
-                    ? "bg-positive text-primary-foreground" 
-                    : signal.spread === "High"
-                    ? "bg-negative text-destructive-foreground"
-                    : "bg-muted text-muted-foreground"
-                }`}>
-                  {signal.spread}
-                </span>
-              </div>
+              <span className={`text-[8px] px-1 py-0 ${
+                signal.spread === "Low" 
+                  ? "bg-positive text-primary-foreground" 
+                  : signal.spread === "High"
+                  ? "bg-negative text-destructive-foreground"
+                  : "bg-muted text-muted-foreground"
+              }`}>
+                {signal.spread}
+              </span>
             </div>
 
-            <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs">
+            <div className="grid grid-cols-2 gap-x-1.5 gap-y-0.5 text-[9px]">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Avg:</span>
                 <span className="font-mono">{signal.avg.toFixed(2)}</span>
@@ -60,18 +58,18 @@ const ValueRadar = ({ signals }: ValueRadarProps) => {
                 />
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Sources:</span>
+                <span className="text-muted-foreground">Src:</span>
                 <span className="font-mono">{signal.sources}</span>
               </div>
             </div>
 
             {/* Confidence bar */}
-            <div className="mt-2.5 pt-2.5 border-t border-border/50">
-              <div className="flex items-center justify-between text-[10px] mb-1">
-                <span className="text-muted-foreground uppercase">Confidence</span>
+            <div className="mt-1 pt-1 border-t border-border/50">
+              <div className="flex items-center justify-between text-[8px] mb-0.5">
+                <span className="text-muted-foreground">Conf</span>
                 <span className="font-mono text-foreground">{signal.confidence}%</span>
               </div>
-              <div className="h-1.5 bg-muted/30 overflow-hidden">
+              <div className="h-0.5 bg-muted/30 overflow-hidden">
                 <div 
                   className={`h-full transition-all duration-500 ${
                     signal.confidence >= 90 ? 'bg-signal' : 

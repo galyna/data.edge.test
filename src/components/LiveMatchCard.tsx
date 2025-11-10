@@ -1,30 +1,16 @@
 import { Circle } from "lucide-react";
-
-interface Match {
-  id: string;
-  sport: string;
-  league: string;
-  status: "live" | "scheduled" | "finished";
-  homeTeam: {
-    name: string;
-    logo: string;
-    score?: number;
-  };
-  awayTeam: {
-    name: string;
-    logo: string;
-    score?: number;
-  };
-  time: string;
-  period?: string;
-  startTime?: string;
-}
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Match } from "@/types/match";
 
 interface LiveMatchCardProps {
   match: Match;
+  showSource?: boolean;
+  showStats?: boolean;
 }
 
-const LiveMatchCard = ({ match }: LiveMatchCardProps) => {
+const LiveMatchCard = ({ match, showSource = true, showStats = false }: LiveMatchCardProps) => {
   const getStatusColor = () => {
     switch (match.status) {
       case "live":
@@ -49,6 +35,17 @@ const LiveMatchCard = ({ match }: LiveMatchCardProps) => {
     }
   };
 
+  const getSourceBadge = () => {
+    if (!match.sources || match.sources.length === 0) {
+      return match.bestSource || "Unknown";
+    }
+    const primarySource = match.sources.find((s) => s.sourceName === match.bestSource) || match.sources[0];
+    return primarySource?.sourceName || match.bestSource || "Unknown";
+  };
+
+  const getHomeScore = () => match.liveData?.homeScore ?? match.homeTeam.logo;
+  const getAwayScore = () => match.liveData?.awayScore ?? match.awayTeam.logo;
+
   return (
     <div className="terminal-card p-3 hover-lift cursor-pointer">
       
@@ -62,15 +59,33 @@ const LiveMatchCard = ({ match }: LiveMatchCardProps) => {
             {match.league}
           </span>
         </div>
-        <div className="flex items-center gap-1.5">
-          <Circle 
-            className={`h-2 w-2 fill-current ${getStatusColor()} ${
-              match.status === 'live' ? 'animate-pulse' : ''
-            }`}
-          />
-          <span className={`text-[10px] uppercase tracking-wider font-semibold ${getStatusColor()}`}>
-            {getStatusText()}
-          </span>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
+            <Circle 
+              className={`h-2 w-2 fill-current ${getStatusColor()} ${
+                match.status === 'live' ? 'animate-pulse' : ''
+              }`}
+            />
+            <span className={`text-[10px] uppercase tracking-wider font-semibold ${getStatusColor()}`}>
+              {getStatusText()}
+            </span>
+          </div>
+          {showSource && (
+            <Tooltip>
+              <TooltipTrigger>
+                <div className="inline-flex items-center px-2 py-0.5 text-[10px] font-mono text-muted-foreground border border-border">
+                  {getSourceBadge()}
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <div className="text-xs space-y-1">
+                  <p>Primary source: {getSourceBadge()}</p>
+                  <p>Total sources: {match.sources?.length || 0}</p>
+                  <p>Best source: {match.bestSource || "Unknown"}</p>
+                </div>
+              </TooltipContent>
+            </Tooltip>
+          )}
         </div>
       </div>
 
@@ -85,9 +100,9 @@ const LiveMatchCard = ({ match }: LiveMatchCardProps) => {
               {match.homeTeam.name}
             </span>
           </div>
-          {match.homeTeam.score !== undefined && (
+          {match.liveData && (
             <span className="text-2xl font-mono font-bold text-foreground ml-2">
-              {match.homeTeam.score}
+              {getHomeScore()}
             </span>
           )}
         </div>
@@ -100,29 +115,43 @@ const LiveMatchCard = ({ match }: LiveMatchCardProps) => {
               {match.awayTeam.name}
             </span>
           </div>
-          {match.awayTeam.score !== undefined && (
+          {match.liveData && (
             <span className="text-2xl font-mono font-bold text-foreground ml-2">
-              {match.awayTeam.score}
+              {getAwayScore()}
             </span>
           )}
         </div>
 
       </div>
 
+      {/* Stats (if available and enabled) */}
+      {showStats && match.liveData && (
+        <div className="mt-3 pt-3 border-t border-border space-y-2">
+          {/* Example: Possession or other stats */}
+          <div>
+            <div className="flex justify-between text-xs mb-1">
+              <span className="text-muted-foreground">Value</span>
+              <span className="font-mono text-signal">+{match.value.toFixed(1)}%</span>
+            </div>
+            <Progress value={Math.min(match.value * 10, 100)} className="h-1" />
+          </div>
+        </div>
+      )}
+
       {/* Footer: Time/Period */}
       <div className="mt-3 pt-2 border-t border-border">
         <div className="flex items-center justify-between">
           <span className="text-xs text-muted-foreground font-mono">
-            {match.time}
+            {match.liveData?.time || new Date(match.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </span>
-          {match.period && (
+          {match.liveData?.period && (
             <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
-              {match.period}
+              {match.liveData.period}
             </span>
           )}
-          {match.startTime && !match.period && (
+          {!match.liveData && (
             <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
-              Starts at {match.startTime}
+              {new Date(match.startTime).toLocaleDateString()}
             </span>
           )}
         </div>

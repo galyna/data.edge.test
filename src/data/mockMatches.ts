@@ -2,8 +2,8 @@ import { Match, DataSource, Anomaly, ValueSignal } from "@/types/match";
 
 export const mockDataSources: DataSource[] = [
   { 
-    id: "source-a", 
-    name: "Source A", 
+    id: "sportradar", 
+    name: "Sportradar", 
     provider: "Sportradar", 
     status: "online", 
     latency: 120, 
@@ -11,8 +11,8 @@ export const mockDataSources: DataSource[] = [
     reliability: 98
   },
   { 
-    id: "source-b", 
-    name: "Source B", 
+    id: "sportsdataio", 
+    name: "SportsDataIO", 
     provider: "SportsDataIO", 
     status: "online", 
     latency: 95, 
@@ -20,17 +20,17 @@ export const mockDataSources: DataSource[] = [
     reliability: 95
   },
   { 
-    id: "source-c", 
-    name: "Source C", 
-    provider: "NewsAPI", 
+    id: "apisports", 
+    name: "API-Sports", 
+    provider: "API-Sports", 
     status: "slow", 
     latency: 450, 
     lastUpdate: "12s ago",
     reliability: 88
   },
   { 
-    id: "source-d", 
-    name: "Source D", 
+    id: "pandascore", 
+    name: "PandaScore", 
     provider: "PandaScore", 
     status: "offline", 
     latency: 0, 
@@ -38,9 +38,9 @@ export const mockDataSources: DataSource[] = [
     reliability: 75
   },
   { 
-    id: "source-e", 
-    name: "Source E", 
-    provider: "OddsAPI", 
+    id: "thesportsdb", 
+    name: "TheSportsDB", 
+    provider: "TheSportsDB", 
     status: "online", 
     latency: 180, 
     lastUpdate: "5s ago",
@@ -63,8 +63,14 @@ export const mockMatches: Match[] = [
       shortName: "CHE",
       logo: "⚽"
     },
-    status: "scheduled",
+    status: "live",
     startTime: "2025-01-20T15:00:00Z",
+    liveData: {
+      homeScore: 2,
+      awayScore: 1,
+      time: "67'",
+      period: "2nd Half"
+    },
     aggregatedOdds: {
       home: 2.15,
       draw: 3.40,
@@ -72,29 +78,29 @@ export const mockMatches: Match[] = [
     },
     sources: [
       {
-        sourceId: "source-a",
-        sourceName: "Source A",
+        sourceId: "sportradar",
+        sourceName: "Sportradar",
         odds: { home: 2.12, draw: 3.35, away: 3.25 },
         timestamp: "2025-01-15T14:32:00Z",
         latency: 120
       },
       {
-        sourceId: "source-b",
-        sourceName: "Source B",
+        sourceId: "sportsdataio",
+        sourceName: "SportsDataIO",
         odds: { home: 2.25, draw: 3.40, away: 3.15 },
         timestamp: "2025-01-15T14:32:05Z",
         latency: 95
       },
       {
-        sourceId: "source-c",
-        sourceName: "Source C",
+        sourceId: "apisports",
+        sourceName: "API-Sports",
         odds: { home: 2.10, draw: 3.45, away: 3.20 },
         timestamp: "2025-01-15T14:31:50Z",
         latency: 450
       },
       {
-        sourceId: "source-e",
-        sourceName: "Source E",
+        sourceId: "thesportsdb",
+        sourceName: "TheSportsDB",
         odds: { home: 2.18, draw: 3.38, away: 3.22 },
         timestamp: "2025-01-15T14:32:02Z",
         latency: 180
@@ -102,7 +108,7 @@ export const mockMatches: Match[] = [
     ],
     spread: 0.08,
     spreadQuality: "low",
-    bestSource: "Source B",
+    bestSource: "SportsDataIO",
     value: 12.3
   },
   {
@@ -128,22 +134,22 @@ export const mockMatches: Match[] = [
     },
     sources: [
       {
-        sourceId: "source-a",
-        sourceName: "Source A",
+        sourceId: "sportradar",
+        sourceName: "Sportradar",
         odds: { home: 1.92, draw: 3.55, away: 4.10 },
         timestamp: "2025-01-15T14:32:00Z",
         latency: 120
       },
       {
-        sourceId: "source-b",
-        sourceName: "Source B",
+        sourceId: "sportsdataio",
+        sourceName: "SportsDataIO",
         odds: { home: 1.82, draw: 3.70, away: 4.25 },
         timestamp: "2025-01-15T14:32:05Z",
         latency: 95
       },
       {
-        sourceId: "source-c",
-        sourceName: "Source C",
+        sourceId: "apisports",
+        sourceName: "API-Sports",
         odds: { home: 1.78, draw: 3.50, away: 4.35 },
         timestamp: "2025-01-15T14:31:50Z",
         latency: 450
@@ -151,7 +157,7 @@ export const mockMatches: Match[] = [
     ],
     spread: 0.15,
     spreadQuality: "high",
-    bestSource: "Source A",
+    bestSource: "Sportradar",
     value: 8.7
   },
   {
@@ -177,29 +183,29 @@ export const mockMatches: Match[] = [
     },
     sources: [
       {
-        sourceId: "source-a",
-        sourceName: "Source A",
+        sourceId: "sportradar",
+        sourceName: "Sportradar",
         odds: { home: 2.42, draw: 3.25, away: 2.95 },
         timestamp: "2025-01-15T14:32:00Z",
         latency: 120
       },
       {
-        sourceId: "source-b",
-        sourceName: "Source B",
+        sourceId: "sportsdataio",
+        sourceName: "SportsDataIO",
         odds: { home: 2.58, draw: 3.30, away: 2.82 },
         timestamp: "2025-01-15T14:32:05Z",
         latency: 95
       },
       {
-        sourceId: "source-c",
-        sourceName: "Source C",
+        sourceId: "apisports",
+        sourceName: "API-Sports",
         odds: { home: 2.40, draw: 3.35, away: 2.92 },
         timestamp: "2025-01-15T14:31:50Z",
         latency: 450
       },
       {
-        sourceId: "source-e",
-        sourceName: "Source E",
+        sourceId: "thesportsdb",
+        sourceName: "TheSportsDB",
         odds: { home: 2.48, draw: 3.28, away: 2.88 },
         timestamp: "2025-01-15T14:32:02Z",
         latency: 180
@@ -207,7 +213,7 @@ export const mockMatches: Match[] = [
     ],
     spread: 0.06,
     spreadQuality: "low",
-    bestSource: "Source B",
+    bestSource: "SportsDataIO",
     value: 15.2
   },
   {
@@ -233,22 +239,22 @@ export const mockMatches: Match[] = [
     },
     sources: [
       {
-        sourceId: "source-a",
-        sourceName: "Source A",
+        sourceId: "sportradar",
+        sourceName: "Sportradar",
         odds: { home: 1.72, draw: 3.75, away: 4.60 },
         timestamp: "2025-01-15T14:32:00Z",
         latency: 120
       },
       {
-        sourceId: "source-b",
-        sourceName: "Source B",
+        sourceId: "sportsdataio",
+        sourceName: "SportsDataIO",
         odds: { home: 1.81, draw: 3.85, away: 4.35 },
         timestamp: "2025-01-15T14:32:05Z",
         latency: 95
       },
       {
-        sourceId: "source-e",
-        sourceName: "Source E",
+        sourceId: "thesportsdb",
+        sourceName: "TheSportsDB",
         odds: { home: 1.78, draw: 3.82, away: 4.48 },
         timestamp: "2025-01-15T14:32:02Z",
         latency: 180
@@ -256,7 +262,7 @@ export const mockMatches: Match[] = [
     ],
     spread: 0.12,
     spreadQuality: "medium",
-    bestSource: "Source B",
+    bestSource: "SportsDataIO",
     value: 6.4
   },
   {
@@ -282,22 +288,22 @@ export const mockMatches: Match[] = [
     },
     sources: [
       {
-        sourceId: "source-a",
-        sourceName: "Source A",
+        sourceId: "sportradar",
+        sourceName: "Sportradar",
         odds: { home: 1.62, draw: 4.10, away: 5.60 },
         timestamp: "2025-01-15T14:32:00Z",
         latency: 120
       },
       {
-        sourceId: "source-b",
-        sourceName: "Source B",
+        sourceId: "sportsdataio",
+        sourceName: "SportsDataIO",
         odds: { home: 1.48, draw: 4.35, away: 6.10 },
         timestamp: "2025-01-15T14:32:05Z",
         latency: 95
       },
       {
-        sourceId: "source-c",
-        sourceName: "Source C",
+        sourceId: "apisports",
+        sourceName: "API-Sports",
         odds: { home: 1.52, draw: 4.15, away: 5.75 },
         timestamp: "2025-01-15T14:31:50Z",
         latency: 450
@@ -305,8 +311,143 @@ export const mockMatches: Match[] = [
     ],
     spread: 0.18,
     spreadQuality: "high",
-    bestSource: "Source A",
+    bestSource: "Sportradar",
     value: 4.1
+  },
+  {
+    id: "match-6",
+    sport: "NBA",
+    league: "NBA Regular Season",
+    homeTeam: {
+      name: "Lakers",
+      shortName: "LAL",
+      logo: "🏀"
+    },
+    awayTeam: {
+      name: "Warriors",
+      shortName: "GSW",
+      logo: "🏀"
+    },
+    status: "live",
+    startTime: "2025-01-20T20:00:00Z",
+    liveData: {
+      homeScore: 98,
+      awayScore: 102,
+      time: "Q3 8:24",
+      period: "3rd Quarter"
+    },
+    aggregatedOdds: {
+      home: 1.90,
+      away: 1.95
+    },
+    sources: [
+      {
+        sourceId: "sportradar",
+        sourceName: "Sportradar",
+        odds: { home: 1.92, away: 1.93 },
+        timestamp: "2025-01-15T14:32:00Z",
+        latency: 120
+      },
+      {
+        sourceId: "sportsdataio",
+        sourceName: "SportsDataIO",
+        odds: { home: 1.88, away: 1.97 },
+        timestamp: "2025-01-15T14:32:05Z",
+        latency: 95
+      }
+    ],
+    spread: 0.05,
+    spreadQuality: "low",
+    bestSource: "Sportradar",
+    value: 8.5
+  },
+  {
+    id: "match-7",
+    sport: "Tennis",
+    league: "ATP Tour",
+    homeTeam: {
+      name: "Djokovic",
+      shortName: "DJK",
+      logo: "🎾"
+    },
+    awayTeam: {
+      name: "Alcaraz",
+      shortName: "ALC",
+      logo: "🎾"
+    },
+    status: "scheduled",
+    startTime: "2025-01-21T14:00:00Z",
+    aggregatedOdds: {
+      home: 1.75,
+      away: 2.10
+    },
+    sources: [
+      {
+        sourceId: "sportradar",
+        sourceName: "Sportradar",
+        odds: { home: 1.72, away: 2.15 },
+        timestamp: "2025-01-15T14:32:00Z",
+        latency: 120
+      },
+      {
+        sourceId: "sportsdataio",
+        sourceName: "SportsDataIO",
+        odds: { home: 1.78, away: 2.05 },
+        timestamp: "2025-01-15T14:32:05Z",
+        latency: 95
+      }
+    ],
+    spread: 0.06,
+    spreadQuality: "low",
+    bestSource: "SportsDataIO",
+    value: 10.2
+  },
+  {
+    id: "match-8",
+    sport: "E-sports",
+    league: "LEC Spring",
+    homeTeam: {
+      name: "G2 Esports",
+      shortName: "G2",
+      logo: "🎮"
+    },
+    awayTeam: {
+      name: "Fnatic",
+      shortName: "FNC",
+      logo: "🎮"
+    },
+    status: "live",
+    startTime: "2025-01-20T19:00:00Z",
+    liveData: {
+      homeScore: 1,
+      awayScore: 0,
+      time: "Game 2",
+      period: "Best of 3"
+    },
+    aggregatedOdds: {
+      home: 1.65,
+      away: 2.25
+    },
+    sources: [
+      {
+        sourceId: "sportradar",
+        sourceName: "Sportradar",
+        odds: { home: 1.62, away: 2.30 },
+        timestamp: "2025-01-15T14:32:00Z",
+        latency: 120
+      },
+      {
+        sourceId: "sportsdataio",
+        sourceName: "SportsDataIO",
+        odds: { home: 1.68, away: 2.20 },
+        timestamp: "2025-01-15T14:32:05Z",
+        latency: 95
+      }
+    ],
+    spread: 0.06,
+    spreadQuality: "low",
+    bestSource: "Sportradar",
+    value: 7.8
   }
 ];
 
@@ -318,7 +459,7 @@ export const mockAnomalies: Anomaly[] = [
     description: "Source C deviates +0.15 from aggregate",
     severity: "high",
     timestamp: "2025-01-15T14:30:00Z",
-    sourceId: "source-c"
+    sourceId: "apisports"
   },
   {
     id: "anomaly-2",
@@ -335,7 +476,7 @@ export const mockAnomalies: Anomaly[] = [
     description: "Source A late update (45s delay)",
     severity: "low",
     timestamp: "2025-01-15T14:25:00Z",
-    sourceId: "source-a"
+    sourceId: "sportradar"
   }
 ];
 
