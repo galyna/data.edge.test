@@ -13,6 +13,14 @@ const Header = () => {
   const location = useLocation();
   const isActive = (path: string) => location.pathname === path;
   
+  const getLinkClass = (path: string) => {
+    return `px-3 py-1 text-xs font-medium uppercase tracking-wider transition-all ${
+      isActive(path)
+        ? "bg-primary/20 text-primary border border-primary/50"
+        : "text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-transparent"
+    }`;
+  };
+
   return (
     <header className="h-14 border-b border-border bg-card flex items-center justify-between px-6">
       {/* Left: Logo + Navigation */}
@@ -23,25 +31,14 @@ const Header = () => {
         
         {/* Navigation Links */}
         <nav className="flex items-center gap-1">
-          <Link
-            to="/"
-            className={`px-3 py-1 text-xs font-medium uppercase tracking-wider transition-all ${
-              isActive('/') 
-                ? "bg-primary/20 text-primary border border-primary/50" 
-                : "text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-transparent"
-            }`}
-          >
+          <Link to="/" className={getLinkClass("/")}>
             Dashboard
           </Link>
-          <Link
-            to="/live-scores"
-            className={`px-3 py-1 text-xs font-medium uppercase tracking-wider transition-all ${
-              isActive('/live-scores') 
-                ? "bg-primary/20 text-primary border border-primary/50" 
-                : "text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-transparent"
-            }`}
-          >
+          <Link to="/live-scores" className={getLinkClass("/live-scores")}>
             Live Scores
+          </Link>
+          <Link to="/news" className={getLinkClass("/news")}>
+            News
           </Link>
         </nav>
         

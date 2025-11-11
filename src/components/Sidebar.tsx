@@ -12,7 +12,7 @@ const Sidebar = ({ activeSection = "dashboard" }: SidebarProps) => {
   const menuItems = [
     { id: "dashboard", icon: LayoutDashboard, label: "Dashboard", path: "/" },
     { id: "live-scores", icon: Activity, label: "Live Scores", path: "/live-scores" },
-    { id: "markets", icon: TrendingUp, label: "Markets", path: "#" },
+    { id: "news", icon: TrendingUp, label: "News", path: "/news" },
     { id: "analytics", icon: BarChart3, label: "Analytics", path: "#" },
     { id: "predictions", icon: Target, label: "Predictions", path: "#" },
     { id: "data", icon: Database, label: "Data Feed", path: "#" },

@@ -69,7 +69,8 @@ export const mockMatches: Match[] = [
       homeScore: 2,
       awayScore: 1,
       time: "67'",
-      period: "2nd Half"
+      period: "2nd Half",
+      lastUpdate: new Date().toISOString()
     },
     aggregatedOdds: {
       home: 2.15,
@@ -334,7 +335,8 @@ export const mockMatches: Match[] = [
       homeScore: 98,
       awayScore: 102,
       time: "Q3 8:24",
-      period: "3rd Quarter"
+      period: "3rd Quarter",
+      lastUpdate: new Date().toISOString()
     },
     aggregatedOdds: {
       home: 1.90,
@@ -422,7 +424,8 @@ export const mockMatches: Match[] = [
       homeScore: 1,
       awayScore: 0,
       time: "Game 2",
-      period: "Best of 3"
+      period: "Best of 3",
+      lastUpdate: new Date().toISOString()
     },
     aggregatedOdds: {
       home: 1.65,

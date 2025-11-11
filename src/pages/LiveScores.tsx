@@ -3,29 +3,10 @@ import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import LiveMatchCard from "@/components/LiveMatchCard";
 import { Button } from "@/components/ui/button";
+import { Match } from "@/types/match";
 
 const sports = ["All", "Football", "NBA", "MLB", "Tennis", "E-sports"];
 const statuses = ["All", "Live", "Scheduled", "Finished"];
-
-interface Match {
-  id: string;
-  sport: string;
-  league: string;
-  status: "live" | "scheduled" | "finished";
-  homeTeam: {
-    name: string;
-    logo: string;
-    score?: number;
-  };
-  awayTeam: {
-    name: string;
-    logo: string;
-    score?: number;
-  };
-  time: string;
-  period?: string;
-  startTime?: string;
-}
 
 const mockMatches: Match[] = [
   {
@@ -33,80 +14,162 @@ const mockMatches: Match[] = [
     sport: "Football",
     league: "Premier League",
     status: "live",
-    homeTeam: { name: "Arsenal", logo: "⚽", score: 2 },
-    awayTeam: { name: "Chelsea", logo: "⚽", score: 1 },
-    time: "67'",
-    period: "2nd Half"
+    homeTeam: { name: "Arsenal", logo: "⚽", shortName: "ARS" },
+    awayTeam: { name: "Chelsea", logo: "⚽", shortName: "CHE" },
+    startTime: new Date(Date.now() - 67 * 60000).toISOString(),
+    aggregatedOdds: { home: 2.15, draw: 3.40, away: 3.20 },
+    sources: [],
+    spread: 0.05,
+    spreadQuality: "low",
+    value: 4.5,
+    bestSource: "Source A",
+    liveData: {
+      homeScore: 2,
+      awayScore: 1,
+      period: "2nd Half",
+      time: "67'",
+      lastUpdate: new Date().toISOString()
+    }
   },
   {
     id: "2",
     sport: "NBA",
     league: "NBA Regular Season",
     status: "live",
-    homeTeam: { name: "Lakers", logo: "🏀", score: 98 },
-    awayTeam: { name: "Warriors", logo: "🏀", score: 102 },
-    time: "Q3 8:24",
-    period: "3rd Quarter"
+    homeTeam: { name: "Lakers", logo: "🏀", shortName: "LAL" },
+    awayTeam: { name: "Warriors", logo: "🏀", shortName: "GSW" },
+    startTime: new Date(Date.now() - 125 * 60000).toISOString(),
+    aggregatedOdds: { home: 1.95, draw: 0, away: 1.85 },
+    sources: [],
+    spread: 0.03,
+    spreadQuality: "low",
+    value: 2.8,
+    bestSource: "Source B",
+    liveData: {
+      homeScore: 98,
+      awayScore: 102,
+      period: "3rd Quarter",
+      time: "Q3 8:24",
+      lastUpdate: new Date().toISOString()
+    }
   },
   {
     id: "3",
     sport: "Football",
     league: "La Liga",
     status: "scheduled",
-    homeTeam: { name: "Real Madrid", logo: "⚽" },
-    awayTeam: { name: "Barcelona", logo: "⚽" },
-    startTime: "20:00",
-    time: "20:00"
+    homeTeam: { name: "Real Madrid", logo: "⚽", shortName: "RMA" },
+    awayTeam: { name: "Barcelona", logo: "⚽", shortName: "FCB" },
+    startTime: new Date(Date.now() + 2 * 60 * 60000).toISOString(),
+    aggregatedOdds: { home: 2.45, draw: 3.20, away: 2.90 },
+    sources: [],
+    spread: 0.08,
+    spreadQuality: "medium",
+    value: 6.2,
+    bestSource: "Source C"
   },
   {
     id: "4",
     sport: "Tennis",
     league: "ATP Tour",
     status: "live",
-    homeTeam: { name: "Djokovic", logo: "🎾", score: 2 },
-    awayTeam: { name: "Alcaraz", logo: "🎾", score: 1 },
-    time: "Set 4",
-    period: "4th Set"
+    homeTeam: { name: "Djokovic", logo: "🎾", shortName: "DJO" },
+    awayTeam: { name: "Alcaraz", logo: "🎾", shortName: "ALC" },
+    startTime: new Date(Date.now() - 180 * 60000).toISOString(),
+    aggregatedOdds: { home: 1.65, draw: 0, away: 2.25 },
+    sources: [],
+    spread: 0.04,
+    spreadQuality: "low",
+    value: 3.1,
+    bestSource: "Source A",
+    liveData: {
+      homeScore: 2,
+      awayScore: 1,
+      period: "4th Set",
+      time: "Set 4",
+      lastUpdate: new Date().toISOString()
+    }
   },
   {
     id: "5",
     sport: "MLB",
     league: "MLB Regular Season",
     status: "finished",
-    homeTeam: { name: "Yankees", logo: "⚾", score: 5 },
-    awayTeam: { name: "Red Sox", logo: "⚾", score: 3 },
-    time: "Final",
-    period: "Game Finished"
+    homeTeam: { name: "Yankees", logo: "⚾", shortName: "NYY" },
+    awayTeam: { name: "Red Sox", logo: "⚾", shortName: "BOS" },
+    startTime: new Date(Date.now() - 240 * 60000).toISOString(),
+    aggregatedOdds: { home: 1.75, draw: 0, away: 2.05 },
+    sources: [],
+    spread: 0.02,
+    spreadQuality: "low",
+    value: 1.5,
+    bestSource: "Source B",
+    liveData: {
+      homeScore: 5,
+      awayScore: 3,
+      period: "Game Finished",
+      time: "Final",
+      lastUpdate: new Date(Date.now() - 30 * 60000).toISOString()
+    }
   },
   {
     id: "6",
     sport: "E-sports",
     league: "LEC Spring",
     status: "live",
-    homeTeam: { name: "G2 Esports", logo: "🎮", score: 1 },
-    awayTeam: { name: "Fnatic", logo: "🎮", score: 0 },
-    time: "Game 2",
-    period: "Best of 3"
+    homeTeam: { name: "G2 Esports", logo: "🎮", shortName: "G2" },
+    awayTeam: { name: "Fnatic", logo: "🎮", shortName: "FNC" },
+    startTime: new Date(Date.now() - 45 * 60000).toISOString(),
+    aggregatedOdds: { home: 1.55, draw: 0, away: 2.40 },
+    sources: [],
+    spread: 0.06,
+    spreadQuality: "medium",
+    value: 4.8,
+    bestSource: "Source D",
+    liveData: {
+      homeScore: 1,
+      awayScore: 0,
+      period: "Best of 3",
+      time: "Game 2",
+      lastUpdate: new Date().toISOString()
+    }
   },
   {
     id: "7",
     sport: "Football",
     league: "Bundesliga",
     status: "live",
-    homeTeam: { name: "Bayern", logo: "⚽", score: 3 },
-    awayTeam: { name: "Dortmund", logo: "⚽", score: 2 },
-    time: "78'",
-    period: "2nd Half"
+    homeTeam: { name: "Bayern", logo: "⚽", shortName: "BAY" },
+    awayTeam: { name: "Dortmund", logo: "⚽", shortName: "DOR" },
+    startTime: new Date(Date.now() - 78 * 60000).toISOString(),
+    aggregatedOdds: { home: 1.85, draw: 3.60, away: 4.20 },
+    sources: [],
+    spread: 0.07,
+    spreadQuality: "medium",
+    value: 5.5,
+    bestSource: "Source A",
+    liveData: {
+      homeScore: 3,
+      awayScore: 2,
+      period: "2nd Half",
+      time: "78'",
+      lastUpdate: new Date().toISOString()
+    }
   },
   {
     id: "8",
     sport: "NBA",
     league: "NBA Regular Season",
     status: "scheduled",
-    homeTeam: { name: "Celtics", logo: "🏀" },
-    awayTeam: { name: "Heat", logo: "🏀" },
-    startTime: "19:30",
-    time: "19:30"
+    homeTeam: { name: "Celtics", logo: "🏀", shortName: "BOS" },
+    awayTeam: { name: "Heat", logo: "🏀", shortName: "MIA" },
+    startTime: new Date(Date.now() + 90 * 60000).toISOString(),
+    aggregatedOdds: { home: 1.70, draw: 0, away: 2.10 },
+    sources: [],
+    spread: 0.05,
+    spreadQuality: "low",
+    value: 3.4,
+    bestSource: "Source C"
   }
 ];
 

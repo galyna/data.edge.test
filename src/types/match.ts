@@ -47,6 +47,7 @@ export interface Match {
     awayScore: number;
     time: string;
     period: string;
+    lastUpdate: string;
   };
 }
 

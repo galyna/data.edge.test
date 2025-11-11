@@ -249,43 +249,41 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
           </div>
           
           <ChartContainer config={chartConfig} className="h-[280px] w-full">
-            <defs>
-              {/* Intense lightning-like glow filters for aggregated line */}
-              <filter id="glow-aggregate-outer" x="-100%" y="-100%" width="300%" height="300%">
-                <feGaussianBlur stdDeviation="12" result="coloredBlur"/>
-                <feMerge>
-                  <feMergeNode in="coloredBlur"/>
-                </feMerge>
-              </filter>
-              <filter id="glow-aggregate-large" x="-100%" y="-100%" width="300%" height="300%">
-                <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
-                <feMerge>
-                  <feMergeNode in="coloredBlur"/>
-                </feMerge>
-              </filter>
-              <filter id="glow-aggregate-medium" x="-100%" y="-100%" width="300%" height="300%">
-                <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
-                <feMerge>
-                  <feMergeNode in="coloredBlur"/>
-                </feMerge>
-              </filter>
-              <filter id="glow-aggregate-close" x="-100%" y="-100%" width="300%" height="300%">
-                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-                <feMerge>
-                  <feMergeNode in="coloredBlur"/>
-                  <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-              </filter>
-              {/* Subtle glow for source lines */}
-              <filter id="glow-source" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-                <feMerge>
-                  <feMergeNode in="coloredBlur"/>
-                  <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-              </filter>
-            </defs>
             <LineChart data={chartData} margin={{ top: 10, right: 20, left: 10, bottom: 20 }}>
+              <defs>
+                <filter id="glow-aggregate-outer" x="-100%" y="-100%" width="300%" height="300%">
+                  <feGaussianBlur stdDeviation="12" result="coloredBlur"/>
+                  <feMerge>
+                    <feMergeNode in="coloredBlur"/>
+                  </feMerge>
+                </filter>
+                <filter id="glow-aggregate-large" x="-100%" y="-100%" width="300%" height="300%">
+                  <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+                  <feMerge>
+                    <feMergeNode in="coloredBlur"/>
+                  </feMerge>
+                </filter>
+                <filter id="glow-aggregate-medium" x="-100%" y="-100%" width="300%" height="300%">
+                  <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
+                  <feMerge>
+                    <feMergeNode in="coloredBlur"/>
+                  </feMerge>
+                </filter>
+                <filter id="glow-aggregate-close" x="-100%" y="-100%" width="300%" height="300%">
+                  <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                  <feMerge>
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+                <filter id="glow-source" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                  <feMerge>
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+              </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
               <XAxis
                 dataKey="time"
@@ -305,20 +303,9 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
                 content={<ChartLegendContent />}
               />
               <ChartTooltip 
-                content={(props) => {
-                  if (!props.active || !props.payload) return null;
-                  // Filter out duplicate entries by dataKey (keep only the first occurrence)
-                  const seen = new Set();
-                  const uniquePayload = props.payload.filter((item) => {
-                    const key = item.dataKey || item.name;
-                    if (seen.has(key)) return false;
-                    seen.add(key);
-                    return true;
-                  });
-                  return <ChartTooltipContent {...props} payload={uniquePayload} />;
-                }} 
+                content={<ChartTooltipContent />}
               />
-              {/* Aggregated line with intense lightning-like glow - multiple layers */}
+              {/* Aggregated line with intense glow - multiple layers */}
               <Line
                 type="monotone"
                 dataKey="aggregate"
@@ -375,7 +362,6 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
                 const sourceColor = chartConfig[source.sourceName]?.color || "#9ca3af";
                 return (
                   <React.Fragment key={source.sourceId}>
-                    {/* Glow layer - visual effect only, duplicates filtered in tooltip */}
                     <Line
                       type="monotone"
                       dataKey={source.sourceName}
@@ -386,7 +372,6 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
                       filter="url(#glow-source)"
                       isAnimationActive={false}
                     />
-                    {/* Main line - visible in chart and tooltip */}
                     <Line
                       type="monotone"
                       dataKey={source.sourceName}
