@@ -1,4 +1,8 @@
+"use client";
+
 import { useState } from "react";
+
+export const dynamic = "force-dynamic";
 import { Search, TrendingUp, Award, Target, ChevronRight } from "lucide-react";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
@@ -69,7 +73,7 @@ const mockPredictions: Prediction[] = [
   }
 ];
 
-const Analysis = () => {
+export default function AnalysisPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSport, setSelectedSport] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
@@ -276,6 +280,5 @@ const Analysis = () => {
       </div>
     </div>
   );
-};
+}
 
-export default Analysis;

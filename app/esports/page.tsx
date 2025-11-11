@@ -1,4 +1,8 @@
+"use client";
+
 import { useState } from "react";
+
+export const dynamic = "force-dynamic";
 import { Search, Trophy, Users, TrendingUp, Gamepad2 } from "lucide-react";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
@@ -78,7 +82,7 @@ const mockMatches: EsportsMatch[] = [
 const games = ["all", "CS:GO", "League of Legends", "Dota 2", "Valorant"];
 const statuses = ["all", "live", "upcoming", "finished"];
 
-const Esports = () => {
+export default function EsportsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedGame, setSelectedGame] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
@@ -298,6 +302,5 @@ const Esports = () => {
       </div>
     </div>
   );
-};
+}
 
-export default Esports;

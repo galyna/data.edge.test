@@ -1,3 +1,5 @@
+"use client";
+
 import { useMemo } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +16,63 @@ interface MultiSourceComparisonProps {
 }
 
 const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSourceComparisonProps) => {
+  // Generate historical data for chart (simulate last 6 hours) - must be before early returns
+  const chartData = useMemo(() => {
+    if (!match || !match.sources || match.sources.length === 0) {
+      return [];
+    }
+    const data = [];
+    const now = Date.now();
+    const hours = 6;
+    const points = 12;
+    
+    // Use a seed based on match ID for consistent data
+    let seed = match.id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    
+    const seededRandom = () => {
+      seed = (seed * 9301 + 49297) % 233280;
+      return seed / 233280;
+    };
+    
+    for (let i = points; i >= 0; i--) {
+      const time = new Date(now - (i * hours * 60 * 60 * 1000) / points);
+      const timeLabel = time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      
+      const point: Record<string, string | number> = {
+        time: timeLabel,
+        aggregate: match.aggregatedOdds.home + (seededRandom() - 0.5) * 0.2,
+      };
+      
+      match.sources.forEach((source) => {
+        point[source.sourceName] = source.odds.home + (seededRandom() - 0.5) * 0.15;
+      });
+      
+      data.push(point);
+    }
+    
+    return data;
+  }, [match]);
+  
+  const chartConfig = useMemo(() => {
+    if (!match || !match.sources || match.sources.length === 0) {
+      return {};
+    }
+    return {
+      aggregate: {
+        label: "Aggregate",
+        color: "#00ff88",
+      },
+      ...match.sources.reduce((acc, source, index) => {
+        const colors = ["#3b82f6", "#8b5cf6", "#ec4899", "#f59e0b", "#10b981"];
+        acc[source.sourceName] = {
+          label: source.sourceName,
+          color: colors[index % colors.length],
+        };
+        return acc;
+      }, {} as Record<string, { label: string; color: string }>),
+    };
+  }, [match]);
+
   // Show list of matches if no match selected
   if (!match) {
     if (matches.length > 0) {
@@ -94,56 +153,6 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
     }
     return null;
   };
-
-  // Generate historical data for chart (simulate last 6 hours)
-  const chartData = useMemo(() => {
-    const data = [];
-    const now = Date.now();
-    const hours = 6;
-    const points = 12;
-    
-    // Use a seed based on match ID for consistent data
-    let seed = match.id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    
-    const seededRandom = () => {
-      seed = (seed * 9301 + 49297) % 233280;
-      return seed / 233280;
-    };
-    
-    for (let i = points; i >= 0; i--) {
-      const time = new Date(now - (i * hours * 60 * 60 * 1000) / points);
-      const timeLabel = time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-      
-      const point: Record<string, string | number> = {
-        time: timeLabel,
-        aggregate: match.aggregatedOdds.home + (seededRandom() - 0.5) * 0.2,
-      };
-      
-      match.sources.forEach((source) => {
-        point[source.sourceName] = source.odds.home + (seededRandom() - 0.5) * 0.15;
-      });
-      
-      data.push(point);
-    }
-    
-    return data;
-  }, [match.id, match.aggregatedOdds.home, match.sources]);
-  
-  const chartConfig = useMemo(() => ({
-    aggregate: {
-      label: "Aggregate",
-      color: "#00ff88",
-    },
-    ...match.sources.reduce((acc, source, index) => {
-      // Light grey-blue colors for individual sources
-      const sourceColors = ["#9ca3af", "#a5b4c3", "#b0c4d6", "#9db5d0", "#a8c0d8"];
-      acc[source.sourceName] = {
-        label: source.sourceName,
-        color: sourceColors[index % sourceColors.length],
-      };
-      return acc;
-    }, {} as Record<string, { label: string; color: string }>),
-  }), [match.sources]);
 
   return (
     <div className="terminal-card p-3">

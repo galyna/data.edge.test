@@ -1,5 +1,8 @@
+"use client";
+
 import { Search, Bell, User, Circle } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const leagues = [
   { name: "Football", active: true },
@@ -10,8 +13,8 @@ const leagues = [
 ];
 
 const Header = () => {
-  const location = useLocation();
-  const isActive = (path: string) => location.pathname === path;
+  const pathname = usePathname();
+  const isActive = (path: string) => pathname === path;
   
   const getLinkClass = (path: string) => {
     return `px-3 py-1 text-xs font-medium uppercase tracking-wider transition-all ${
@@ -25,25 +28,25 @@ const Header = () => {
     <header className="h-14 border-b border-border bg-card flex items-center justify-between px-6">
       {/* Left: Logo + Navigation */}
       <div className="flex items-center gap-6">
-        <Link to="/" className="hover:opacity-80 transition-opacity">
+        <Link href="/" className="hover:opacity-80 transition-opacity">
           <h1 className="text-base font-bold text-signal tracking-tight">DATA EDGE</h1>
         </Link>
         
         {/* Navigation Links */}
         <nav className="flex items-center gap-1">
-          <Link to="/" className={getLinkClass("/")}>
+          <Link href="/" className={getLinkClass("/")}>
             Data Feeds
           </Link>
-          <Link to="/live-scores" className={getLinkClass("/live-scores")}>
+          <Link href="/live-scores" className={getLinkClass("/live-scores")}>
             Live Scores
           </Link>
-          <Link to="/analysis" className={getLinkClass("/analysis")}>
+          <Link href="/analysis" className={getLinkClass("/analysis")}>
             Analysis
           </Link>
-          <Link to="/esports" className={getLinkClass("/esports")}>
+          <Link href="/esports" className={getLinkClass("/esports")}>
             E-sports
           </Link>
-          <Link to="/news" className={getLinkClass("/news")}>
+          <Link href="/news" className={getLinkClass("/news")}>
             News
           </Link>
         </nav>

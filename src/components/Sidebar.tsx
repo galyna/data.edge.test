@@ -1,13 +1,16 @@
+"use client";
+
 import { LayoutDashboard, TrendingUp, BarChart3, Target, Database, Settings, Activity, Gamepad2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Link, useLocation } from "react-router-dom";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 interface SidebarProps {
   activeSection?: string;
 }
 
 const Sidebar = ({ activeSection = "dashboard" }: SidebarProps) => {
-  const location = useLocation();
+  const pathname = usePathname();
   
   const menuItems = [
     { id: "dashboard", icon: Database, label: "Data Feeds", path: "/" },
@@ -20,8 +23,8 @@ const Sidebar = ({ activeSection = "dashboard" }: SidebarProps) => {
   ];
   
   const isActive = (path: string) => {
-    if (path === "/") return location.pathname === "/";
-    return location.pathname === path;
+    if (path === "/") return pathname === "/";
+    return pathname === path;
   };
 
   return (
@@ -58,7 +61,7 @@ const Sidebar = ({ activeSection = "dashboard" }: SidebarProps) => {
           return item.path !== "#" ? (
             <Link
               key={item.id}
-              to={item.path}
+              href={item.path}
               className={className}
               title={item.label}
             >

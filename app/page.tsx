@@ -1,4 +1,8 @@
+"use client";
+
 import { useState, useEffect } from "react";
+
+export const dynamic = "force-dynamic";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import UnifiedSportsFeed from "@/components/UnifiedSportsFeed";
@@ -12,7 +16,7 @@ import { useRealtimeData } from "@/hooks/useRealtimeData";
 import { Match } from "@/types/match";
 import MatchDetailDialog from "@/components/MatchDetailDialog";
 
-const Index = () => {
+export default function Home() {
   const { matches, dataSources, lastUpdate } = useRealtimeData(mockMatches, mockDataSources, 8000);
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -104,6 +108,5 @@ const Index = () => {
       />
     </div>
   );
-};
+}
 
-export default Index;

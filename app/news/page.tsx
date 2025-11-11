@@ -1,4 +1,8 @@
+"use client";
+
 import { useState } from "react";
+
+export const dynamic = "force-dynamic";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
@@ -123,7 +127,7 @@ const mockNews: NewsArticle[] = [
   }
 ];
 
-const News = () => {
+export default function NewsPage() {
   const [selectedSport, setSelectedSport] = useState("All");
   const [selectedSource, setSelectedSource] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
@@ -332,6 +336,5 @@ const News = () => {
       </div>
     </div>
   );
-};
+}
 
-export default News;

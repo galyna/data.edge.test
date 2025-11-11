@@ -1,4 +1,8 @@
+"use client";
+
 import { useState } from "react";
+
+export const dynamic = "force-dynamic";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import LiveMatchCard from "@/components/LiveMatchCard";
@@ -173,7 +177,7 @@ const mockMatches: Match[] = [
   }
 ];
 
-const LiveScores = () => {
+export default function LiveScoresPage() {
   const [selectedSport, setSelectedSport] = useState("All");
   const [selectedStatus, setSelectedStatus] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
@@ -292,6 +296,5 @@ const LiveScores = () => {
       </div>
     </div>
   );
-};
+}
 
-export default LiveScores;
