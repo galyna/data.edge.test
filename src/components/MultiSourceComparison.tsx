@@ -22,9 +22,12 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
     setMounted(true);
   }, []);
 
+  // Ensure we have sources array (moved before useMemo hooks)
+  const sources = useMemo(() => match?.sources || [], [match?.sources]);
+
   // Generate historical data for chart (simulate last 6 hours) - only on client to avoid hydration issues
   const chartData = useMemo(() => {
-    if (!mounted || !match || !match.sources || match.sources.length === 0) {
+    if (!mounted || !match || !sources || sources.length === 0) {
       return [];
     }
     const data = [];
@@ -52,7 +55,7 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
         aggregate: match.aggregatedOdds.home + (seededRandom() - 0.5) * 0.2,
       };
       
-      match.sources.forEach((source) => {
+      sources.forEach((source) => {
         point[source.sourceName] = source.odds.home + (seededRandom() - 0.5) * 0.15;
       });
       
@@ -60,10 +63,10 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
     }
     
     return data;
-  }, [match, mounted]);
+  }, [match, mounted, sources]);
   
   const chartConfig = useMemo(() => {
-    if (!match || !match.sources || match.sources.length === 0) {
+    if (!match || !sources || sources.length === 0) {
       return {};
     }
     return {
@@ -71,7 +74,7 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
         label: "Aggregate",
         color: "#00ff88",
       },
-      ...match.sources.reduce((acc, source, index) => {
+      ...sources.reduce((acc, source, index) => {
         const colors = ["#3b82f6", "#8b5cf6", "#ec4899", "#f59e0b", "#10b981"];
         acc[source.sourceName] = {
           label: source.sourceName,
@@ -80,7 +83,7 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
         return acc;
       }, {} as Record<string, { label: string; color: string }>),
     };
-  }, [match]);
+  }, [match, sources]);
 
   // Show list of matches if no match selected
   if (!match) {
@@ -144,14 +147,14 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
   }
 
   // Check for discrepancies
-  const hasDiscrepancy = match.sources.some((source) => {
+  const hasDiscrepancy = sources.some((source) => {
     const homeDiff = Math.abs(source.odds.home - match.aggregatedOdds.home);
     const awayDiff = Math.abs(source.odds.away - match.aggregatedOdds.away);
     return homeDiff > 0.1 || awayDiff > 0.1;
   });
 
   const getDiscrepancyMessage = () => {
-    const discrepancies = match.sources.filter((source) => {
+    const discrepancies = sources.filter((source) => {
       const homeDiff = Math.abs(source.odds.home - match.aggregatedOdds.home);
       return homeDiff > 0.1;
     });
@@ -165,11 +168,16 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
 
   return (
     <div className="terminal-card p-3">
-        <div className="flex items-center gap-2 mb-3">
-          <Database className="h-4 w-4 text-primary" />
-          <h3 className="text-sm font-bold uppercase tracking-wide text-foreground">
-            MULTI-SOURCE: {match.homeTeam.shortName} vs {match.awayTeam.shortName}
-          </h3>
+        <div className="flex items-center justify-between gap-2 mb-3">
+          <div className="flex items-center gap-2">
+            <Database className="h-4 w-4 text-primary" />
+            <h3 className="text-sm font-bold uppercase tracking-wide text-foreground">
+              MULTI-SOURCE: {match.homeTeam.shortName} vs {match.awayTeam.shortName}
+            </h3>
+          </div>
+          <div className="text-[10px] text-muted-foreground font-mono">
+            {sources.length} sources
+          </div>
         </div>
 
       {hasDiscrepancy && (
@@ -188,75 +196,110 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
         </div>
       )}
 
-      <Table>
-        <TableHeader>
-          <TableRow className="border-border hover:bg-transparent">
-                <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2">
-                  SOURCE
-                </TableHead>
-                <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2 text-center">
-                  SCORE
-                </TableHead>
-                <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2 text-center">
-                  STATUS
-                </TableHead>
-                <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2 text-center">
-                  LATENCY
-                </TableHead>
-                <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2 text-right">
-                  UPDATE
-                </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {match.sources.map((source, index) => {
-            const isDiscrepant = hasDiscrepancy && 
-              (Math.abs(source.odds.home - match.aggregatedOdds.home) > 0.1 ||
-               Math.abs(source.odds.away - match.aggregatedOdds.away) > 0.1);
+      <div className="w-full">
+        <Table className="w-full table-auto">
+          <TableHeader>
+            <TableRow className="border-border hover:bg-transparent">
+                  <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2">
+                    SOURCE
+                  </TableHead>
+                  <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2 text-center">
+                    SCORE
+                  </TableHead>
+                  <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2 text-center">
+                    STATUS
+                  </TableHead>
+                  <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2 text-center">
+                    LATENCY
+                  </TableHead>
+                  <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2 text-right">
+                    UPDATE
+                  </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {sources.map((source, index) => {
+              const isDiscrepant = hasDiscrepancy && 
+                (Math.abs(source.odds.home - match.aggregatedOdds.home) > 0.1 ||
+                 Math.abs(source.odds.away - match.aggregatedOdds.away) > 0.1);
 
-            return (
-              <TableRow
-                key={source.sourceId}
-                className={`border-border hover:bg-muted/20 h-8 ${
-                  isDiscrepant ? "bg-destructive/10" : ""
-                }`}
-              >
-                <TableCell className="font-semibold text-[10px] px-2 text-foreground">
-                  {source.sourceName}
-                </TableCell>
-                <TableCell className={`text-center font-mono text-[10px] px-2 font-semibold ${
-                  isDiscrepant ? "text-destructive" : "text-foreground"
-                }`}>
-                  {match.liveData 
-                    ? `${match.liveData.homeScore}-${match.liveData.awayScore}`
-                    : `${source.odds.home.toFixed(2)}/${source.odds.away.toFixed(2)}`
-                  }
-                </TableCell>
-                <TableCell className="text-center px-2">
-                  {index === 0 ? (
-                    <Badge className="text-[9px] px-1.5 py-0">P</Badge>
-                  ) : (
-                    <Badge variant="outline" className="text-[9px] px-1.5 py-0">S</Badge>
-                  )}
-                </TableCell>
-                <TableCell className={`text-center font-mono text-[10px] px-2 ${
-                  source.latency > 300 ? "text-destructive" : ""
-                }`}>
-                  {source.latency}ms
-                </TableCell>
-                <TableCell className="text-right text-[10px] text-muted-foreground px-2 font-mono" suppressHydrationWarning>
-                  {(() => {
-                    const date = new Date(source.timestamp);
-                    const hours = date.getUTCHours().toString().padStart(2, '0');
-                    const minutes = date.getUTCMinutes().toString().padStart(2, '0');
-                    return `${hours}:${minutes}`;
-                  })()}
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
+              return (
+                <TableRow
+                  key={source.sourceId}
+                  className={`border-border hover:bg-muted/20 h-8 ${
+                    isDiscrepant ? "bg-destructive/10" : ""
+                  }`}
+                >
+                  <TableCell className="font-semibold text-[10px] px-2 text-foreground">
+                    {source.sourceName}
+                  </TableCell>
+                  <TableCell className={`text-center font-mono text-[10px] px-2 font-semibold ${
+                    isDiscrepant ? "text-destructive" : "text-foreground"
+                  }`}>
+                    {match.liveData 
+                      ? `${match.liveData.homeScore}-${match.liveData.awayScore}`
+                      : `${source.odds.home.toFixed(2)}/${source.odds.away.toFixed(2)}`
+                    }
+                  </TableCell>
+                  <TableCell className="text-center px-2">
+                    {index === 0 ? (
+                      <Badge className="text-[9px] px-1.5 py-0">P</Badge>
+                    ) : (
+                      <Badge variant="outline" className="text-[9px] px-1.5 py-0">S</Badge>
+                    )}
+                  </TableCell>
+                  <TableCell className={`text-center font-mono text-[10px] px-2 ${
+                    source.latency > 300 ? "text-destructive" : ""
+                  }`}>
+                    {source.latency}ms
+                  </TableCell>
+                  <TableCell className="text-right text-[10px] text-muted-foreground px-2 font-mono" suppressHydrationWarning>
+                    {(() => {
+                      if (!mounted) return "";
+                      const date = new Date(source.timestamp);
+                      const hours = date.getHours();
+                      const minutes = date.getMinutes().toString().padStart(2, '0');
+                      const ampm = hours >= 12 ? 'PM' : 'AM';
+                      const displayHours = hours % 12 || 12;
+                      return `${displayHours.toString().padStart(2, '0')}:${minutes} ${ampm}`;
+                    })()}
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          {/* Aggregate row */}
+          <TableRow className="border-t-2 border-primary/30 bg-primary/5 hover:bg-primary/10 h-8">
+            <TableCell className="font-bold text-[10px] px-2 text-primary">
+              AGGREGATE
+            </TableCell>
+            <TableCell className="text-center font-mono text-[10px] px-2 font-bold text-primary">
+              {match.liveData 
+                ? `${match.liveData.homeScore}-${match.liveData.awayScore}`
+                : `${match.aggregatedOdds.home.toFixed(2)}/${match.aggregatedOdds.away.toFixed(2)}`
+              }
+            </TableCell>
+            <TableCell className="text-center px-2">
+              <Badge className="text-[9px] px-1.5 py-0 bg-primary/20 text-primary border-primary/50">AVG</Badge>
+            </TableCell>
+            <TableCell className="text-center font-mono text-[10px] px-2 text-primary">
+              {Math.round(sources.reduce((sum, s) => sum + s.latency, 0) / sources.length)}ms
+            </TableCell>
+            <TableCell className="text-right text-[10px] text-muted-foreground px-2 font-mono" suppressHydrationWarning>
+              {(() => {
+                if (!mounted) return "";
+                const latestTimestamp = Math.max(...sources.map(s => new Date(s.timestamp).getTime()));
+                const date = new Date(latestTimestamp);
+                const hours = date.getHours();
+                const minutes = date.getMinutes().toString().padStart(2, '0');
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+                const displayHours = hours % 12 || 12;
+                return `${displayHours.toString().padStart(2, '0')}:${minutes} ${ampm}`;
+              })()}
+            </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </div>
 
         {/* Line Movement Chart */}
         {mounted && chartData.length > 0 && (
@@ -385,27 +428,29 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
                 dot={false}
                 strokeOpacity={1}
               />
-              {match.sources.map((source) => {
+              {sources.map((source) => {
                 const sourceColor = chartConfig[source.sourceName]?.color || "#9ca3af";
                 return (
                   <React.Fragment key={source.sourceId}>
                     <Line
+                      key={`${source.sourceId}-glow`}
                       type="monotone"
                       dataKey={source.sourceName}
                       stroke={sourceColor}
-                      strokeWidth={3}
+                      strokeWidth={4}
                       dot={false}
-                      strokeOpacity={0.25}
+                      strokeOpacity={0.4}
                       filter="url(#glow-source)"
                       isAnimationActive={false}
                     />
                     <Line
+                      key={`${source.sourceId}-main`}
                       type="monotone"
                       dataKey={source.sourceName}
                       stroke={sourceColor}
-                      strokeWidth={1.5}
+                      strokeWidth={2}
                       dot={false}
-                      strokeOpacity={0.85}
+                      strokeOpacity={1}
                       isAnimationActive={false}
                     />
                   </React.Fragment>
@@ -421,13 +466,13 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
         <div className="grid grid-cols-3 gap-2 text-[10px]">
           <div className="text-center p-1.5 bg-muted/30 border border-border">
             <div className="text-muted-foreground mb-0.5">Sources</div>
-            <div className="font-mono text-base">{match.sources.length}</div>
+            <div className="font-mono text-base">{sources.length}</div>
           </div>
           <div className="text-center p-1.5 bg-muted/30 border border-border">
             <div className="text-muted-foreground mb-0.5">Latency</div>
             <div className="font-mono text-base">
               {Math.round(
-                match.sources.reduce((sum, s) => sum + s.latency, 0) / match.sources.length
+                sources.reduce((sum, s) => sum + s.latency, 0) / sources.length
               )}ms
             </div>
           </div>
