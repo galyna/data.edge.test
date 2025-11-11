@@ -1,4 +1,4 @@
-import { LayoutDashboard, TrendingUp, BarChart3, Target, Database, Settings, Activity } from "lucide-react";
+import { LayoutDashboard, TrendingUp, BarChart3, Target, Database, Settings, Activity, Gamepad2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Link, useLocation } from "react-router-dom";
 
@@ -10,12 +10,12 @@ const Sidebar = ({ activeSection = "dashboard" }: SidebarProps) => {
   const location = useLocation();
   
   const menuItems = [
-    { id: "dashboard", icon: LayoutDashboard, label: "Dashboard", path: "/" },
+    { id: "dashboard", icon: Database, label: "Data Feeds", path: "/" },
     { id: "live-scores", icon: Activity, label: "Live Scores", path: "/live-scores" },
+    { id: "analysis", icon: Target, label: "Analysis & Tips", path: "/analysis" },
+    { id: "esports", icon: Gamepad2, label: "E-sports", path: "/esports" },
     { id: "news", icon: TrendingUp, label: "News", path: "/news" },
     { id: "analytics", icon: BarChart3, label: "Analytics", path: "#" },
-    { id: "predictions", icon: Target, label: "Predictions", path: "#" },
-    { id: "data", icon: Database, label: "Data Feed", path: "#" },
     { id: "settings", icon: Settings, label: "Settings", path: "#" },
   ];
   

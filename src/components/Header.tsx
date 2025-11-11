@@ -32,10 +32,16 @@ const Header = () => {
         {/* Navigation Links */}
         <nav className="flex items-center gap-1">
           <Link to="/" className={getLinkClass("/")}>
-            Dashboard
+            Data Feeds
           </Link>
           <Link to="/live-scores" className={getLinkClass("/live-scores")}>
             Live Scores
+          </Link>
+          <Link to="/analysis" className={getLinkClass("/analysis")}>
+            Analysis
+          </Link>
+          <Link to="/esports" className={getLinkClass("/esports")}>
+            E-sports
           </Link>
           <Link to="/news" className={getLinkClass("/news")}>
             News
