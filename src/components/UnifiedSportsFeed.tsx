@@ -92,7 +92,10 @@ const UnifiedSportsFeed = ({ matches, onMatchClick }: UnifiedSportsFeedProps) =>
       return match.liveData.time;
     }
     if (match.status === "scheduled") {
-      return new Date(match.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const date = new Date(match.startTime);
+      const hours = date.getUTCHours().toString().padStart(2, '0');
+      const minutes = date.getUTCMinutes().toString().padStart(2, '0');
+      return `${hours}:${minutes}`;
     }
     return "FT";
   };

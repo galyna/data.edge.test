@@ -196,6 +196,7 @@ const OddsAggregator = ({ match }: OddsAggregatorProps) => {
               />
               <ChartTooltip content={<ChartTooltipContent />} />
               <Line
+                key="aggregate-odds"
                 type="monotone"
                 dataKey="aggregate"
                 stroke="hsl(var(--primary))"

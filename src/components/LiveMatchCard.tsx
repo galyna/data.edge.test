@@ -1,3 +1,5 @@
+"use client";
+
 import { Circle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -141,8 +143,13 @@ const LiveMatchCard = ({ match, showSource = true, showStats = false }: LiveMatc
       {/* Footer: Time/Period */}
       <div className="mt-3 pt-2 border-t border-border">
         <div className="flex items-center justify-between">
-          <span className="text-xs text-muted-foreground font-mono">
-            {match.liveData?.time || new Date(match.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          <span className="text-xs text-muted-foreground font-mono" suppressHydrationWarning>
+            {match.liveData?.time || (() => {
+              const date = new Date(match.startTime);
+              const hours = date.getUTCHours().toString().padStart(2, '0');
+              const minutes = date.getUTCMinutes().toString().padStart(2, '0');
+              return `${hours}:${minutes}`;
+            })()}
           </span>
           {match.liveData?.period && (
             <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
@@ -150,8 +157,13 @@ const LiveMatchCard = ({ match, showSource = true, showStats = false }: LiveMatc
             </span>
           )}
           {!match.liveData && (
-            <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
-              {new Date(match.startTime).toLocaleDateString()}
+            <span className="text-[10px] text-muted-foreground uppercase tracking-wider" suppressHydrationWarning>
+              {(() => {
+                const date = new Date(match.startTime);
+                const day = date.getUTCDate().toString().padStart(2, '0');
+                const month = (date.getUTCMonth() + 1).toString().padStart(2, '0');
+                return `${day}.${month}`;
+              })()}
             </span>
           )}
         </div>

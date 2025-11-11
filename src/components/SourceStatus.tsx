@@ -77,8 +77,13 @@ const SourceStatus = ({ sources, anomalies }: SourceStatusProps) => {
                     }`} 
                   />
                 </div>
-                <span className="text-[10px] text-muted-foreground font-mono">
-                  {new Date(anomaly.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                <span className="text-[10px] text-muted-foreground font-mono" suppressHydrationWarning>
+                  {(() => {
+                    const date = new Date(anomaly.timestamp);
+                    const hours = date.getUTCHours().toString().padStart(2, '0');
+                    const minutes = date.getUTCMinutes().toString().padStart(2, '0');
+                    return `${hours}:${minutes}`;
+                  })()}
                 </span>
               </div>
               <div className="text-xs mb-1.5 font-medium">{anomaly.match}</div>

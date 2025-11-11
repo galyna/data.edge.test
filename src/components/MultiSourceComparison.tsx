@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { AlertTriangle, Database, TrendingUp } from "lucide-react";
@@ -16,9 +16,15 @@ interface MultiSourceComparisonProps {
 }
 
 const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSourceComparisonProps) => {
-  // Generate historical data for chart (simulate last 6 hours) - must be before early returns
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Generate historical data for chart (simulate last 6 hours) - only on client to avoid hydration issues
   const chartData = useMemo(() => {
-    if (!match || !match.sources || match.sources.length === 0) {
+    if (!mounted || !match || !match.sources || match.sources.length === 0) {
       return [];
     }
     const data = [];
@@ -36,7 +42,10 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
     
     for (let i = points; i >= 0; i--) {
       const time = new Date(now - (i * hours * 60 * 60 * 1000) / points);
-      const timeLabel = time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      // Use UTC to avoid locale differences between server and client
+      const hours24 = time.getUTCHours().toString().padStart(2, '0');
+      const minutes = time.getUTCMinutes().toString().padStart(2, '0');
+      const timeLabel = `${hours24}:${minutes}`;
       
       const point: Record<string, string | number> = {
         time: timeLabel,
@@ -51,7 +60,7 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
     }
     
     return data;
-  }, [match]);
+  }, [match, mounted]);
   
   const chartConfig = useMemo(() => {
     if (!match || !match.sources || match.sources.length === 0) {
@@ -235,11 +244,13 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
                 }`}>
                   {source.latency}ms
                 </TableCell>
-                <TableCell className="text-right text-[10px] text-muted-foreground px-2 font-mono">
-                  {new Date(source.timestamp).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
+                <TableCell className="text-right text-[10px] text-muted-foreground px-2 font-mono" suppressHydrationWarning>
+                  {(() => {
+                    const date = new Date(source.timestamp);
+                    const hours = date.getUTCHours().toString().padStart(2, '0');
+                    const minutes = date.getUTCMinutes().toString().padStart(2, '0');
+                    return `${hours}:${minutes}`;
+                  })()}
                 </TableCell>
               </TableRow>
             );
@@ -248,6 +259,7 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
       </Table>
 
         {/* Line Movement Chart */}
+        {mounted && chartData.length > 0 && (
         <div className="mt-3 pt-3 border-t border-border">
           <div className="flex items-center gap-2 mb-3">
             <TrendingUp className="h-4 w-4 text-primary" />
@@ -316,6 +328,7 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
               />
               {/* Aggregated line with intense glow - multiple layers */}
               <Line
+                key="aggregate-outer"
                 type="monotone"
                 dataKey="aggregate"
                 stroke="#00ff88"
@@ -325,6 +338,7 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
                 filter="url(#glow-aggregate-outer)"
               />
               <Line
+                key="aggregate-large"
                 type="monotone"
                 dataKey="aggregate"
                 stroke="#00ff88"
@@ -334,6 +348,7 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
                 filter="url(#glow-aggregate-large)"
               />
               <Line
+                key="aggregate-medium"
                 type="monotone"
                 dataKey="aggregate"
                 stroke="#00ff88"
@@ -343,6 +358,7 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
                 filter="url(#glow-aggregate-medium)"
               />
               <Line
+                key="aggregate-close"
                 type="monotone"
                 dataKey="aggregate"
                 stroke="#00ff88"
@@ -352,6 +368,7 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
                 filter="url(#glow-aggregate-close)"
               />
               <Line
+                key="aggregate-opacity-7"
                 type="monotone"
                 dataKey="aggregate"
                 stroke="#00ff88"
@@ -360,6 +377,7 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
                 strokeOpacity={0.7}
               />
               <Line
+                key="aggregate-main"
                 type="monotone"
                 dataKey="aggregate"
                 stroke="#00ff88"
@@ -396,6 +414,7 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
             </LineChart>
           </ChartContainer>
         </div>
+        )}
 
       {/* Summary */}
       <div className="mt-2 pt-2 border-t border-border">

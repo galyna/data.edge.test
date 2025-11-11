@@ -30,8 +30,11 @@ const OddsChart = () => {
     const data: DataPoint[] = [];
     const now = Date.now();
     for (let i = 60; i >= 0; i--) {
+      const date = new Date(now - i * 60000);
+      const hours = date.getUTCHours().toString().padStart(2, '0');
+      const minutes = date.getUTCMinutes().toString().padStart(2, '0');
       data.push({
-        time: new Date(now - i * 60000).toLocaleTimeString(),
+        time: `${hours}:${minutes}`,
         bookmaker1: 1.85 + Math.random() * 0.1,
         bookmaker2: 1.88 + Math.random() * 0.1,
         bookmaker3: 1.82 + Math.random() * 0.1,

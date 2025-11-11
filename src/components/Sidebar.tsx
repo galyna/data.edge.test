@@ -14,12 +14,13 @@ const Sidebar = ({ activeSection = "dashboard" }: SidebarProps) => {
   
   const menuItems = [
     { id: "dashboard", icon: Database, label: "Data Feeds", path: "/" },
-    { id: "live-scores", icon: Activity, label: "Live Scores", path: "/live-scores" },
-    { id: "analysis", icon: Target, label: "Analysis & Tips", path: "/analysis" },
-    { id: "esports", icon: Gamepad2, label: "E-sports", path: "/esports" },
     { id: "news", icon: TrendingUp, label: "News", path: "/news" },
-    { id: "analytics", icon: BarChart3, label: "Analytics", path: "#" },
-    { id: "settings", icon: Settings, label: "Settings", path: "#" },
+    { id: "live-scores", icon: Activity, label: "Live Scores", path: "/live-scores" },
+    { id: "analysis", icon: BarChart3, label: "Analysis & Tips", path: "/analysis" },
+    { id: "esports", icon: Gamepad2, label: "E-sports", path: "/esports" },
+   
+    // { id: "analytics", icon: Target, label: "Analytics", path: "#" },
+    // { id: "settings", icon: Settings, label: "Settings", path: "#" },
   ];
   
   const isActive = (path: string) => {

@@ -32,24 +32,6 @@ const Header = () => {
           <h1 className="text-base font-bold text-signal tracking-tight">DATA EDGE</h1>
         </Link>
         
-        {/* Navigation Links */}
-        <nav className="flex items-center gap-1">
-          <Link href="/" className={getLinkClass("/")}>
-            Data Feeds
-          </Link>
-          <Link href="/live-scores" className={getLinkClass("/live-scores")}>
-            Live Scores
-          </Link>
-          <Link href="/analysis" className={getLinkClass("/analysis")}>
-            Analysis
-          </Link>
-          <Link href="/esports" className={getLinkClass("/esports")}>
-            E-sports
-          </Link>
-          <Link href="/news" className={getLinkClass("/news")}>
-            News
-          </Link>
-        </nav>
         
         {/* League Filters */}
         <div className="flex items-center gap-2 ml-4">

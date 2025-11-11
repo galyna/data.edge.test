@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export const dynamic = "force-dynamic";
 import Sidebar from "@/components/Sidebar";
@@ -132,6 +132,11 @@ export default function NewsPage() {
   const [selectedSource, setSelectedSource] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const filteredNews = mockNews.filter((article) => {
     const sportMatch = selectedSport === "All" || article.sport === selectedSport;
@@ -146,6 +151,10 @@ export default function NewsPage() {
   });
 
   const getTimeAgo = (date: string) => {
+    if (!mounted) {
+      // Return a stable value during SSR to avoid hydration mismatch
+      return "";
+    }
     const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
     
     if (seconds < 60) return `${seconds}s ago`;
@@ -312,9 +321,9 @@ export default function NewsPage() {
 
                   {/* Time and Link */}
                   <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
-                    <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                    <div className="flex items-center gap-1 text-[10px] text-muted-foreground" suppressHydrationWarning>
                       <Clock className="h-3 w-3" />
-                      <span>{getTimeAgo(article.publishedAt)}</span>
+                      <span>{getTimeAgo(article.publishedAt) || "Just now"}</span>
                     </div>
                     <ExternalLink className="h-3 w-3 text-muted-foreground group-hover:text-primary transition-colors" />
                   </div>

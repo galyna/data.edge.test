@@ -193,6 +193,7 @@ const MatchDetailDialog = ({ match, open, onOpenChange }: MatchDetailDialogProps
                   />
                   {/* Aggregated line with intense lightning-like glow - multiple layers */}
                   <Line 
+                    key="aggregate-dialog-outer"
                     type="monotone" 
                     dataKey="aggregate" 
                     stroke="#00ff88" 
@@ -202,6 +203,7 @@ const MatchDetailDialog = ({ match, open, onOpenChange }: MatchDetailDialogProps
                     filter="url(#glow-aggregate-dialog-outer)"
                   />
                   <Line 
+                    key="aggregate-dialog-large"
                     type="monotone" 
                     dataKey="aggregate" 
                     stroke="#00ff88" 
@@ -211,6 +213,7 @@ const MatchDetailDialog = ({ match, open, onOpenChange }: MatchDetailDialogProps
                     filter="url(#glow-aggregate-dialog-large)"
                   />
                   <Line 
+                    key="aggregate-dialog-medium"
                     type="monotone" 
                     dataKey="aggregate" 
                     stroke="#00ff88" 
@@ -220,6 +223,7 @@ const MatchDetailDialog = ({ match, open, onOpenChange }: MatchDetailDialogProps
                     filter="url(#glow-aggregate-dialog-medium)"
                   />
                   <Line 
+                    key="aggregate-dialog-close"
                     type="monotone" 
                     dataKey="aggregate" 
                     stroke="#00ff88" 
@@ -229,6 +233,7 @@ const MatchDetailDialog = ({ match, open, onOpenChange }: MatchDetailDialogProps
                     filter="url(#glow-aggregate-dialog-close)"
                   />
                   <Line 
+                    key="aggregate-dialog-opacity-7"
                     type="monotone" 
                     dataKey="aggregate" 
                     stroke="#00ff88" 
@@ -237,6 +242,7 @@ const MatchDetailDialog = ({ match, open, onOpenChange }: MatchDetailDialogProps
                     strokeOpacity={0.7}
                   />
                   <Line 
+                    key="aggregate-dialog-main"
                     type="monotone" 
                     dataKey="aggregate" 
                     stroke="#00ff88" 
