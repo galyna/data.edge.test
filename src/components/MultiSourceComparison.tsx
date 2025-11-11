@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { AlertTriangle, Database, TrendingUp } from "lucide-react";
 import { Match } from "@/types/match";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from "@/components/ui/chart";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
+import { ComposedChart, Line, XAxis, YAxis, CartesianGrid, Area } from "recharts";
 import React from "react";
 
 interface MultiSourceComparisonProps {
@@ -33,7 +33,7 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
     const data = [];
     const now = Date.now();
     const hours = 6;
-    const points = 12;
+    const points = 24;
     
     // Use a seed based on match ID for consistent data
     let seed = match.id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
@@ -50,13 +50,20 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
       const minutes = time.getUTCMinutes().toString().padStart(2, '0');
       const timeLabel = `${hours24}:${minutes}`;
       
+      // Add some trend and variation to make it more interesting
+      const trendFactor = (points - i) / points * 0.3; // slight upward trend
+      const waveFactor = Math.sin((i / points) * Math.PI * 2) * 0.15; // sine wave variation
+      
       const point: Record<string, string | number> = {
         time: timeLabel,
-        aggregate: match.aggregatedOdds.home + (seededRandom() - 0.5) * 0.2,
+        aggregate: match.aggregatedOdds.home + trendFactor + waveFactor + (seededRandom() - 0.5) * 0.15,
       };
       
-      sources.forEach((source) => {
-        point[source.sourceName] = source.odds.home + (seededRandom() - 0.5) * 0.15;
+      sources.forEach((source, idx) => {
+        // Each source has slightly different behavior
+        const sourceWave = Math.sin((i / points) * Math.PI * 2 + idx) * 0.12;
+        const sourceTrend = (points - i) / points * 0.25 * (1 + idx * 0.1);
+        point[source.sourceName] = source.odds.home + sourceTrend + sourceWave + (seededRandom() - 0.5) * 0.12;
       });
       
       data.push(point);
@@ -167,7 +174,7 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
   };
 
   return (
-    <div className="terminal-card p-3">
+    <div className={`terminal-card p-3 min-h-0 ${!mounted ? 'overflow-y-hidden' : ''}`}>
         <div className="flex items-center justify-between gap-2 mb-3">
           <div className="flex items-center gap-2">
             <Database className="h-4 w-4 text-primary" />
@@ -196,7 +203,7 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
         </div>
       )}
 
-      <div className="w-full">
+      <div className="w-full overflow-x-hidden">
         <Table className="w-full table-auto">
           <TableHeader>
             <TableRow className="border-border hover:bg-transparent">
@@ -304,160 +311,152 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
         {/* Line Movement Chart */}
         {mounted && chartData.length > 0 && (
         <div className="mt-3 pt-3 border-t border-border">
-          <div className="flex items-center gap-2 mb-3">
-            <TrendingUp className="h-4 w-4 text-primary" />
-            <h4 className="text-xs font-semibold uppercase tracking-wide text-foreground">
-              LINE MOVEMENT GRAPH
-            </h4>
-            <span className="text-[10px] text-muted-foreground ml-auto">Multi-source tracking - last 6 hours</span>
-          </div>
-          
-          <ChartContainer config={chartConfig} className="h-[280px] w-full">
-            <LineChart data={chartData} margin={{ top: 10, right: 20, left: 10, bottom: 20 }}>
-              <defs>
-                <filter id="glow-aggregate-outer" x="-100%" y="-100%" width="300%" height="300%">
-                  <feGaussianBlur stdDeviation="12" result="coloredBlur"/>
-                  <feMerge>
-                    <feMergeNode in="coloredBlur"/>
-                  </feMerge>
-                </filter>
-                <filter id="glow-aggregate-large" x="-100%" y="-100%" width="300%" height="300%">
-                  <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
-                  <feMerge>
-                    <feMergeNode in="coloredBlur"/>
-                  </feMerge>
-                </filter>
-                <filter id="glow-aggregate-medium" x="-100%" y="-100%" width="300%" height="300%">
-                  <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
-                  <feMerge>
-                    <feMergeNode in="coloredBlur"/>
-                  </feMerge>
-                </filter>
-                <filter id="glow-aggregate-close" x="-100%" y="-100%" width="300%" height="300%">
-                  <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-                  <feMerge>
-                    <feMergeNode in="coloredBlur"/>
-                    <feMergeNode in="SourceGraphic"/>
-                  </feMerge>
-                </filter>
-                <filter id="glow-source" x="-50%" y="-50%" width="200%" height="200%">
-                  <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-                  <feMerge>
-                    <feMergeNode in="coloredBlur"/>
-                    <feMergeNode in="SourceGraphic"/>
-                  </feMerge>
-                </filter>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
-              <XAxis
-                dataKey="time"
-                stroke="hsl(var(--foreground))"
-                style={{ fontSize: "11px", fontWeight: 500 }}
-                interval="preserveStartEnd"
-                tick={{ fill: "hsl(var(--foreground))" }}
-              />
-              <YAxis
-                stroke="hsl(var(--foreground))"
-                style={{ fontSize: "11px", fontWeight: 500 }}
-                tick={{ fill: "hsl(var(--foreground))" }}
-              />
-              <ChartLegend 
-                verticalAlign="top"
-                align="right"
-                content={<ChartLegendContent />}
-              />
-              <ChartTooltip 
-                content={<ChartTooltipContent />}
-              />
-              {/* Aggregated line with intense glow - multiple layers */}
-              <Line
-                key="aggregate-outer"
-                type="monotone"
-                dataKey="aggregate"
-                stroke="#00ff88"
-                strokeWidth={10}
-                dot={false}
-                strokeOpacity={0.12}
-                filter="url(#glow-aggregate-outer)"
-              />
-              <Line
-                key="aggregate-large"
-                type="monotone"
-                dataKey="aggregate"
-                stroke="#00ff88"
-                strokeWidth={8}
-                dot={false}
-                strokeOpacity={0.2}
-                filter="url(#glow-aggregate-large)"
-              />
-              <Line
-                key="aggregate-medium"
-                type="monotone"
-                dataKey="aggregate"
-                stroke="#00ff88"
-                strokeWidth={6}
-                dot={false}
-                strokeOpacity={0.3}
-                filter="url(#glow-aggregate-medium)"
-              />
-              <Line
-                key="aggregate-close"
-                type="monotone"
-                dataKey="aggregate"
-                stroke="#00ff88"
-                strokeWidth={5}
-                dot={false}
-                strokeOpacity={0.5}
-                filter="url(#glow-aggregate-close)"
-              />
-              <Line
-                key="aggregate-opacity-7"
-                type="monotone"
-                dataKey="aggregate"
-                stroke="#00ff88"
-                strokeWidth={4}
-                dot={false}
-                strokeOpacity={0.7}
-              />
-              <Line
-                key="aggregate-main"
-                type="monotone"
-                dataKey="aggregate"
-                stroke="#00ff88"
-                strokeWidth={3}
-                dot={false}
-                strokeOpacity={1}
-              />
-              {sources.map((source) => {
-                const sourceColor = chartConfig[source.sourceName]?.color || "#9ca3af";
+          <div className="flex items-center justify-between gap-2 mb-3">
+            <div className="flex items-center gap-2">
+              <h4 className="text-[11px] font-semibold uppercase tracking-wide text-foreground">
+                LINE MOVEMENT GRAPH
+              </h4>
+              <span className="text-[10px] text-muted-foreground">Multi-source tracking - last 6 hours</span>
+            </div>
+            <div className="flex items-center gap-3 text-[10px]">
+              {sources.map((source, index) => {
+                const colors = ["#6b7280", "#9ca3af", "#d1d5db"];
                 return (
-                  <React.Fragment key={source.sourceId}>
-                    <Line
-                      key={`${source.sourceId}-glow`}
-                      type="monotone"
-                      dataKey={source.sourceName}
-                      stroke={sourceColor}
-                      strokeWidth={4}
-                      dot={false}
-                      strokeOpacity={0.4}
-                      filter="url(#glow-source)"
-                      isAnimationActive={false}
-                    />
-                    <Line
-                      key={`${source.sourceId}-main`}
-                      type="monotone"
-                      dataKey={source.sourceName}
-                      stroke={sourceColor}
-                      strokeWidth={2}
-                      dot={false}
-                      strokeOpacity={1}
-                      isAnimationActive={false}
-                    />
-                  </React.Fragment>
+                  <div key={source.sourceId} className="flex items-center gap-1.5">
+                    <div className="w-3 h-[2px]" style={{ backgroundColor: colors[index % colors.length] }}></div>
+                    <span className="text-muted-foreground">{source.sourceName}</span>
+                  </div>
                 );
               })}
-            </LineChart>
-          </ChartContainer>
+              <div className="flex items-center gap-1.5">
+                <div className="w-3 h-[2px] bg-[#00ff88]" style={{ boxShadow: '0 0 8px #00ff88' }}></div>
+                <span className="text-[#00ff88] font-medium">Aggregated</span>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-[#0a0a0a] border border-border/50 rounded-sm p-4 shadow-lg">
+            <ChartContainer config={chartConfig} className="h-[360px] w-full">
+              <ComposedChart data={chartData} margin={{ top: 10, right: 20, left: 0, bottom: 10 }}>
+                <defs>
+                  <linearGradient id="aggregateGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#00ff88" stopOpacity={0.3}/>
+                    <stop offset="50%" stopColor="#00ff88" stopOpacity={0.1}/>
+                    <stop offset="100%" stopColor="#00ff88" stopOpacity={0}/>
+                  </linearGradient>
+                  <filter id="glow-aggregate" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                    <feMerge>
+                      <feMergeNode in="coloredBlur"/>
+                      <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                  </filter>
+                </defs>
+                <CartesianGrid 
+                  strokeDasharray="0" 
+                  stroke="#1a1a1a" 
+                  vertical={true}
+                  horizontal={true}
+                  strokeOpacity={0.5}
+                />
+                <XAxis
+                  dataKey="time"
+                  stroke="#404040"
+                  style={{ fontSize: "11px", fontWeight: 500 }}
+                  interval={2}
+                  tick={{ fill: "#808080" }}
+                  tickLine={false}
+                  axisLine={{ stroke: "#2a2a2a" }}
+                  height={40}
+                />
+                <YAxis
+                  stroke="#404040"
+                  style={{ fontSize: "11px", fontWeight: 500 }}
+                  tick={{ fill: "#808080" }}
+                  tickLine={false}
+                  axisLine={{ stroke: "#2a2a2a" }}
+                  domain={['dataMin - 0.2', 'dataMax + 0.2']}
+                  width={50}
+                />
+                <ChartTooltip 
+                  content={<ChartTooltipContent />}
+                  cursor={{ stroke: '#404040', strokeWidth: 1 }}
+                />
+                {/* Source lines */}
+                {sources.map((source, index) => {
+                  const colors = ["#6b7280", "#9ca3af", "#d1d5db"];
+                  const color = colors[index % colors.length];
+                  return (
+                    <Line
+                      key={source.sourceId}
+                      type="monotone"
+                      dataKey={source.sourceName}
+                      stroke={color}
+                      strokeWidth={1.5}
+                      dot={false}
+                      strokeOpacity={0.8}
+                      isAnimationActive={false}
+                    />
+                  );
+                })}
+                {/* Area under aggregated line */}
+                <Area
+                  type="monotone"
+                  dataKey="aggregate"
+                  fill="url(#aggregateGradient)"
+                  stroke="none"
+                  isAnimationActive={false}
+                  hide={true}
+                />
+                {/* Aggregated line with glow effect - hidden from tooltip */}
+                <Line
+                  key="aggregate-glow-far"
+                  type="monotone"
+                  dataKey="aggregate"
+                  stroke="#00ff88"
+                  strokeWidth={12}
+                  dot={false}
+                  strokeOpacity={0.08}
+                  isAnimationActive={false}
+                  hide={true}
+                />
+                <Line
+                  key="aggregate-glow-outer"
+                  type="monotone"
+                  dataKey="aggregate"
+                  stroke="#00ff88"
+                  strokeWidth={8}
+                  dot={false}
+                  strokeOpacity={0.15}
+                  isAnimationActive={false}
+                  hide={true}
+                />
+                <Line
+                  key="aggregate-glow"
+                  type="monotone"
+                  dataKey="aggregate"
+                  stroke="#00ff88"
+                  strokeWidth={5}
+                  dot={false}
+                  strokeOpacity={0.35}
+                  filter="url(#glow-aggregate)"
+                  isAnimationActive={false}
+                  hide={true}
+                />
+                {/* Main aggregate line - shown in tooltip */}
+                <Line
+                  key="aggregate-main"
+                  type="monotone"
+                  dataKey="aggregate"
+                  stroke="#00ff88"
+                  strokeWidth={2.5}
+                  dot={false}
+                  strokeOpacity={1}
+                  isAnimationActive={false}
+                />
+              </ComposedChart>
+            </ChartContainer>
+          </div>
         </div>
         )}
 

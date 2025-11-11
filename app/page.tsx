@@ -63,9 +63,8 @@ export default function Home() {
             {/* Main Grid Layout - Optimized for data analytics */}
             <div className="grid grid-cols-12 gap-2">
               
-              {/* Row 1: Priority Components - Data Analysis */}
-              {/* Multi-Source Comparison - 8 columns (PRIORITY: Core analytics) */}
-              <div className="col-span-8">
+              {/* Row 1: Multi-Source Comparison - Full Width (PRIORITY: Core analytics) */}
+              <div className="col-span-12">
                 <MultiSourceComparison 
                   match={selectedMatch} 
                   matches={matches}
@@ -73,25 +72,25 @@ export default function Home() {
                 />
               </div>
               
+              {/* Row 2: Secondary Components */}
               {/* Odds Aggregator - 4 columns (PRIORITY: Odds comparison) */}
               <div className="col-span-4">
                 <OddsAggregator match={selectedMatch} />
               </div>
               
-              {/* Row 2: Secondary Components - Efficient space usage */}
               {/* Schedule Calendar - 5 columns (Compact) */}
               <div className="col-span-5">
                 <ScheduleCalendar matches={matches} />
               </div>
               
-              {/* Data Quality Indicator - 4 columns (PRIORITY: Source monitoring) */}
-              <div className="col-span-4">
-                <DataQualityIndicator sources={dataSources} />
-              </div>
-              
               {/* Value Radar - 3 columns (Compact signals) */}
               <div className="col-span-3">
                 <ValueRadar signals={mockValueSignals} />
+              </div>
+              
+              {/* Row 3: Data Quality Indicator - Full Width */}
+              <div className="col-span-12">
+                <DataQualityIndicator sources={dataSources} />
               </div>
               
             </div>
