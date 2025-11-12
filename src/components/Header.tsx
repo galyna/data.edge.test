@@ -1,18 +1,25 @@
 "use client";
 
-import { Search, Bell, User, Circle } from "lucide-react";
+import { Bell, User, Circle, Search } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 
-const leagues = [
-  { name: "Football", active: true },
-  { name: "NBA", active: false },
-  { name: "MLB", active: false },
-  { name: "NHL", active: false },
-  { name: "Tennis", active: false },
+interface HeaderProps {
+  selectedSport: string;
+  onSportChange: (sport: string) => void;
+}
+
+const sports = [
+  { id: "football", name: "Football", icon: "⚽" },
+  { id: "nba", name: "NBA", icon: "🏀" },
+  { id: "mlb", name: "MLB", icon: "⚾" },
+  { id: "nhl", name: "NHL", icon: "🏒" },
+  { id: "tennis", name: "Tennis", icon: "🎾" },
+  { id: "esports", name: "E-sports", icon: "🎮" },
 ];
 
-const Header = () => {
+const Header = ({ selectedSport, onSportChange }: HeaderProps) => {
   const pathname = usePathname();
   const isActive = (path: string) => pathname === path;
   
@@ -35,16 +42,19 @@ const Header = () => {
         
         {/* League Filters */}
         <div className="flex items-center gap-2 ml-4">
-          {leagues.map((league) => (
+          {sports.map((sport) => (
             <button
-              key={league.name}
-              className={`px-3 py-1 text-xs font-medium transition-all ${
-                league.active
-                  ? "bg-primary/20 text-primary border border-primary/50"
-                  : "bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground border border-transparent"
-              }`}
+              key={sport.id}
+              onClick={() => onSportChange(sport.id)}
+              className={cn(
+                "flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
+                selectedSport === sport.id
+                  ? "bg-muted text-foreground"
+                  : "text-muted-foreground hover:bg-muted/50"
+              )}
             >
-              {league.name}
+              <span>{sport.icon}</span>
+              {sport.name}
             </button>
           ))}
         </div>

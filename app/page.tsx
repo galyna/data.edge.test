@@ -5,26 +5,23 @@ import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import UnifiedSportsFeed from "@/components/UnifiedSportsFeed";
 import MultiSourceComparison from "@/components/MultiSourceComparison";
-import OddsAggregator from "@/components/OddsAggregator";
 import ScheduleCalendar from "@/components/ScheduleCalendar";
+import OddsAggregator from "@/components/OddsAggregator";
 import ValueRadar from "@/components/ValueRadar";
 import { mockMatches, mockDataSources, mockValueSignals } from "@/data/mockMatches";
 import { useRealtimeData } from "@/hooks/useRealtimeData";
 import { Match } from "@/types/match";
 import MatchDetailDialog from "@/components/MatchDetailDialog";
+import { useMatchStore } from "@/store/matchStore";
+// import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"; - No longer needed
 
 export default function Home() {
   const { matches, lastUpdate } = useRealtimeData(mockMatches, mockDataSources, 8000);
+  const [selectedSport, setSelectedSport] = useState("football");
   
-  // Initialize selectedMatch with first match that has sources (using function to avoid re-computation)
-  const [selectedMatch, setSelectedMatch] = useState<Match | null>(() => {
-    // This function runs only once during initial render
-    return mockMatches.find(m => m.sources && m.sources.length > 0) || null;
-  });
-  
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const { selectedMatch, setSelectedMatch, isMatchDetailDialogOpen, setMatchDetailDialogOpen } = useMatchStore();
 
-  // Update selectedMatch if it becomes null and matches are available
+  // Initialize selectedMatch with first match that has sources (using function to avoid re-computation)
   useEffect(() => {
     if (!selectedMatch && matches.length > 0) {
       const firstMatchWithSources = matches.find(m => m.sources && m.sources.length > 0);
@@ -32,11 +29,11 @@ export default function Home() {
         setSelectedMatch(firstMatchWithSources);
       }
     }
-  }, [matches, selectedMatch]);
+  }, [matches, selectedMatch, setSelectedMatch]);
 
   const handleMatchClick = (match: Match) => {
     setSelectedMatch(match);
-    setDialogOpen(true);
+    setMatchDetailDialogOpen(true);
   };
 
   const handleMatchSelect = (match: Match) => {
@@ -52,17 +49,17 @@ export default function Home() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Header */}
-        <Header />
+        <Header selectedSport={selectedSport} onSportChange={setSelectedSport} />
 
         {/* Dashboard Content */}
         <main className="flex-1 p-2 overflow-auto">
           <div className="max-w-[2000px] mx-auto grid grid-cols-12 gap-2">
             
             {/* Left Column (Main Content) */}
-            <div className="col-span-9 space-y-2">
+            <div className="col-span-8 space-y-2">
               {/* Hero: Unified Sports Feed */}
               <div>
-                <UnifiedSportsFeed matches={matches} onMatchClick={handleMatchClick} />
+                <UnifiedSportsFeed matches={matches} selectedSport={selectedSport} />
               </div>
 
               {/* Multi-Source Comparison */}
@@ -73,24 +70,19 @@ export default function Home() {
                   onMatchSelect={handleMatchSelect}
                 />
               </div>
-
-              {/* Grid for OddsAggregator and ScheduleCalendar */}
-              <div className="grid grid-cols-9 gap-2">
-                {/* Odds Aggregator */}
-                <div className="col-span-4">
-                  <OddsAggregator match={selectedMatch} />
-                </div>
-                
-                {/* Schedule Calendar */}
-                <div className="col-span-5">
-                  <ScheduleCalendar matches={matches} />
-                </div>
-              </div>
             </div>
 
-            {/* Right Column (Value Signals) */}
-            <div className="col-span-3">
-              <ValueRadar signals={mockValueSignals} />
+            {/* Right Column (Odds Aggregator & Value Signals) */}
+            <div className="col-span-4 space-y-2">
+              {/* Odds Aggregator */}
+              <div>
+                <OddsAggregator match={selectedMatch} />
+              </div>
+              
+              {/* Value Signals */}
+              <div>
+                <ValueRadar signals={mockValueSignals} />
+              </div>
             </div>
 
           </div>
@@ -100,8 +92,8 @@ export default function Home() {
       {/* Match Detail Dialog */}
       <MatchDetailDialog 
         match={selectedMatch}
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
+        open={isMatchDetailDialogOpen}
+        onOpenChange={setMatchDetailDialogOpen}
       />
     </div>
   );

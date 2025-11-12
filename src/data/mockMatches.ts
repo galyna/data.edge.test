@@ -493,7 +493,9 @@ export const mockValueSignals: ValueSignal[] = [
     edge: 4.7,
     sources: 4,
     spread: "Low",
-    confidence: 92
+    confidence: 92,
+    homeTeam: mockMatches[0].homeTeam,
+    awayTeam: mockMatches[0].awayTeam,
   },
   {
     id: "signal-2",
@@ -504,7 +506,9 @@ export const mockValueSignals: ValueSignal[] = [
     edge: 3.8,
     sources: 3,
     spread: "Low",
-    confidence: 88
+    confidence: 88,
+    homeTeam: mockMatches[1].homeTeam,
+    awayTeam: mockMatches[1].awayTeam,
   },
   {
     id: "signal-3",
@@ -515,7 +519,9 @@ export const mockValueSignals: ValueSignal[] = [
     edge: 5.3,
     sources: 4,
     spread: "Medium",
-    confidence: 85
+    confidence: 85,
+    homeTeam: mockMatches[2].homeTeam,
+    awayTeam: mockMatches[2].awayTeam,
   },
   {
     id: "signal-4",
@@ -526,7 +532,9 @@ export const mockValueSignals: ValueSignal[] = [
     edge: 3.4,
     sources: 3,
     spread: "Low",
-    confidence: 90
+    confidence: 90,
+    homeTeam: mockMatches[3].homeTeam,
+    awayTeam: mockMatches[3].awayTeam,
   },
   {
     id: "signal-5",
@@ -537,6 +545,47 @@ export const mockValueSignals: ValueSignal[] = [
     edge: 4.5,
     sources: 3,
     spread: "Medium",
-    confidence: 82
+    confidence: 82,
+    homeTeam: mockMatches[4].homeTeam,
+    awayTeam: mockMatches[4].awayTeam,
+  },
+  {
+    id: "signal-6",
+    matchId: "match-6",
+    match: "Lakers vs Warriors",
+    avg: 1.90,
+    best: 1.92,
+    edge: 8.5,
+    sources: 2,
+    spread: "Low",
+    confidence: 95,
+    homeTeam: mockMatches[5].homeTeam,
+    awayTeam: mockMatches[5].awayTeam,
+  },
+  {
+    id: "signal-7",
+    matchId: "match-7",
+    match: "Djokovic vs Alcaraz",
+    avg: 1.75,
+    best: 1.78,
+    edge: 10.2,
+    sources: 2,
+    spread: "Low",
+    confidence: 90,
+    homeTeam: mockMatches[6].homeTeam,
+    awayTeam: mockMatches[6].awayTeam,
+  },
+  {
+    id: "signal-8",
+    matchId: "match-8",
+    match: "G2 Esports vs Fnatic",
+    avg: 1.65,
+    best: 1.68,
+    edge: 7.8,
+    sources: 2,
+    spread: "Low",
+    confidence: 85,
+    homeTeam: mockMatches[7].homeTeam,
+    awayTeam: mockMatches[7].awayTeam,
   }
 ];

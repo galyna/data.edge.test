@@ -94,43 +94,9 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
     };
   }, [match, sources]);
 
+
   // Show list of matches if no match selected
   if (!match) {
-    if (matches.length > 0) {
-      return (
-        <div className="terminal-card p-4">
-          <div className="flex items-center gap-2 mb-3">
-            <Database className="h-4 w-4 text-primary" />
-            <h3 className="text-sm font-semibold uppercase tracking-wide">
-              Select Match for Source Comparison
-            </h3>
-          </div>
-          <div className="space-y-2 max-h-[400px] overflow-y-auto">
-            {matches.slice(0, 10).map((m) => (
-              <div
-                key={m.id}
-                className="border border-border p-3 hover-lift cursor-pointer transition-all hover:border-primary/50"
-                onClick={() => onMatchSelect?.(m)}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <TeamLogo team={m.homeTeam} sport={m.sport.toLowerCase()} size="sm" />
-                    <div className="text-xs">
-                      <div className="font-medium">{m.homeTeam.name} vs {m.awayTeam.name}</div>
-                      <div className="text-muted-foreground">{m.league}</div>
-                    </div>
-                  </div>
-                  <Badge variant="outline" className="text-[10px]">
-                    {m.sources?.length || 0} sources
-                  </Badge>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-    }
-    
     return (
       <div className="terminal-card p-4">
         <div className="text-center py-8">
@@ -213,7 +179,7 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
                 {getDiscrepancyMessage()}
               </div>
               <div className="text-[9px] text-muted-foreground italic">
-                One analyst&apos;s prediction differs significantly from the consensus average. This may indicate a unique insight or data delay.
+                An analyst&apos;s prediction (highlighted below) differs significantly from the consensus. This may indicate a unique insight or a data delay.
               </div>
             </div>
           </div>
@@ -228,20 +194,15 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
                     ANALYST
                   </TableHead>
                   <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2 text-center">
-                    SCORE
+                    <Tooltip>
+                      <TooltipTrigger className="cursor-help">HOME ODDS</TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">Current odds for {match.homeTeam.name} to win (shown on chart)</p>
+                      </TooltipContent>
+                    </Tooltip>
                   </TableHead>
                   <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2 text-center">
                     STATUS
-                  </TableHead>
-                  <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2 text-center">
-                    <Tooltip>
-                      <TooltipTrigger className="cursor-help">
-                        RESPONSE TIME
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="text-xs">Time it takes for analyst to provide their prediction (lower is better)</p>
-                      </TooltipContent>
-                    </Tooltip>
                   </TableHead>
                   <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2 text-right">
                     LAST UPDATE
@@ -257,42 +218,38 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
               return (
                 <TableRow
                   key={source.sourceId}
-                  className={`border-border hover:bg-muted/20 h-8 ${
-                    isDiscrepant ? "bg-destructive/10" : ""
+                  className={`border-border hover:bg-muted/20 h-8 transition-colors ${
+                    isDiscrepant ? "border-l-2 border-l-destructive" : ""
                   }`}
                 >
                   <TableCell className="font-semibold text-[10px] px-2 text-foreground">
-                    {source.sourceName}
+                    {isDiscrepant ? (
+                      <Tooltip>
+                        <TooltipTrigger className="cursor-help text-destructive">{source.sourceName}</TooltipTrigger>
+                        <TooltipContent>
+                          <p className="text-xs">This analyst&apos;s odds deviate significantly from the average.</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    ) : (
+                      source.sourceName
+                    )}
                   </TableCell>
                   <TableCell className={`text-center font-mono text-[10px] px-2 font-semibold ${
                     isDiscrepant ? "text-destructive" : "text-foreground"
                   }`}>
-                    {match.liveData 
-                      ? `${match.liveData.homeScore}-${match.liveData.awayScore}`
-                      : source.odds.draw 
-                        ? `${source.odds.home.toFixed(2)}/${source.odds.draw.toFixed(2)}/${source.odds.away.toFixed(2)}`
-                        : `${source.odds.home.toFixed(2)}/${source.odds.away.toFixed(2)}`
-                    }
+                    {source.odds.home.toFixed(2)}
                   </TableCell>
                   <TableCell className="text-center px-2">
-                    {index === 0 ? (
-                      <Badge className="text-[9px] px-1.5 py-0">P</Badge>
-                    ) : (
-                      <Badge variant="outline" className="text-[9px] px-1.5 py-0">S</Badge>
-                    )}
-                  </TableCell>
-                  <TableCell className={`text-center font-mono text-[10px] px-2 ${
-                    source.latency > 300 ? "text-destructive" : source.latency > 200 ? "text-yellow-500" : ""
-                  }`}>
                     <Tooltip>
-                      <TooltipTrigger className="cursor-help">
-                        {source.latency}ms
+                      <TooltipTrigger>
+                        {index === 0 ? (
+                          <Badge className="text-[9px] px-1.5 py-0 bg-primary/20 text-primary border-primary/30">P</Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-[9px] px-1.5 py-0">S</Badge>
+                        )}
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p className="text-xs">Time delay: {source.latency}ms</p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {source.latency < 200 ? "Fast response" : source.latency < 300 ? "Moderate delay" : "Slow response"}
-                        </p>
+                        <p className="text-xs">{index === 0 ? "Primary Source" : "Secondary Source"}</p>
                       </TooltipContent>
                     </Tooltip>
                   </TableCell>
@@ -316,25 +273,10 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
               AGGREGATE
             </TableCell>
             <TableCell className="text-center font-mono text-[10px] px-2 font-bold text-primary">
-              {match.liveData 
-                ? `${match.liveData.homeScore}-${match.liveData.awayScore}`
-                : match.aggregatedOdds.draw
-                  ? `${match.aggregatedOdds.home.toFixed(2)}/${match.aggregatedOdds.draw.toFixed(2)}/${match.aggregatedOdds.away.toFixed(2)}`
-                  : `${match.aggregatedOdds.home.toFixed(2)}/${match.aggregatedOdds.away.toFixed(2)}`
-              }
+              {match.aggregatedOdds.home.toFixed(2)}
             </TableCell>
             <TableCell className="text-center px-2">
               <Badge className="text-[9px] px-1.5 py-0 bg-primary/20 text-primary border-primary/50">AVG</Badge>
-            </TableCell>
-            <TableCell className="text-center font-mono text-[10px] px-2 text-primary">
-              <Tooltip>
-                <TooltipTrigger className="cursor-help">
-                  {Math.round(sources.reduce((sum, s) => sum + s.latency, 0) / sources.length)}ms
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="text-xs">Average response time across all analysts</p>
-                </TooltipContent>
-              </Tooltip>
             </TableCell>
             <TableCell className="text-right text-[10px] text-muted-foreground px-2 font-mono" suppressHydrationWarning>
               {(() => {
@@ -356,7 +298,7 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
         {/* Line Movement Chart */}
         {mounted && chartData.length > 0 && (
         <div className="mt-3 pt-3 border-t border-border">
-          <div className="mb-3">
+          <div className="mb-3 px-4">
             <h4 className="text-[11px] font-semibold uppercase tracking-wide text-foreground mb-1 flex items-center gap-2">
               ODDS MOVEMENT: 
               <TeamLogo team={match.homeTeam} sport={match.sport.toLowerCase()} size="sm" />
@@ -387,9 +329,9 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
             </div>
           </div>
           
-          <div className="bg-[#0a0a0a] border border-border/50 rounded-sm p-4 shadow-lg">
+          <div className="bg-[#0a0a0a] border border-border/50 rounded-sm shadow-lg overflow-hidden">
             <ChartContainer config={chartConfig} className="h-[360px] w-full">
-              <ComposedChart data={chartData} margin={{ top: 10, right: 20, left: 0, bottom: 10 }}>
+              <ComposedChart data={chartData} margin={{ top: 20, right: 40, left: 20, bottom: 20 }}>
                 <defs>
                   <linearGradient id="aggregateGradient" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#00ff88" stopOpacity={0.3}/>
@@ -415,11 +357,12 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
                   dataKey="time"
                   stroke="#404040"
                   style={{ fontSize: "11px", fontWeight: 500 }}
-                  interval={2}
+                  interval={4}
                   tick={{ fill: "#808080" }}
                   tickLine={false}
                   axisLine={{ stroke: "#2a2a2a" }}
                   height={40}
+                  tickMargin={10}
                 />
                 <YAxis
                   stroke="#404040"
@@ -429,6 +372,9 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
                   axisLine={{ stroke: "#2a2a2a" }}
                   domain={['dataMin - 0.2', 'dataMax + 0.2']}
                   width={50}
+                  tickMargin={10}
+                  tickCount={5}
+                  tickFormatter={(value) => value.toFixed(1)}
                   label={{ value: 'Win Odds', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#808080', fontSize: '10px' } }}
                 />
                 <ChartTooltip 
@@ -515,18 +461,10 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
 
       {/* Summary */}
       <div className="mt-2 pt-2 border-t border-border">
-        <div className="grid grid-cols-3 gap-2 text-[10px]">
+        <div className="grid grid-cols-2 gap-2 text-[10px]">
           <div className="text-center p-1.5 bg-muted/30 border border-border">
             <div className="text-muted-foreground mb-0.5">Sources</div>
             <div className="font-mono text-base">{sources.length}</div>
-          </div>
-          <div className="text-center p-1.5 bg-muted/30 border border-border">
-            <div className="text-muted-foreground mb-0.5">Latency</div>
-            <div className="font-mono text-base">
-              {Math.round(
-                sources.reduce((sum, s) => sum + s.latency, 0) / sources.length
-              )}ms
-            </div>
           </div>
           <div className="text-center p-1.5 bg-muted/30 border border-border">
             <div className="text-muted-foreground mb-0.5">Spread</div>

@@ -6,12 +6,16 @@ import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { Team } from "@/types/match";
+import { TeamLogo } from "@/components/TeamLogo";
 
 interface Prediction {
   id: string;
   match: string;
   league: string;
   sport: string;
+  homeTeam: Team;
+  awayTeam: Team;
   prediction: string;
   confidence: number;
   analyst: string;
@@ -26,6 +30,16 @@ const mockPredictions: Prediction[] = [
     match: "Manchester City vs Arsenal",
     league: "Premier League",
     sport: "Football",
+    homeTeam: {
+      name: "Manchester City",
+      shortName: "MCI",
+      logo: "⚽"
+    },
+    awayTeam: {
+      name: "Arsenal",
+      shortName: "ARS",
+      logo: "⚽"
+    },
     prediction: "Manchester City Win",
     confidence: 87,
     analyst: "Alex Thompson",
@@ -38,6 +52,16 @@ const mockPredictions: Prediction[] = [
     match: "Lakers vs Warriors",
     league: "NBA",
     sport: "Basketball",
+    homeTeam: {
+      name: "Los Angeles Lakers",
+      shortName: "LAL",
+      logo: "🏀"
+    },
+    awayTeam: {
+      name: "Golden State Warriors",
+      shortName: "GSW",
+      logo: "🏀"
+    },
     prediction: "Over 225.5 Points",
     confidence: 92,
     analyst: "Sarah Mitchell",
@@ -50,6 +74,16 @@ const mockPredictions: Prediction[] = [
     match: "Real Madrid vs Barcelona",
     league: "La Liga",
     sport: "Football",
+    homeTeam: {
+      name: "Real Madrid",
+      shortName: "RMA",
+      logo: "⚽"
+    },
+    awayTeam: {
+      name: "Barcelona",
+      shortName: "BAR",
+      logo: "⚽"
+    },
     prediction: "BTTS Yes",
     confidence: 78,
     analyst: "James Rodriguez",
@@ -62,6 +96,16 @@ const mockPredictions: Prediction[] = [
     match: "Djokovic vs Alcaraz",
     league: "ATP Finals",
     sport: "Tennis",
+    homeTeam: {
+      name: "Novak Djokovic",
+      shortName: "DJK",
+      logo: "🎾"
+    },
+    awayTeam: {
+      name: "Carlos Alcaraz",
+      shortName: "ALC",
+      logo: "🎾"
+    },
     prediction: "Alcaraz Win",
     confidence: 65,
     analyst: "Emma Wilson",
@@ -225,9 +269,11 @@ export default function AnalysisPage() {
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
+                      <TeamLogo team={prediction.homeTeam} sport={prediction.sport.toLowerCase()} size="sm" />
                       <h3 className="text-base font-bold text-foreground group-hover:text-primary transition-colors">
-                        {prediction.match}
+                        {prediction.homeTeam.shortName} vs {prediction.awayTeam.shortName}
                       </h3>
+                      <TeamLogo team={prediction.awayTeam} sport={prediction.sport.toLowerCase()} size="sm" />
                       {getStatusBadge(prediction.status)}
                     </div>
                     

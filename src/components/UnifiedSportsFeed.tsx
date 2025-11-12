@@ -1,8 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useState, useEffect, useMemo } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -10,10 +16,11 @@ import { Match } from "@/types/match";
 import { Circle, Clock } from "lucide-react";
 import AnimatedValue from "./AnimatedValue";
 import { TeamLogo } from "./TeamLogo";
+import { useMatchStore } from "@/store/matchStore";
 
 interface UnifiedSportsFeedProps {
   matches: Match[];
-  onMatchClick?: (match: Match) => void;
+  selectedSport: string;
 }
 
 const sports = [
@@ -30,12 +37,14 @@ const leaguesBySport: Record<string, string[]> = {
   esports: ["LEC Spring", "LCS Spring", "CS:GO Major"],
 };
 
-const UnifiedSportsFeed = ({ matches, onMatchClick }: UnifiedSportsFeedProps) => {
-  const [selectedSport, setSelectedSport] = useState("football");
-  const [selectedLeague, setSelectedLeague] = useState<string>("all");
+const UnifiedSportsFeed = ({ matches, selectedSport }: UnifiedSportsFeedProps) => {
+  const { setSelectedMatch, setMatchDetailDialogOpen, selectedMatch } = useMatchStore();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   const handleMatchClick = (match: Match) => {
-    onMatchClick?.(match);
+    setSelectedMatch(match);
+    // setMatchDetailDialogOpen(true); // Now handled by clicking on a row if needed, not by default
   };
 
   const getStatusBadge = (status: Match["status"]) => {
@@ -62,19 +71,11 @@ const UnifiedSportsFeed = ({ matches, onMatchClick }: UnifiedSportsFeedProps) =>
     return styles[sourceName] || "";
   };
 
-  const filteredMatches = matches.filter((match) => {
-    const sportMap: Record<string, string[]> = {
-      football: ["Football"],
-      nba: ["NBA"],
-      tennis: ["Tennis"],
-      esports: ["E-sports"],
-    };
-    const sportMatch = 
-      selectedSport === "all" || 
-      (sportMap[selectedSport]?.includes(match.sport) ?? false);
-    const leagueMatch = selectedLeague === "all" || match.league === selectedLeague;
-    return sportMatch && leagueMatch;
-  });
+  const filteredMatches = useMemo(() => {
+    return matches.filter(
+      (match) => match.sport.toLowerCase() === selectedSport
+    );
+  }, [matches, selectedSport]);
 
   const formatOdds = (match: Match) => {
     if (match.aggregatedOdds.draw) {
@@ -100,57 +101,24 @@ const UnifiedSportsFeed = ({ matches, onMatchClick }: UnifiedSportsFeedProps) =>
     <div className="terminal-card p-3">
       <div className="flex items-center justify-between mb-3">
         <div>
-          <h2 className="text-sm font-bold uppercase tracking-wide text-foreground">UNIFIED SPORTS FEED</h2>
-          <p className="text-[10px] text-muted-foreground mt-0.5">
-            Live scores and data from all sources
+          <h3 className="text-sm font-bold uppercase tracking-wide text-foreground">
+            UNIFIED SPORTS FEED
+          </h3>
+          <p className="text-[10px] text-muted-foreground">
+            Live scores and data from all sources. Matches: {filteredMatches.length}
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-[10px] text-muted-foreground">Matches:</span>
-          <span className="text-[10px] font-mono text-signal font-bold">{filteredMatches.length}</span>
-        </div>
+        {/* The filters (Tabs) are removed from here */}
       </div>
 
-      <Tabs value={selectedSport} onValueChange={setSelectedSport}>
-        <div className="flex items-center justify-between mb-3">
-          <TabsList className="bg-muted/30">
-            {sports.map((sport) => (
-              <TabsTrigger 
-                key={sport.id} 
-                value={sport.id}
-                className="text-xs px-3 py-1.5"
-              >
-                <span className="mr-1.5">{sport.icon}</span>
-                {sport.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-
-          <Select value={selectedLeague} onValueChange={setSelectedLeague}>
-            <SelectTrigger className="w-[180px] h-8 text-xs">
-              <SelectValue placeholder="Select league" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Leagues</SelectItem>
-              {leaguesBySport[selectedSport]?.map((league) => (
-                <SelectItem key={league} value={league}>
-                  {league}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+      {filteredMatches.length === 0 ? (
+        <div className="text-center py-8 text-muted-foreground">
+          No matches available for the selected sport.
         </div>
-
-        {sports.map((sport) => (
-          <TabsContent key={sport.id} value={sport.id} className="mt-0">
-            {filteredMatches.length === 0 ? (
-              <div className="py-8 text-center">
-                <p className="text-sm text-muted-foreground">No matches found</p>
-              </div>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow className="border-border hover:bg-transparent">
+      ) : (
+        <Table>
+          <TableHeader>
+            <TableRow className="border-border hover:bg-transparent">
                     <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2 w-[30%]">
                       MATCH
                     </TableHead>
@@ -163,9 +131,6 @@ const UnifiedSportsFeed = ({ matches, onMatchClick }: UnifiedSportsFeedProps) =>
                     <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2 text-center">
                       ODDS
                     </TableHead>
-                    <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2 text-center">
-                      SOURCE
-                    </TableHead>
                     <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2 text-right">
                       TIME
                     </TableHead>
@@ -175,7 +140,9 @@ const UnifiedSportsFeed = ({ matches, onMatchClick }: UnifiedSportsFeedProps) =>
                   {filteredMatches.map((match) => (
                     <TableRow
                       key={match.id}
-                      className="border-border hover-lift cursor-pointer h-11 transition-all"
+                      className={`border-border hover-lift cursor-pointer h-11 transition-all ${
+                        selectedMatch?.id === match.id ? "bg-primary/10 border-primary/50" : ""
+                      }`}
                       onClick={() => handleMatchClick(match)}
                     >
                       <TableCell className="font-medium text-xs px-3">
@@ -206,22 +173,6 @@ const UnifiedSportsFeed = ({ matches, onMatchClick }: UnifiedSportsFeedProps) =>
                           {formatOdds(match)}
                         </span>
                       </TableCell>
-                      <TableCell className="text-center px-3">
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <div className={`inline-flex items-center px-2 py-0.5 text-[10px] font-mono text-muted-foreground border border-border ${getSourceBadge(match.bestSource)}`}>
-                              {match.bestSource}
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <div className="text-xs space-y-1">
-                              <p>Primary source: {match.bestSource || "Unknown"}</p>
-                              <p>Total sources: {match.sources?.length || 0}</p>
-                              <p>Spread: ±{match.spread.toFixed(2)}</p>
-                            </div>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TableCell>
                       <TableCell className="text-right px-3">
                         <div className="flex items-center justify-end gap-1.5">
                           <Clock className="w-3 h-3 text-muted-foreground" />
@@ -235,9 +186,6 @@ const UnifiedSportsFeed = ({ matches, onMatchClick }: UnifiedSportsFeedProps) =>
                 </TableBody>
               </Table>
             )}
-          </TabsContent>
-        ))}
-      </Tabs>
     </div>
   );
 };

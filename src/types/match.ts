@@ -81,4 +81,6 @@ export interface ValueSignal {
   sources: number;
   spread: "Low" | "Medium" | "High";
   confidence: number; // 0-100
+  homeTeam?: Team; // Optional: for display purposes
+  awayTeam?: Team; // Optional: for display purposes
 }

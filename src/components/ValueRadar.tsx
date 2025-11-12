@@ -1,6 +1,7 @@
 import { TrendingUp, Circle, TrendingDown } from "lucide-react";
 import { ValueSignal } from "@/types/match";
 import AnimatedValue from "./AnimatedValue";
+import { TeamLogo } from "./TeamLogo";
 
 interface ValueRadarProps {
   signals: ValueSignal[];
@@ -15,13 +16,13 @@ const ValueRadar = ({ signals }: ValueRadarProps) => {
       </div>
 
       <div className="space-y-1.5">
-        {signals.slice(0, 4).map((signal) => (
+        {signals.map((signal) => (
           <div 
             key={signal.id} 
             className="border border-border p-1.5 hover:bg-muted/20 cursor-pointer transition-colors"
           >
             <div className="flex items-start justify-between mb-1">
-              <div className="flex items-center gap-1 flex-1 min-w-0">
+              <div className="flex items-center gap-2 flex-1 min-w-0">
                 <Circle className="w-1 h-1 fill-primary text-primary flex-shrink-0 mt-1" />
                 <span className="text-[9px] font-medium truncate">{signal.match}</span>
               </div>

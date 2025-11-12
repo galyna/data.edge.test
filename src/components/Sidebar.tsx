@@ -14,11 +14,10 @@ const Sidebar = ({ activeSection = "dashboard" }: SidebarProps) => {
   
   const menuItems = [
     { id: "dashboard", icon: Database, label: "Data Feeds", path: "/" },
-    { id: "news", icon: TrendingUp, label: "News", path: "/news" },
-    { id: "live-scores", icon: Activity, label: "Live Scores", path: "/live-scores" },
     { id: "analysis", icon: BarChart3, label: "Analysis & Tips", path: "/analysis" },
+    { id: "live-scores", icon: Activity, label: "Live Scores", path: "/live-scores" },
     { id: "esports", icon: Gamepad2, label: "E-sports", path: "/esports" },
-   
+    { id: "news", icon: TrendingUp, label: "News", path: "/news" },
     // { id: "analytics", icon: Target, label: "Analytics", path: "#" },
     // { id: "settings", icon: Settings, label: "Settings", path: "#" },
   ];
