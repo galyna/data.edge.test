@@ -41,19 +41,18 @@ const Header = ({ selectedSport, onSportChange }: HeaderProps) => {
         
         
         {/* League Filters */}
-        <div className="flex items-center gap-2 ml-4">
+        <div className="flex items-center gap-1 ml-4">
           {sports.map((sport) => (
             <button
               key={sport.id}
               onClick={() => onSportChange(sport.id)}
               className={cn(
-                "flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
+                "px-2 py-1 text-xs font-medium uppercase tracking-wider transition-all",
                 selectedSport === sport.id
-                  ? "bg-muted text-foreground"
-                  : "text-muted-foreground hover:bg-muted/50"
+                  ? "bg-primary/20 text-primary border border-primary/50"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-transparent"
               )}
             >
-              <span>{sport.icon}</span>
               {sport.name}
             </button>
           ))}
