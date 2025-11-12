@@ -269,7 +269,9 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
                   }`}>
                     {match.liveData 
                       ? `${match.liveData.homeScore}-${match.liveData.awayScore}`
-                      : `${source.odds.home.toFixed(2)}/${source.odds.away.toFixed(2)}`
+                      : source.odds.draw 
+                        ? `${source.odds.home.toFixed(2)}/${source.odds.draw.toFixed(2)}/${source.odds.away.toFixed(2)}`
+                        : `${source.odds.home.toFixed(2)}/${source.odds.away.toFixed(2)}`
                     }
                   </TableCell>
                   <TableCell className="text-center px-2">
@@ -316,7 +318,9 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
             <TableCell className="text-center font-mono text-[10px] px-2 font-bold text-primary">
               {match.liveData 
                 ? `${match.liveData.homeScore}-${match.liveData.awayScore}`
-                : `${match.aggregatedOdds.home.toFixed(2)}/${match.aggregatedOdds.away.toFixed(2)}`
+                : match.aggregatedOdds.draw
+                  ? `${match.aggregatedOdds.home.toFixed(2)}/${match.aggregatedOdds.draw.toFixed(2)}/${match.aggregatedOdds.away.toFixed(2)}`
+                  : `${match.aggregatedOdds.home.toFixed(2)}/${match.aggregatedOdds.away.toFixed(2)}`
               }
             </TableCell>
             <TableCell className="text-center px-2">
