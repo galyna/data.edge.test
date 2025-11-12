@@ -83,28 +83,32 @@ export const mockMatches: Match[] = [
         sourceName: "Jack",
         odds: { home: 2.12, draw: 3.35, away: 3.25 },
         timestamp: "2025-01-15T14:32:00Z",
-        latency: 120
+        latency: 120,
+        scorePrediction: { home: 2, away: 1 }
       },
       {
         sourceId: "sportsdataio",
         sourceName: "Johnny",
         odds: { home: 2.25, draw: 3.40, away: 3.15 },
         timestamp: "2025-01-15T14:32:05Z",
-        latency: 95
+        latency: 95,
+        scorePrediction: { home: 2, away: 0 }
       },
       {
         sourceId: "apisports",
         sourceName: "Sam",
         odds: { home: 2.10, draw: 3.45, away: 3.20 },
         timestamp: "2025-01-15T14:31:50Z",
-        latency: 450
+        latency: 450,
+        scorePrediction: { home: 1, away: 1 }
       },
       {
         sourceId: "thesportsdb",
         sourceName: "Mike",
         odds: { home: 2.18, draw: 3.38, away: 3.22 },
         timestamp: "2025-01-15T14:32:02Z",
-        latency: 180
+        latency: 180,
+        scorePrediction: { home: 3, away: 1 }
       }
     ],
     spread: 0.08,
@@ -139,21 +143,24 @@ export const mockMatches: Match[] = [
         sourceName: "Jack",
         odds: { home: 1.92, draw: 3.55, away: 4.10 },
         timestamp: "2025-01-15T14:32:00Z",
-        latency: 120
+        latency: 120,
+        scorePrediction: { home: 2, away: 1 }
       },
       {
         sourceId: "sportsdataio",
         sourceName: "Johnny",
         odds: { home: 1.82, draw: 3.70, away: 4.25 },
         timestamp: "2025-01-15T14:32:05Z",
-        latency: 95
+        latency: 95,
+        scorePrediction: { home: 3, away: 1 }
       },
       {
         sourceId: "apisports",
         sourceName: "Sam",
         odds: { home: 1.78, draw: 3.50, away: 4.35 },
         timestamp: "2025-01-15T14:31:50Z",
-        latency: 450
+        latency: 450,
+        scorePrediction: { home: 1, away: 0 }
       }
     ],
     spread: 0.15,
@@ -188,28 +195,32 @@ export const mockMatches: Match[] = [
         sourceName: "Jack",
         odds: { home: 2.42, draw: 3.25, away: 2.95 },
         timestamp: "2025-01-15T14:32:00Z",
-        latency: 120
+        latency: 120,
+        scorePrediction: { home: 1, away: 2 }
       },
       {
         sourceId: "sportsdataio",
         sourceName: "Johnny",
         odds: { home: 2.58, draw: 3.30, away: 2.82 },
         timestamp: "2025-01-15T14:32:05Z",
-        latency: 95
+        latency: 95,
+        scorePrediction: { home: 2, away: 1 }
       },
       {
         sourceId: "apisports",
         sourceName: "Sam",
         odds: { home: 2.40, draw: 3.35, away: 2.92 },
         timestamp: "2025-01-15T14:31:50Z",
-        latency: 450
+        latency: 450,
+        scorePrediction: { home: 0, away: 1 }
       },
       {
         sourceId: "thesportsdb",
         sourceName: "Mike",
         odds: { home: 2.48, draw: 3.28, away: 2.88 },
         timestamp: "2025-01-15T14:32:02Z",
-        latency: 180
+        latency: 180,
+        scorePrediction: { home: 1, away: 1 }
       }
     ],
     spread: 0.06,
@@ -244,21 +255,24 @@ export const mockMatches: Match[] = [
         sourceName: "Jack",
         odds: { home: 1.72, draw: 3.75, away: 4.60 },
         timestamp: "2025-01-15T14:32:00Z",
-        latency: 120
+        latency: 120,
+        scorePrediction: { home: 3, away: 1 }
       },
       {
         sourceId: "sportsdataio",
         sourceName: "Johnny",
         odds: { home: 1.81, draw: 3.85, away: 4.35 },
         timestamp: "2025-01-15T14:32:05Z",
-        latency: 95
+        latency: 95,
+        scorePrediction: { home: 2, away: 0 }
       },
       {
         sourceId: "thesportsdb",
         sourceName: "Mike",
         odds: { home: 1.78, draw: 3.82, away: 4.48 },
         timestamp: "2025-01-15T14:32:02Z",
-        latency: 180
+        latency: 180,
+        scorePrediction: { home: 2, away: 1 }
       }
     ],
     spread: 0.12,
@@ -293,21 +307,24 @@ export const mockMatches: Match[] = [
         sourceName: "Jack",
         odds: { home: 1.62, draw: 4.10, away: 5.60 },
         timestamp: "2025-01-15T14:32:00Z",
-        latency: 120
+        latency: 120,
+        scorePrediction: { home: 2, away: 0 }
       },
       {
         sourceId: "sportsdataio",
         sourceName: "Johnny",
         odds: { home: 1.48, draw: 4.35, away: 6.10 },
         timestamp: "2025-01-15T14:32:05Z",
-        latency: 95
+        latency: 95,
+        scorePrediction: { home: 3, away: 1 }
       },
       {
         sourceId: "apisports",
         sourceName: "Sam",
         odds: { home: 1.52, draw: 4.15, away: 5.75 },
         timestamp: "2025-01-15T14:31:50Z",
-        latency: 450
+        latency: 450,
+        scorePrediction: { home: 1, away: 0 }
       }
     ],
     spread: 0.18,
@@ -348,14 +365,16 @@ export const mockMatches: Match[] = [
         sourceName: "Jack",
         odds: { home: 1.92, away: 1.93 },
         timestamp: "2025-01-15T14:32:00Z",
-        latency: 120
+        latency: 120,
+        scorePrediction: { home: 105, away: 98 }
       },
       {
         sourceId: "sportsdataio",
         sourceName: "Johnny",
         odds: { home: 1.88, away: 1.97 },
         timestamp: "2025-01-15T14:32:05Z",
-        latency: 95
+        latency: 95,
+        scorePrediction: { home: 108, away: 102 }
       }
     ],
     spread: 0.05,
@@ -389,14 +408,16 @@ export const mockMatches: Match[] = [
         sourceName: "Jack",
         odds: { home: 1.72, away: 2.15 },
         timestamp: "2025-01-15T14:32:00Z",
-        latency: 120
+        latency: 120,
+        scorePrediction: { home: 3, away: 1 }
       },
       {
         sourceId: "sportsdataio",
         sourceName: "Johnny",
         odds: { home: 1.78, away: 2.05 },
         timestamp: "2025-01-15T14:32:05Z",
-        latency: 95
+        latency: 95,
+        scorePrediction: { home: 3, away: 0 }
       }
     ],
     spread: 0.06,
@@ -437,14 +458,16 @@ export const mockMatches: Match[] = [
         sourceName: "Jack",
         odds: { home: 1.62, away: 2.30 },
         timestamp: "2025-01-15T14:32:00Z",
-        latency: 120
+        latency: 120,
+        scorePrediction: { home: 2, away: 1 }
       },
       {
         sourceId: "sportsdataio",
         sourceName: "Johnny",
         odds: { home: 1.68, away: 2.20 },
         timestamp: "2025-01-15T14:32:05Z",
-        latency: 95
+        latency: 95,
+        scorePrediction: { home: 2, away: 0 }
       }
     ],
     spread: 0.06,

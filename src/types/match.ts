@@ -14,6 +14,10 @@ export interface OddsSource {
   };
   timestamp: string;
   latency: number;
+  scorePrediction?: {
+    home: number;
+    away: number;
+  };
 }
 
 export interface Match {

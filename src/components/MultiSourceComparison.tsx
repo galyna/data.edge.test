@@ -163,117 +163,6 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
           </div>
         </div>
 
-      <div className="w-full overflow-x-hidden">
-        <Table className="w-full table-auto">
-          <TableHeader>
-            <TableRow className="border-border hover:bg-transparent">
-                  <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2">
-                    ANALYST
-                  </TableHead>
-                  <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2 text-center">
-                    <Tooltip>
-                      <TooltipTrigger className="cursor-help">HOME ODDS</TooltipTrigger>
-                      <TooltipContent>
-                        <p className="text-xs">Current odds for {match.homeTeam.name} to win (shown on chart)</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TableHead>
-                  <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2 text-center">
-                    STATUS
-                  </TableHead>
-                  <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2 text-right">
-                    LAST UPDATE
-                  </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {sources.map((source, index) => {
-              const isDiscrepant = hasDiscrepancy && 
-                (Math.abs(source.odds.home - match.aggregatedOdds.home) > 0.1 ||
-                 Math.abs(source.odds.away - match.aggregatedOdds.away) > 0.1);
-
-              return (
-                <TableRow
-                  key={source.sourceId}
-                  className={`border-border hover:bg-muted/20 h-8 transition-colors ${
-                    isDiscrepant ? "border-l-2 border-l-destructive" : ""
-                  }`}
-                >
-                  <TableCell className="font-semibold text-[10px] px-2 text-foreground">
-                    {isDiscrepant ? (
-                      <Tooltip>
-                        <TooltipTrigger className="cursor-help text-destructive">{source.sourceName}</TooltipTrigger>
-                        <TooltipContent>
-                          <p className="text-xs">
-                            {getDiscrepancyMessage(source.sourceName) || "This analyst's odds deviate significantly from the average."}
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    ) : (
-                      source.sourceName
-                    )}
-                  </TableCell>
-                  <TableCell className={`text-center font-mono text-[10px] px-2 font-semibold ${
-                    isDiscrepant ? "text-destructive" : "text-foreground"
-                  }`}>
-                    {source.odds.home.toFixed(2)}
-                  </TableCell>
-                  <TableCell className="text-center px-2">
-                    <Tooltip>
-                      <TooltipTrigger>
-                        {index === 0 ? (
-                          <Badge className="text-[9px] px-1.5 py-0 bg-primary/20 text-primary border-primary/30">P</Badge>
-                        ) : (
-                          <Badge variant="outline" className="text-[9px] px-1.5 py-0">S</Badge>
-                        )}
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="text-xs">{index === 0 ? "Primary Source" : "Secondary Source"}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TableCell>
-                  <TableCell className="text-right text-[10px] text-muted-foreground px-2 font-mono" suppressHydrationWarning>
-                    {(() => {
-                      if (!mounted) return "";
-                      const date = new Date(source.timestamp);
-                      const hours = date.getHours();
-                      const minutes = date.getMinutes().toString().padStart(2, '0');
-                      const ampm = hours >= 12 ? 'PM' : 'AM';
-                      const displayHours = hours % 12 || 12;
-                      return `${displayHours.toString().padStart(2, '0')}:${minutes} ${ampm}`;
-                    })()}
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          {/* Aggregate row */}
-          <TableRow className="border-t-2 border-primary/30 bg-primary/5 hover:bg-primary/10 h-8">
-            <TableCell className="font-bold text-[10px] px-2 text-primary">
-              AGGREGATE
-            </TableCell>
-            <TableCell className="text-center font-mono text-[10px] px-2 font-bold text-primary">
-              {match.aggregatedOdds.home.toFixed(2)}
-            </TableCell>
-            <TableCell className="text-center px-2">
-              <Badge className="text-[9px] px-1.5 py-0 bg-primary/20 text-primary border-primary/50">AVG</Badge>
-            </TableCell>
-            <TableCell className="text-right text-[10px] text-muted-foreground px-2 font-mono" suppressHydrationWarning>
-              {(() => {
-                if (!mounted) return "";
-                const latestTimestamp = Math.max(...sources.map(s => new Date(s.timestamp).getTime()));
-                const date = new Date(latestTimestamp);
-                const hours = date.getHours();
-                const minutes = date.getMinutes().toString().padStart(2, '0');
-                const ampm = hours >= 12 ? 'PM' : 'AM';
-                const displayHours = hours % 12 || 12;
-                return `${displayHours.toString().padStart(2, '0')}:${minutes} ${ampm}`;
-              })()}
-            </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-      </div>
-
         {/* Line Movement Chart */}
         {mounted && chartData.length > 0 && (
         <div className="mt-3 pt-3 border-t border-border">
@@ -437,6 +326,151 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
           </div>
         </div>
         )}
+
+      {/* Table - moved below chart */}
+      <div className="mt-3 pt-3 border-t border-border w-full overflow-x-hidden">
+        <Table className="w-full table-auto">
+          <TableHeader>
+            <TableRow className="border-border hover:bg-transparent">
+              <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2">
+                ANALYST
+              </TableHead>
+              <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2 text-center">
+                <Tooltip>
+                  <TooltipTrigger className="cursor-help">HOME</TooltipTrigger>
+                  <TooltipContent>
+                    <p className="text-xs">Odds for {match.homeTeam.name} to win</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TableHead>
+              {match.aggregatedOdds.draw && (
+                <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2 text-center">
+                  <Tooltip>
+                    <TooltipTrigger className="cursor-help">DRAW</TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-xs">Odds for a draw</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TableHead>
+              )}
+              <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2 text-center">
+                <Tooltip>
+                  <TooltipTrigger className="cursor-help">AWAY</TooltipTrigger>
+                  <TooltipContent>
+                    <p className="text-xs">Odds for {match.awayTeam.name} to win</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TableHead>
+              <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2 text-center">
+                <Tooltip>
+                  <TooltipTrigger className="cursor-help">SCORE PREDICTION</TooltipTrigger>
+                  <TooltipContent>
+                    <p className="text-xs">Predicted final score</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TableHead>
+              <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2 text-center">
+                STATUS
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {sources.map((source, index) => {
+              const isDiscrepant = hasDiscrepancy && 
+                (Math.abs(source.odds.home - match.aggregatedOdds.home) > 0.1 ||
+                 Math.abs(source.odds.away - match.aggregatedOdds.away) > 0.1);
+
+              return (
+                <TableRow
+                  key={source.sourceId}
+                  className={`border-border hover:bg-muted/20 h-8 transition-colors ${
+                    isDiscrepant ? "border-l-2 border-l-destructive" : ""
+                  }`}
+                >
+                  <TableCell className="font-semibold text-[10px] px-2 text-foreground">
+                    {isDiscrepant ? (
+                      <Tooltip>
+                        <TooltipTrigger className="cursor-help text-destructive">{source.sourceName}</TooltipTrigger>
+                        <TooltipContent>
+                          <p className="text-xs">
+                            {getDiscrepancyMessage(source.sourceName) || "This analyst's odds deviate significantly from the average."}
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    ) : (
+                      source.sourceName
+                    )}
+                  </TableCell>
+                  <TableCell className={`text-center font-mono text-[10px] px-2 font-semibold ${
+                    isDiscrepant ? "text-destructive" : "text-foreground"
+                  }`}>
+                    {source.odds.home.toFixed(2)}
+                  </TableCell>
+                  {match.aggregatedOdds.draw && (
+                    <TableCell className="text-center font-mono text-[10px] px-2 text-foreground">
+                      {source.odds.draw ? source.odds.draw.toFixed(2) : '-'}
+                    </TableCell>
+                  )}
+                  <TableCell className="text-center font-mono text-[10px] px-2 text-foreground">
+                    {source.odds.away.toFixed(2)}
+                  </TableCell>
+                  <TableCell className="text-center font-mono text-[10px] px-2 text-foreground">
+                    {source.scorePrediction 
+                      ? `${source.scorePrediction.home}-${source.scorePrediction.away}`
+                      : '-'
+                    }
+                  </TableCell>
+                  <TableCell className="text-center px-2">
+                    <Tooltip>
+                      <TooltipTrigger>
+                        {index === 0 ? (
+                          <Badge className="text-[9px] px-1.5 py-0 bg-primary/20 text-primary border-primary/30">P</Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-[9px] px-1.5 py-0">S</Badge>
+                        )}
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">{index === 0 ? "Primary Source" : "Secondary Source"}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+            {/* Aggregate row */}
+            <TableRow className="border-t-2 border-primary/30 bg-primary/5 hover:bg-primary/10 h-8">
+              <TableCell className="font-bold text-[10px] px-2 text-primary">
+                AGGREGATE
+              </TableCell>
+              <TableCell className="text-center font-mono text-[10px] px-2 font-bold text-primary">
+                {match.aggregatedOdds.home.toFixed(2)}
+              </TableCell>
+              {match.aggregatedOdds.draw && (
+                <TableCell className="text-center font-mono text-[10px] px-2 font-bold text-primary">
+                  {match.aggregatedOdds.draw.toFixed(2)}
+                </TableCell>
+              )}
+              <TableCell className="text-center font-mono text-[10px] px-2 font-bold text-primary">
+                {match.aggregatedOdds.away.toFixed(2)}
+              </TableCell>
+              <TableCell className="text-center font-mono text-[10px] px-2 text-muted-foreground">
+                {(() => {
+                  const predictions = sources
+                    .filter(s => s.scorePrediction && typeof s.scorePrediction.home === 'number' && typeof s.scorePrediction.away === 'number')
+                    .map(s => s.scorePrediction!);
+                  if (predictions.length === 0) return '-';
+                  const avgHome = Math.round(predictions.reduce((sum, p) => sum + p.home, 0) / predictions.length);
+                  const avgAway = Math.round(predictions.reduce((sum, p) => sum + p.away, 0) / predictions.length);
+                  return `${avgHome}-${avgAway}`;
+                })()}
+              </TableCell>
+              <TableCell className="text-center px-2">
+                <Badge className="text-[9px] px-1.5 py-0 bg-primary/20 text-primary border-primary/50">AVG</Badge>
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </div>
 
       {/* Summary */}
       <div className="mt-2 pt-2 border-t border-border">
