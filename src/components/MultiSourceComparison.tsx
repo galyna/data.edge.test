@@ -3,7 +3,7 @@
 import { useMemo, useState, useEffect } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, Database, TrendingUp } from "lucide-react";
+import { Database, TrendingUp } from "lucide-react";
 import { Match } from "@/types/match";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from "@/components/ui/chart";
 import { ComposedChart, Line, XAxis, YAxis, CartesianGrid, Area } from "recharts";
@@ -128,17 +128,18 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
     return homeDiff > 0.1 || awayDiff > 0.1;
   });
 
-  const getDiscrepancyMessage = () => {
-    const discrepancies = sources.filter((source) => {
-      const homeDiff = Math.abs(source.odds.home - match.aggregatedOdds.home);
-      return homeDiff > 0.1;
-    });
+  const getDiscrepancyMessage = (sourceName?: string) => {
+    const targetSource = sourceName 
+      ? sources.find(s => s.sourceName === sourceName)
+      : sources.find((source) => {
+          const homeDiff = Math.abs(source.odds.home - match.aggregatedOdds.home);
+          return homeDiff > 0.1;
+        });
 
-    if (discrepancies.length > 0) {
-      const source = discrepancies[0];
-      const diffValue = source.odds.home - match.aggregatedOdds.home;
+    if (targetSource) {
+      const diffValue = targetSource.odds.home - match.aggregatedOdds.home;
       const diff = diffValue.toFixed(2);
-      return `${source.sourceName} predicts ${source.odds.home.toFixed(2)} vs consensus ${match.aggregatedOdds.home.toFixed(2)} (diff: ${diffValue > 0 ? '+' : ''}${diff})`;
+      return `${targetSource.sourceName} predicts ${targetSource.odds.home.toFixed(2)} vs consensus ${match.aggregatedOdds.home.toFixed(2)} (diff: ${diffValue > 0 ? '+' : ''}${diff})`;
     }
     return null;
   };
@@ -161,30 +162,6 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
             {sources.length} analysts
           </div>
         </div>
-        
-        {/* Explanation */}
-        <div className="mb-2 text-[9px] text-muted-foreground italic">
-          Comparing predictions from our analysts. Each provides odds estimates with different response times. The aggregate row shows the consensus average.
-        </div>
-
-      {hasDiscrepancy && (
-        <div className="mb-2 border border-border bg-muted/10 p-2">
-          <div className="flex items-start gap-1.5">
-            <AlertTriangle className="h-3 w-3 text-yellow-500 mt-0.5 flex-shrink-0" />
-            <div className="flex-1 min-w-0">
-              <div className="text-[10px] font-medium text-foreground mb-0.5">
-                Prediction Variance Detected
-              </div>
-              <div className="text-[10px] text-muted-foreground font-mono mb-1">
-                {getDiscrepancyMessage()}
-              </div>
-              <div className="text-[9px] text-muted-foreground italic">
-                An analyst&apos;s prediction (highlighted below) differs significantly from the consensus. This may indicate a unique insight or a data delay.
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       <div className="w-full overflow-x-hidden">
         <Table className="w-full table-auto">
@@ -227,7 +204,9 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
                       <Tooltip>
                         <TooltipTrigger className="cursor-help text-destructive">{source.sourceName}</TooltipTrigger>
                         <TooltipContent>
-                          <p className="text-xs">This analyst&apos;s odds deviate significantly from the average.</p>
+                          <p className="text-xs">
+                            {getDiscrepancyMessage(source.sourceName) || "This analyst's odds deviate significantly from the average."}
+                          </p>
                         </TooltipContent>
                       </Tooltip>
                     ) : (
