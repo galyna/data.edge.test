@@ -56,41 +56,41 @@ export default function Home() {
 
         {/* Dashboard Content */}
         <main className="flex-1 p-2 overflow-auto">
-          <div className="max-w-[2000px] mx-auto space-y-2">
+          <div className="max-w-[2000px] mx-auto grid grid-cols-12 gap-2">
             
-            {/* Hero: Unified Sports Feed */}
-            <div className="col-span-12">
-              <UnifiedSportsFeed matches={matches} onMatchClick={handleMatchClick} />
-            </div>
+            {/* Left Column (Main Content) */}
+            <div className="col-span-9 space-y-2">
+              {/* Hero: Unified Sports Feed */}
+              <div>
+                <UnifiedSportsFeed matches={matches} onMatchClick={handleMatchClick} />
+              </div>
 
-            {/* Main Grid Layout - Optimized for data analytics */}
-            <div className="grid grid-cols-12 gap-2">
-              
-              {/* Row 1: Multi-Source Comparison - Full Width (PRIORITY: Core analytics) */}
-              <div className="col-span-12">
+              {/* Multi-Source Comparison */}
+              <div>
                 <MultiSourceComparison 
                   match={selectedMatch} 
                   matches={matches}
                   onMatchSelect={handleMatchSelect}
                 />
               </div>
-              
-              {/* Row 2: Secondary Components */}
-              {/* Odds Aggregator - 4 columns (PRIORITY: Odds comparison) */}
-              <div className="col-span-4">
-                <OddsAggregator match={selectedMatch} />
+
+              {/* Grid for OddsAggregator and ScheduleCalendar */}
+              <div className="grid grid-cols-9 gap-2">
+                {/* Odds Aggregator */}
+                <div className="col-span-4">
+                  <OddsAggregator match={selectedMatch} />
+                </div>
+                
+                {/* Schedule Calendar */}
+                <div className="col-span-5">
+                  <ScheduleCalendar matches={matches} />
+                </div>
               </div>
-              
-              {/* Schedule Calendar - 5 columns (Compact) */}
-              <div className="col-span-5">
-                <ScheduleCalendar matches={matches} />
-              </div>
-              
-              {/* Value Radar - 3 columns (Compact signals) */}
-              <div className="col-span-3">
-                <ValueRadar signals={mockValueSignals} />
-              </div>
-              
+            </div>
+
+            {/* Right Column (Value Signals) */}
+            <div className="col-span-3">
+              <ValueRadar signals={mockValueSignals} />
             </div>
 
           </div>

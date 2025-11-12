@@ -8,7 +8,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Match } from "@/types/match";
 import { Circle, Clock } from "lucide-react";
-import MatchDetailDialog from "./MatchDetailDialog";
 import AnimatedValue from "./AnimatedValue";
 import { TeamLogo } from "./TeamLogo";
 
@@ -34,12 +33,8 @@ const leaguesBySport: Record<string, string[]> = {
 const UnifiedSportsFeed = ({ matches, onMatchClick }: UnifiedSportsFeedProps) => {
   const [selectedSport, setSelectedSport] = useState("football");
   const [selectedLeague, setSelectedLeague] = useState<string>("all");
-  const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
 
   const handleMatchClick = (match: Match) => {
-    setSelectedMatch(match);
-    setDialogOpen(true);
     onMatchClick?.(match);
   };
 
@@ -243,12 +238,6 @@ const UnifiedSportsFeed = ({ matches, onMatchClick }: UnifiedSportsFeedProps) =>
           </TabsContent>
         ))}
       </Tabs>
-
-      <MatchDetailDialog
-        match={selectedMatch}
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-      />
     </div>
   );
 };

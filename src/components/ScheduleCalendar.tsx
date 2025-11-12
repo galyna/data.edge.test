@@ -18,7 +18,7 @@ interface ScheduleCalendarProps {
 const ScheduleCalendar = ({ matches }: ScheduleCalendarProps) => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [selectedSport, setSelectedSport] = useState<string>("all");
-  const [viewMode, setViewMode] = useState<"calendar" | "list">("calendar");
+  const [viewMode, setViewMode] = useState<"calendar" | "list">("list");
 
   const sports = ["all", "Football", "NBA", "Tennis", "E-sports"];
 
@@ -123,14 +123,14 @@ const ScheduleCalendar = ({ matches }: ScheduleCalendarProps) => {
                       className="p-1.5 border border-border hover:bg-muted/20 cursor-pointer transition-colors"
                     >
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-1 min-w-0">
                           <TeamLogo team={match.homeTeam} sport={match.sport.toLowerCase()} size="sm" />
-                          <div className="text-[9px] min-w-0">
-                            <div className="font-medium truncate">{match.homeTeam.shortName} vs {match.awayTeam.shortName}</div>
-                            <div className="text-muted-foreground truncate">{match.league}</div>
+                          <div className="text-[9px] font-medium truncate flex-1 text-center">
+                            {match.homeTeam.shortName} vs {match.awayTeam.shortName}
                           </div>
+                          <TeamLogo team={match.awayTeam} sport={match.sport.toLowerCase()} size="sm" />
                         </div>
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-1.5 ml-2">
                           {getStatusBadge(match.status)}
                           <div className="flex items-center gap-0.5 text-[9px] text-muted-foreground font-mono">
                             <Clock className="w-2 h-2" />
@@ -159,14 +159,14 @@ const ScheduleCalendar = ({ matches }: ScheduleCalendarProps) => {
                   className="p-1.5 border border-border hover:bg-muted/20 cursor-pointer transition-colors"
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
                       <TeamLogo team={match.homeTeam} sport={match.sport.toLowerCase()} size="sm" />
-                      <div className="text-[9px] min-w-0">
-                        <div className="font-medium truncate">{match.homeTeam.shortName} vs {match.awayTeam.shortName}</div>
-                        <div className="text-muted-foreground truncate">{match.league}</div>
+                      <div className="text-[9px] font-medium truncate flex-1 text-center">
+                        {match.homeTeam.shortName} vs {match.awayTeam.shortName}
                       </div>
+                      <TeamLogo team={match.awayTeam} sport={match.sport.toLowerCase()} size="sm" />
                     </div>
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex items-center gap-1.5 ml-2">
                       {getStatusBadge(match.status)}
                       <div className="text-[9px] font-mono text-muted-foreground">
                         {format(new Date(match.startTime), "MMM dd, HH:mm")}

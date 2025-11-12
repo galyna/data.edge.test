@@ -130,7 +130,11 @@ const MatchDetailDialog = ({ match, open, onOpenChange }: MatchDetailDialogProps
           <div className="terminal-card p-4">
             <div className="flex items-center gap-2 mb-3">
               <Clock className="h-4 w-4 text-primary" />
-              <h3 className="text-sm font-semibold uppercase tracking-wide">Home Odds Movement</h3>
+              <h3 className="text-sm font-semibold uppercase tracking-wide flex items-center gap-2">
+                <span>Odds Movement:</span>
+                <TeamLogo team={match.homeTeam} sport={match.sport.toLowerCase()} size="sm" />
+                <span>{match.homeTeam.name} to Win</span>
+              </h3>
             </div>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
@@ -202,6 +206,7 @@ const MatchDetailDialog = ({ match, open, onOpenChange }: MatchDetailDialogProps
                     dot={false}
                     strokeOpacity={0.12}
                     filter="url(#glow-aggregate-dialog-outer)"
+                    legendType="none"
                   />
                   <Line 
                     key="aggregate-dialog-large"
@@ -212,6 +217,7 @@ const MatchDetailDialog = ({ match, open, onOpenChange }: MatchDetailDialogProps
                     dot={false}
                     strokeOpacity={0.2}
                     filter="url(#glow-aggregate-dialog-large)"
+                    legendType="none"
                   />
                   <Line 
                     key="aggregate-dialog-medium"
@@ -222,6 +228,7 @@ const MatchDetailDialog = ({ match, open, onOpenChange }: MatchDetailDialogProps
                     dot={false}
                     strokeOpacity={0.3}
                     filter="url(#glow-aggregate-dialog-medium)"
+                    legendType="none"
                   />
                   <Line 
                     key="aggregate-dialog-close"
@@ -232,6 +239,7 @@ const MatchDetailDialog = ({ match, open, onOpenChange }: MatchDetailDialogProps
                     dot={false}
                     strokeOpacity={0.5}
                     filter="url(#glow-aggregate-dialog-close)"
+                    legendType="none"
                   />
                   <Line 
                     key="aggregate-dialog-opacity-7"
@@ -241,19 +249,21 @@ const MatchDetailDialog = ({ match, open, onOpenChange }: MatchDetailDialogProps
                     strokeWidth={4}
                     dot={false}
                     strokeOpacity={0.7}
+                    legendType="none"
                   />
                   <Line 
                     key="aggregate-dialog-main"
                     type="monotone" 
-                    dataKey="aggregate" 
+                    dataKey="aggregate"
+                    name="Aggregate" 
                     stroke="#00ff88" 
                     strokeWidth={3}
                     dot={{ fill: '#00ff88', r: 4 }}
                     strokeOpacity={1}
                   />
                   {match.sources.map((source, index) => {
-                    // Light grey-blue colors for individual sources
-                    const sourceColors = ["#9ca3af", "#a5b4c3", "#b0c4d6", "#9db5d0", "#a8c0d8"];
+                    // Use distinct, vibrant colors
+                    const sourceColors = ["#3b82f6", "#ef4444", "#eab308", "#8b5cf6", "#22c55e"];
                     return (
                       <Fragment key={source.sourceId}>
                         <Line 
@@ -264,10 +274,12 @@ const MatchDetailDialog = ({ match, open, onOpenChange }: MatchDetailDialogProps
                           dot={false}
                           strokeOpacity={0.4}
                           filter="url(#glow-source-dialog)"
+                          legendType="none"
                         />
                         <Line 
                           type="monotone" 
-                          dataKey={source.sourceName} 
+                          dataKey={source.sourceName}
+                          name={source.sourceName} 
                           stroke={sourceColors[index % sourceColors.length]}
                           strokeWidth={1.5}
                           dot={false}

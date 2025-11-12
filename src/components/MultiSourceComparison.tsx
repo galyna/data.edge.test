@@ -170,8 +170,9 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
 
     if (discrepancies.length > 0) {
       const source = discrepancies[0];
-      const diff = (source.odds.home - match.aggregatedOdds.home).toFixed(2);
-      return `${source.sourceName} predicts ${source.odds.home.toFixed(2)} vs consensus ${match.aggregatedOdds.home.toFixed(2)} (diff: ${diff > 0 ? '+' : ''}${diff})`;
+      const diffValue = source.odds.home - match.aggregatedOdds.home;
+      const diff = diffValue.toFixed(2);
+      return `${source.sourceName} predicts ${source.odds.home.toFixed(2)} vs consensus ${match.aggregatedOdds.home.toFixed(2)} (diff: ${diffValue > 0 ? '+' : ''}${diff})`;
     }
     return null;
   };
@@ -212,7 +213,7 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
                 {getDiscrepancyMessage()}
               </div>
               <div className="text-[9px] text-muted-foreground italic">
-                One analyst's prediction differs significantly from the consensus average. This may indicate a unique insight or data delay.
+                One analyst&apos;s prediction differs significantly from the consensus average. This may indicate a unique insight or data delay.
               </div>
             </div>
           </div>

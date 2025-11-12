@@ -64,7 +64,7 @@ export const mockMatches: Match[] = [
       logo: "⚽"
     },
     status: "live",
-    startTime: "2025-01-20T15:00:00Z",
+    startTime: new Date(new Date().setDate(new Date().getDate())).toISOString(),
     liveData: {
       homeScore: 2,
       awayScore: 1,
@@ -127,7 +127,7 @@ export const mockMatches: Match[] = [
       logo: "⚽"
     },
     status: "scheduled",
-    startTime: "2025-01-20T17:30:00Z",
+    startTime: new Date(new Date().setDate(new Date().getDate())).toISOString(),
     aggregatedOdds: {
       home: 1.85,
       draw: 3.60,
@@ -176,7 +176,7 @@ export const mockMatches: Match[] = [
       logo: "⚽"
     },
     status: "scheduled",
-    startTime: "2025-01-21T20:00:00Z",
+    startTime: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
     aggregatedOdds: {
       home: 2.45,
       draw: 3.30,
@@ -232,7 +232,7 @@ export const mockMatches: Match[] = [
       logo: "⚽"
     },
     status: "scheduled",
-    startTime: "2025-01-20T18:30:00Z",
+    startTime: new Date(new Date().setDate(new Date().getDate())).toISOString(),
     aggregatedOdds: {
       home: 1.75,
       draw: 3.80,
@@ -281,7 +281,7 @@ export const mockMatches: Match[] = [
       logo: "⚽"
     },
     status: "scheduled",
-    startTime: "2025-01-20T21:00:00Z",
+    startTime: new Date(new Date().setDate(new Date().getDate())).toISOString(),
     aggregatedOdds: {
       home: 1.55,
       draw: 4.20,
@@ -330,7 +330,7 @@ export const mockMatches: Match[] = [
       logo: "🏀"
     },
     status: "live",
-    startTime: "2025-01-20T20:00:00Z",
+    startTime: new Date(new Date().setDate(new Date().getDate())).toISOString(),
     liveData: {
       homeScore: 98,
       awayScore: 102,
@@ -378,7 +378,7 @@ export const mockMatches: Match[] = [
       logo: "🎾"
     },
     status: "scheduled",
-    startTime: "2025-01-21T14:00:00Z",
+    startTime: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
     aggregatedOdds: {
       home: 1.75,
       away: 2.10
@@ -419,7 +419,7 @@ export const mockMatches: Match[] = [
       logo: "🎮"
     },
     status: "live",
-    startTime: "2025-01-20T19:00:00Z",
+    startTime: new Date(new Date().setDate(new Date().getDate())).toISOString(),
     liveData: {
       homeScore: 1,
       awayScore: 0,
