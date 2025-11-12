@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-
-export const dynamic = "force-dynamic";
 import { Search, TrendingUp, Award, Target, ChevronRight } from "lucide-react";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";

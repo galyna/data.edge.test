@@ -1,34 +1,6 @@
-Я формирую точный Lovable Prompt, который создаст рабочий прототип в хай-тек стиле. Название концепции (рабочее):
-
-“Data Edge Platform” / “Player Advantage Engine”
-
-Формат продукта:
-
-Не сайт → интерактивный аналитический терминал с live-данными
-
-Роль продукта: Не «дай прогноз» → помоги игроку найти неэффективность рынка
-
-UI/UX-концепция:
-
-Тёмный хай-тек UI
-
-Зелёные акценты как “сигналы данных” (не как «красиво»)
-
-Математические графики, динамика коэффициентов, вероятность, value-диапазоны
-
-Минимум текста → максимум данных
-
-UX правильнее сравнивать с Bloomberg Terminal, а не со Sportsbook сайтом
-Не «дай прогноз» → помоги игроку найти неэффективность рынка
-
-UI/UX-концепция:
-
-Тёмный хай-тек UI
-
-Зелёные акценты как “сигналы данных” (не как «красиво»)
-
-Математические графики, динамика коэффициентов, вероятность, value-диапазоны
-
-Минимум текста → максимум данных
-
-UX правильнее сравнивать с Bloomberg Terminal, а не со Sportsbook сайтом
+we should structure the app around four distinct sections (Data Feeds, News, Analytics, E-sports as you said. 
+The main goal of the website is to provide analytics and the most accurate recommendations, as this is what clients will pay for at the end of the day. 
+So the priority is 
+1.⁠ ⁠to be the best as we can in providing accurate payed signals, predictions that will hit the target. this will be done by using the best sources we can find, if you want to explore the offered best servies that we can pull data from, that will be welcomed. Whatever is needed for us to show a great % of signals, we will do. This is how we will make money. 
+2.⁠ ⁠Market news and media, this can be a good traction to us, but it is not the main goal of the product. so it needs to be presented in a nice professional way, using existing sources, this will allow people to stay longer on our website and not to switch to other news/media sites, so it is 2nd priority but it also serves an important pueporse, of being "one. stop shop" in the essence of allowing clients to stay on our site. 
+Keep in mind always that our speaclity is. to allow the best odds and recomendations, at later stage we will need to allow some free ones and to limit access to more advanced tools we offer and more signals etc.
