@@ -119,6 +119,7 @@ export default function AnalysisPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSport, setSelectedSport] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
+  const [headerSport, setHeaderSport] = useState<string>("football");
 
   const sports = ["all", "Football", "Basketball", "Tennis"];
   const statuses = ["all", "pending", "won", "lost"];
@@ -153,7 +154,7 @@ export default function AnalysisPage() {
       <Sidebar />
       
       <div className="flex-1 flex flex-col">
-        <Header />
+        <Header selectedSport={headerSport} onSportChange={setHeaderSport} />
         
         <main className="flex-1 p-6">
           {/* Page Header */}

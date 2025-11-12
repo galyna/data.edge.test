@@ -179,6 +179,7 @@ export default function LiveScoresPage() {
   const [selectedSport, setSelectedSport] = useState("All");
   const [selectedStatus, setSelectedStatus] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [headerSport, setHeaderSport] = useState<string>("football");
 
   const filteredMatches = mockMatches.filter((match) => {
     const sportMatch = selectedSport === "All" || match.sport === selectedSport;
@@ -197,7 +198,7 @@ export default function LiveScoresPage() {
       <Sidebar />
 
       <div className="flex-1 flex flex-col">
-        <Header />
+        <Header selectedSport={headerSport} onSportChange={setHeaderSport} />
 
         <main className="flex-1 p-3 overflow-auto">
           <div className="max-w-[2000px] mx-auto space-y-3">

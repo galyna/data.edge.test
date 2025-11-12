@@ -131,6 +131,7 @@ export default function NewsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [mounted, setMounted] = useState(false);
+  const [headerSport, setHeaderSport] = useState<string>("football");
 
   useEffect(() => {
     setMounted(true);
@@ -166,7 +167,7 @@ export default function NewsPage() {
       <Sidebar />
 
       <div className="flex-1 flex flex-col">
-        <Header />
+        <Header selectedSport={headerSport} onSportChange={setHeaderSport} />
 
         <main className="flex-1 p-3 overflow-auto">
           <div className="max-w-[2000px] mx-auto space-y-3">

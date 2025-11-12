@@ -84,6 +84,7 @@ export default function EsportsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedGame, setSelectedGame] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
+  const [headerSport, setHeaderSport] = useState<string>("esports");
 
   const filteredMatches = mockMatches.filter(match => {
     const matchesSearch = match.teams[0].toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -119,7 +120,7 @@ export default function EsportsPage() {
       <Sidebar />
       
       <div className="flex-1 flex flex-col">
-        <Header />
+        <Header selectedSport={headerSport} onSportChange={setHeaderSport} />
         
         <main className="flex-1 p-6">
           {/* Page Header */}
