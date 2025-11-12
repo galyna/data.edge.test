@@ -3,8 +3,8 @@ import { Match, DataSource, Anomaly, ValueSignal } from "@/types/match";
 export const mockDataSources: DataSource[] = [
   { 
     id: "sportradar", 
-    name: "Sportradar", 
-    provider: "Sportradar", 
+    name: "Jack", 
+    provider: "Jack", 
     status: "online", 
     latency: 120, 
     lastUpdate: "3s ago",
@@ -12,8 +12,8 @@ export const mockDataSources: DataSource[] = [
   },
   { 
     id: "sportsdataio", 
-    name: "SportsDataIO", 
-    provider: "SportsDataIO", 
+    name: "Johnny", 
+    provider: "Johnny", 
     status: "online", 
     latency: 95, 
     lastUpdate: "4s ago",
@@ -21,8 +21,8 @@ export const mockDataSources: DataSource[] = [
   },
   { 
     id: "apisports", 
-    name: "API-Sports", 
-    provider: "API-Sports", 
+    name: "Sam", 
+    provider: "Sam", 
     status: "slow", 
     latency: 450, 
     lastUpdate: "12s ago",
@@ -30,8 +30,8 @@ export const mockDataSources: DataSource[] = [
   },
   { 
     id: "pandascore", 
-    name: "PandaScore", 
-    provider: "PandaScore", 
+    name: "Alex", 
+    provider: "Alex", 
     status: "offline", 
     latency: 0, 
     lastUpdate: "2m ago",
@@ -39,8 +39,8 @@ export const mockDataSources: DataSource[] = [
   },
   { 
     id: "thesportsdb", 
-    name: "TheSportsDB", 
-    provider: "TheSportsDB", 
+    name: "Mike", 
+    provider: "Mike", 
     status: "online", 
     latency: 180, 
     lastUpdate: "5s ago",
@@ -80,28 +80,28 @@ export const mockMatches: Match[] = [
     sources: [
       {
         sourceId: "sportradar",
-        sourceName: "Sportradar",
+        sourceName: "Jack",
         odds: { home: 2.12, draw: 3.35, away: 3.25 },
         timestamp: "2025-01-15T14:32:00Z",
         latency: 120
       },
       {
         sourceId: "sportsdataio",
-        sourceName: "SportsDataIO",
+        sourceName: "Johnny",
         odds: { home: 2.25, draw: 3.40, away: 3.15 },
         timestamp: "2025-01-15T14:32:05Z",
         latency: 95
       },
       {
         sourceId: "apisports",
-        sourceName: "API-Sports",
+        sourceName: "Sam",
         odds: { home: 2.10, draw: 3.45, away: 3.20 },
         timestamp: "2025-01-15T14:31:50Z",
         latency: 450
       },
       {
         sourceId: "thesportsdb",
-        sourceName: "TheSportsDB",
+        sourceName: "Mike",
         odds: { home: 2.18, draw: 3.38, away: 3.22 },
         timestamp: "2025-01-15T14:32:02Z",
         latency: 180
@@ -109,7 +109,7 @@ export const mockMatches: Match[] = [
     ],
     spread: 0.08,
     spreadQuality: "low",
-    bestSource: "SportsDataIO",
+    bestSource: "Johnny",
     value: 12.3
   },
   {
@@ -136,21 +136,21 @@ export const mockMatches: Match[] = [
     sources: [
       {
         sourceId: "sportradar",
-        sourceName: "Sportradar",
+        sourceName: "Jack",
         odds: { home: 1.92, draw: 3.55, away: 4.10 },
         timestamp: "2025-01-15T14:32:00Z",
         latency: 120
       },
       {
         sourceId: "sportsdataio",
-        sourceName: "SportsDataIO",
+        sourceName: "Johnny",
         odds: { home: 1.82, draw: 3.70, away: 4.25 },
         timestamp: "2025-01-15T14:32:05Z",
         latency: 95
       },
       {
         sourceId: "apisports",
-        sourceName: "API-Sports",
+        sourceName: "Sam",
         odds: { home: 1.78, draw: 3.50, away: 4.35 },
         timestamp: "2025-01-15T14:31:50Z",
         latency: 450
@@ -158,7 +158,7 @@ export const mockMatches: Match[] = [
     ],
     spread: 0.15,
     spreadQuality: "high",
-    bestSource: "Sportradar",
+    bestSource: "Jack",
     value: 8.7
   },
   {
@@ -185,28 +185,28 @@ export const mockMatches: Match[] = [
     sources: [
       {
         sourceId: "sportradar",
-        sourceName: "Sportradar",
+        sourceName: "Jack",
         odds: { home: 2.42, draw: 3.25, away: 2.95 },
         timestamp: "2025-01-15T14:32:00Z",
         latency: 120
       },
       {
         sourceId: "sportsdataio",
-        sourceName: "SportsDataIO",
+        sourceName: "Johnny",
         odds: { home: 2.58, draw: 3.30, away: 2.82 },
         timestamp: "2025-01-15T14:32:05Z",
         latency: 95
       },
       {
         sourceId: "apisports",
-        sourceName: "API-Sports",
+        sourceName: "Sam",
         odds: { home: 2.40, draw: 3.35, away: 2.92 },
         timestamp: "2025-01-15T14:31:50Z",
         latency: 450
       },
       {
         sourceId: "thesportsdb",
-        sourceName: "TheSportsDB",
+        sourceName: "Mike",
         odds: { home: 2.48, draw: 3.28, away: 2.88 },
         timestamp: "2025-01-15T14:32:02Z",
         latency: 180
@@ -214,7 +214,7 @@ export const mockMatches: Match[] = [
     ],
     spread: 0.06,
     spreadQuality: "low",
-    bestSource: "SportsDataIO",
+    bestSource: "Johnny",
     value: 15.2
   },
   {
@@ -241,21 +241,21 @@ export const mockMatches: Match[] = [
     sources: [
       {
         sourceId: "sportradar",
-        sourceName: "Sportradar",
+        sourceName: "Jack",
         odds: { home: 1.72, draw: 3.75, away: 4.60 },
         timestamp: "2025-01-15T14:32:00Z",
         latency: 120
       },
       {
         sourceId: "sportsdataio",
-        sourceName: "SportsDataIO",
+        sourceName: "Johnny",
         odds: { home: 1.81, draw: 3.85, away: 4.35 },
         timestamp: "2025-01-15T14:32:05Z",
         latency: 95
       },
       {
         sourceId: "thesportsdb",
-        sourceName: "TheSportsDB",
+        sourceName: "Mike",
         odds: { home: 1.78, draw: 3.82, away: 4.48 },
         timestamp: "2025-01-15T14:32:02Z",
         latency: 180
@@ -263,7 +263,7 @@ export const mockMatches: Match[] = [
     ],
     spread: 0.12,
     spreadQuality: "medium",
-    bestSource: "SportsDataIO",
+    bestSource: "Johnny",
     value: 6.4
   },
   {
@@ -290,21 +290,21 @@ export const mockMatches: Match[] = [
     sources: [
       {
         sourceId: "sportradar",
-        sourceName: "Sportradar",
+        sourceName: "Jack",
         odds: { home: 1.62, draw: 4.10, away: 5.60 },
         timestamp: "2025-01-15T14:32:00Z",
         latency: 120
       },
       {
         sourceId: "sportsdataio",
-        sourceName: "SportsDataIO",
+        sourceName: "Johnny",
         odds: { home: 1.48, draw: 4.35, away: 6.10 },
         timestamp: "2025-01-15T14:32:05Z",
         latency: 95
       },
       {
         sourceId: "apisports",
-        sourceName: "API-Sports",
+        sourceName: "Sam",
         odds: { home: 1.52, draw: 4.15, away: 5.75 },
         timestamp: "2025-01-15T14:31:50Z",
         latency: 450
@@ -312,7 +312,7 @@ export const mockMatches: Match[] = [
     ],
     spread: 0.18,
     spreadQuality: "high",
-    bestSource: "Sportradar",
+    bestSource: "Jack",
     value: 4.1
   },
   {
@@ -345,14 +345,14 @@ export const mockMatches: Match[] = [
     sources: [
       {
         sourceId: "sportradar",
-        sourceName: "Sportradar",
+        sourceName: "Jack",
         odds: { home: 1.92, away: 1.93 },
         timestamp: "2025-01-15T14:32:00Z",
         latency: 120
       },
       {
         sourceId: "sportsdataio",
-        sourceName: "SportsDataIO",
+        sourceName: "Johnny",
         odds: { home: 1.88, away: 1.97 },
         timestamp: "2025-01-15T14:32:05Z",
         latency: 95
@@ -360,7 +360,7 @@ export const mockMatches: Match[] = [
     ],
     spread: 0.05,
     spreadQuality: "low",
-    bestSource: "Sportradar",
+    bestSource: "Jack",
     value: 8.5
   },
   {
@@ -386,14 +386,14 @@ export const mockMatches: Match[] = [
     sources: [
       {
         sourceId: "sportradar",
-        sourceName: "Sportradar",
+        sourceName: "Jack",
         odds: { home: 1.72, away: 2.15 },
         timestamp: "2025-01-15T14:32:00Z",
         latency: 120
       },
       {
         sourceId: "sportsdataio",
-        sourceName: "SportsDataIO",
+        sourceName: "Johnny",
         odds: { home: 1.78, away: 2.05 },
         timestamp: "2025-01-15T14:32:05Z",
         latency: 95
@@ -401,7 +401,7 @@ export const mockMatches: Match[] = [
     ],
     spread: 0.06,
     spreadQuality: "low",
-    bestSource: "SportsDataIO",
+    bestSource: "Johnny",
     value: 10.2
   },
   {
@@ -434,14 +434,14 @@ export const mockMatches: Match[] = [
     sources: [
       {
         sourceId: "sportradar",
-        sourceName: "Sportradar",
+        sourceName: "Jack",
         odds: { home: 1.62, away: 2.30 },
         timestamp: "2025-01-15T14:32:00Z",
         latency: 120
       },
       {
         sourceId: "sportsdataio",
-        sourceName: "SportsDataIO",
+        sourceName: "Johnny",
         odds: { home: 1.68, away: 2.20 },
         timestamp: "2025-01-15T14:32:05Z",
         latency: 95
@@ -449,7 +449,7 @@ export const mockMatches: Match[] = [
     ],
     spread: 0.06,
     spreadQuality: "low",
-    bestSource: "Sportradar",
+    bestSource: "Jack",
     value: 7.8
   }
 ];
@@ -459,7 +459,7 @@ export const mockAnomalies: Anomaly[] = [
     id: "anomaly-1",
     sport: "Football",
     match: "Arsenal vs Chelsea",
-    description: "Source C deviates +0.15 from aggregate",
+    description: "Sam deviates +0.15 from aggregate",
     severity: "high",
     timestamp: "2025-01-15T14:30:00Z",
     sourceId: "apisports"
@@ -476,7 +476,7 @@ export const mockAnomalies: Anomaly[] = [
     id: "anomaly-3",
     sport: "Football",
     match: "Bayern vs Dortmund",
-    description: "Source A late update (45s delay)",
+    description: "Jack late update (45s delay)",
     severity: "low",
     timestamp: "2025-01-15T14:25:00Z",
     sourceId: "sportradar"

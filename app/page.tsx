@@ -16,10 +16,16 @@ import MatchDetailDialog from "@/components/MatchDetailDialog";
 
 export default function Home() {
   const { matches, dataSources, lastUpdate } = useRealtimeData(mockMatches, mockDataSources, 8000);
-  const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
+  
+  // Initialize selectedMatch with first match that has sources (using function to avoid re-computation)
+  const [selectedMatch, setSelectedMatch] = useState<Match | null>(() => {
+    // This function runs only once during initial render
+    return mockMatches.find(m => m.sources && m.sources.length > 0) || null;
+  });
+  
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  // Auto-select first match with sources when matches are loaded
+  // Update selectedMatch if it becomes null and matches are available
   useEffect(() => {
     if (!selectedMatch && matches.length > 0) {
       const firstMatchWithSources = matches.find(m => m.sources && m.sources.length > 0);

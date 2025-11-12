@@ -7,6 +7,8 @@ import { AlertTriangle, Database, TrendingUp } from "lucide-react";
 import { Match } from "@/types/match";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from "@/components/ui/chart";
 import { ComposedChart, Line, XAxis, YAxis, CartesianGrid, Area } from "recharts";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { TeamLogo } from "@/components/TeamLogo";
 import React from "react";
 
 interface MultiSourceComparisonProps {
@@ -112,7 +114,7 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="text-lg">{m.homeTeam.logo}</span>
+                    <TeamLogo team={m.homeTeam} sport={m.sport.toLowerCase()} size="sm" />
                     <div className="text-xs">
                       <div className="font-medium">{m.homeTeam.name} vs {m.awayTeam.name}</div>
                       <div className="text-muted-foreground">{m.league}</div>
@@ -168,7 +170,8 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
 
     if (discrepancies.length > 0) {
       const source = discrepancies[0];
-      return `Score mismatch detected. ${source.sourceName}: ${source.odds.home.toFixed(2)}, Aggregate: ${match.aggregatedOdds.home.toFixed(2)}`;
+      const diff = (source.odds.home - match.aggregatedOdds.home).toFixed(2);
+      return `${source.sourceName} predicts ${source.odds.home.toFixed(2)} vs consensus ${match.aggregatedOdds.home.toFixed(2)} (diff: ${diff > 0 ? '+' : ''}${diff})`;
     }
     return null;
   };
@@ -178,25 +181,38 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
         <div className="flex items-center justify-between gap-2 mb-3">
           <div className="flex items-center gap-2">
             <Database className="h-4 w-4 text-primary" />
-            <h3 className="text-sm font-bold uppercase tracking-wide text-foreground">
-              MULTI-SOURCE: {match.homeTeam.shortName} vs {match.awayTeam.shortName}
+            <h3 className="text-sm font-bold uppercase tracking-wide text-foreground flex items-center gap-2">
+              <span>ANALYST COMPARISON:</span>
+              <TeamLogo team={match.homeTeam} sport={match.sport.toLowerCase()} size="sm" />
+              <span>{match.homeTeam.shortName}</span>
+              <span className="text-muted-foreground">vs</span>
+              <span>{match.awayTeam.shortName}</span>
+              <TeamLogo team={match.awayTeam} sport={match.sport.toLowerCase()} size="sm" />
             </h3>
           </div>
           <div className="text-[10px] text-muted-foreground font-mono">
-            {sources.length} sources
+            {sources.length} analysts
           </div>
+        </div>
+        
+        {/* Explanation */}
+        <div className="mb-2 text-[9px] text-muted-foreground italic">
+          Comparing predictions from our analysts. Each provides odds estimates with different response times. The aggregate row shows the consensus average.
         </div>
 
       {hasDiscrepancy && (
         <div className="mb-2 border border-border bg-muted/10 p-2">
           <div className="flex items-start gap-1.5">
-            <AlertTriangle className="h-3 w-3 text-muted-foreground mt-0.5 flex-shrink-0" />
+            <AlertTriangle className="h-3 w-3 text-yellow-500 mt-0.5 flex-shrink-0" />
             <div className="flex-1 min-w-0">
               <div className="text-[10px] font-medium text-foreground mb-0.5">
-                Discrepancy
+                Prediction Variance Detected
               </div>
-              <div className="text-[10px] text-muted-foreground font-mono">
+              <div className="text-[10px] text-muted-foreground font-mono mb-1">
                 {getDiscrepancyMessage()}
+              </div>
+              <div className="text-[9px] text-muted-foreground italic">
+                One analyst's prediction differs significantly from the consensus average. This may indicate a unique insight or data delay.
               </div>
             </div>
           </div>
@@ -208,7 +224,7 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
           <TableHeader>
             <TableRow className="border-border hover:bg-transparent">
                   <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2">
-                    SOURCE
+                    ANALYST
                   </TableHead>
                   <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2 text-center">
                     SCORE
@@ -217,10 +233,17 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
                     STATUS
                   </TableHead>
                   <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2 text-center">
-                    LATENCY
+                    <Tooltip>
+                      <TooltipTrigger className="cursor-help">
+                        RESPONSE TIME
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">Time it takes for analyst to provide their prediction (lower is better)</p>
+                      </TooltipContent>
+                    </Tooltip>
                   </TableHead>
                   <TableHead className="text-foreground font-bold text-[10px] uppercase h-8 px-2 text-right">
-                    UPDATE
+                    LAST UPDATE
                   </TableHead>
             </TableRow>
           </TableHeader>
@@ -256,9 +279,19 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
                     )}
                   </TableCell>
                   <TableCell className={`text-center font-mono text-[10px] px-2 ${
-                    source.latency > 300 ? "text-destructive" : ""
+                    source.latency > 300 ? "text-destructive" : source.latency > 200 ? "text-yellow-500" : ""
                   }`}>
-                    {source.latency}ms
+                    <Tooltip>
+                      <TooltipTrigger className="cursor-help">
+                        {source.latency}ms
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">Time delay: {source.latency}ms</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {source.latency < 200 ? "Fast response" : source.latency < 300 ? "Moderate delay" : "Slow response"}
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
                   </TableCell>
                   <TableCell className="text-right text-[10px] text-muted-foreground px-2 font-mono" suppressHydrationWarning>
                     {(() => {
@@ -289,7 +322,14 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
               <Badge className="text-[9px] px-1.5 py-0 bg-primary/20 text-primary border-primary/50">AVG</Badge>
             </TableCell>
             <TableCell className="text-center font-mono text-[10px] px-2 text-primary">
-              {Math.round(sources.reduce((sum, s) => sum + s.latency, 0) / sources.length)}ms
+              <Tooltip>
+                <TooltipTrigger className="cursor-help">
+                  {Math.round(sources.reduce((sum, s) => sum + s.latency, 0) / sources.length)}ms
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-xs">Average response time across all analysts</p>
+                </TooltipContent>
+              </Tooltip>
             </TableCell>
             <TableCell className="text-right text-[10px] text-muted-foreground px-2 font-mono" suppressHydrationWarning>
               {(() => {
@@ -311,26 +351,28 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
         {/* Line Movement Chart */}
         {mounted && chartData.length > 0 && (
         <div className="mt-3 pt-3 border-t border-border">
-          <div className="flex items-center justify-between gap-2 mb-3">
-            <div className="flex items-center gap-2">
-              <h4 className="text-[11px] font-semibold uppercase tracking-wide text-foreground">
-                LINE MOVEMENT GRAPH
-              </h4>
-              <span className="text-[10px] text-muted-foreground">Multi-source tracking - last 6 hours</span>
-            </div>
-            <div className="flex items-center gap-3 text-[10px]">
+          <div className="mb-3">
+            <h4 className="text-[11px] font-semibold uppercase tracking-wide text-foreground mb-1">
+              ODDS MOVEMENT: {match.homeTeam.shortName} WIN
+            </h4>
+            <p className="text-[10px] text-muted-foreground leading-relaxed mb-2">
+              Shows how odds for <span className="font-medium text-foreground">{match.homeTeam.name} to win</span> have changed over the last 6 hours. 
+              Each line represents predictions from our analysts. The green line is the aggregated consensus.
+            </p>
+            {/* Compact horizontal legend */}
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[10px] pt-2 border-t border-border/50">
               {sources.map((source, index) => {
                 const colors = ["#6b7280", "#9ca3af", "#d1d5db"];
                 return (
                   <div key={source.sourceId} className="flex items-center gap-1.5">
-                    <div className="w-3 h-[2px]" style={{ backgroundColor: colors[index % colors.length] }}></div>
-                    <span className="text-muted-foreground">{source.sourceName}</span>
+                    <div className="w-4 h-[2px] rounded-full" style={{ backgroundColor: colors[index % colors.length] }}></div>
+                    <span className="text-muted-foreground font-medium">{source.sourceName}</span>
                   </div>
                 );
               })}
               <div className="flex items-center gap-1.5">
-                <div className="w-3 h-[2px] bg-[#00ff88]" style={{ boxShadow: '0 0 8px #00ff88' }}></div>
-                <span className="text-[#00ff88] font-medium">Aggregated</span>
+                <div className="w-4 h-[2px] bg-[#00ff88] rounded-full" style={{ boxShadow: '0 0 4px #00ff88' }}></div>
+                <span className="text-[#00ff88] font-semibold">Consensus</span>
               </div>
             </div>
           </div>
@@ -377,6 +419,7 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
                   axisLine={{ stroke: "#2a2a2a" }}
                   domain={['dataMin - 0.2', 'dataMax + 0.2']}
                   width={50}
+                  label={{ value: 'Win Odds', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#808080', fontSize: '10px' } }}
                 />
                 <ChartTooltip 
                   content={<ChartTooltipContent />}

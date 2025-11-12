@@ -4,6 +4,7 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/
 import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
 import { Match } from "@/types/match";
 import { TrendingUp, AlertCircle } from "lucide-react";
+import { TeamLogo } from "./TeamLogo";
 
 interface OddsAggregatorProps {
   match: Match | null;
@@ -74,8 +75,13 @@ const OddsAggregator = ({ match }: OddsAggregatorProps) => {
     <div className="terminal-card p-3">
         <div className="flex items-center gap-2 mb-3">
           <TrendingUp className="h-4 w-4 text-primary" />
-          <h3 className="text-sm font-bold uppercase tracking-wide text-foreground">
-            ODDS: {match.homeTeam.shortName} vs {match.awayTeam.shortName}
+          <h3 className="text-sm font-bold uppercase tracking-wide text-foreground flex items-center gap-2">
+            <span>ODDS:</span>
+            <TeamLogo team={match.homeTeam} sport={match.sport.toLowerCase()} size="sm" />
+            <span>{match.homeTeam.shortName}</span>
+            <span className="text-muted-foreground">vs</span>
+            <span>{match.awayTeam.shortName}</span>
+            <TeamLogo team={match.awayTeam} sport={match.sport.toLowerCase()} size="sm" />
           </h3>
         </div>
 

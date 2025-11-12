@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Match } from "@/types/match";
 import { Clock, TrendingUp, Database, AlertCircle } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { TeamLogo } from "./TeamLogo";
 
 interface MatchDetailDialogProps {
   match: Match | null;
@@ -42,11 +43,11 @@ const MatchDetailDialog = ({ match, open, onOpenChange }: MatchDetailDialogProps
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-card border-border">
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold uppercase tracking-wide flex items-center gap-3">
-            <span className="text-2xl">{match.homeTeam.logo}</span>
+            <TeamLogo team={match.homeTeam} sport={match.sport.toLowerCase()} size="lg" />
             <span className="text-foreground">{match.homeTeam.name}</span>
             <span className="text-muted-foreground text-sm">vs</span>
             <span className="text-foreground">{match.awayTeam.name}</span>
-            <span className="text-2xl">{match.awayTeam.logo}</span>
+            <TeamLogo team={match.awayTeam} sport={match.sport.toLowerCase()} size="lg" />
           </DialogTitle>
           <div className="flex items-center gap-3 text-xs text-muted-foreground">
             <span className="uppercase">{match.league}</span>

@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Match } from "@/types/match";
+import { TeamLogo } from "./TeamLogo";
 
 interface LiveMatchCardProps {
   match: Match;
@@ -97,7 +98,7 @@ const LiveMatchCard = ({ match, showSource = true, showStats = false }: LiveMatc
         {/* Home Team */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 flex-1">
-            <span className="text-2xl">{match.homeTeam.logo}</span>
+            <TeamLogo team={match.homeTeam} sport={match.sport.toLowerCase()} size="md" />
             <span className="text-sm text-foreground font-medium truncate">
               {match.homeTeam.name}
             </span>
@@ -112,7 +113,7 @@ const LiveMatchCard = ({ match, showSource = true, showStats = false }: LiveMatc
         {/* Away Team */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 flex-1">
-            <span className="text-2xl">{match.awayTeam.logo}</span>
+            <TeamLogo team={match.awayTeam} sport={match.sport.toLowerCase()} size="md" />
             <span className="text-sm text-foreground font-medium truncate">
               {match.awayTeam.name}
             </span>

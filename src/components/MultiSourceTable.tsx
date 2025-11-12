@@ -4,6 +4,7 @@ import { Match } from "@/types/match";
 import { useState } from "react";
 import MatchDetailDialog from "./MatchDetailDialog";
 import AnimatedValue from "./AnimatedValue";
+import { TeamLogo } from "./TeamLogo";
 
 interface MultiSourceTableProps {
   matches: Match[];
@@ -66,7 +67,7 @@ const MultiSourceTable = ({ matches, lastUpdate }: MultiSourceTableProps) => {
             >
               <TableCell className="font-medium text-xs px-3">
                 <div className="flex items-center gap-2">
-                  <span>{match.homeTeam.logo}</span>
+                  <TeamLogo team={match.homeTeam} sport={match.sport.toLowerCase()} size="sm" />
                   <span>{match.homeTeam.name} vs {match.awayTeam.name}</span>
                 </div>
               </TableCell>

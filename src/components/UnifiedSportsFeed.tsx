@@ -10,6 +10,7 @@ import { Match } from "@/types/match";
 import { Circle, Clock } from "lucide-react";
 import MatchDetailDialog from "./MatchDetailDialog";
 import AnimatedValue from "./AnimatedValue";
+import { TeamLogo } from "./TeamLogo";
 
 interface UnifiedSportsFeedProps {
   matches: Match[];
@@ -57,11 +58,11 @@ const UnifiedSportsFeed = ({ matches, onMatchClick }: UnifiedSportsFeedProps) =>
     // Минималистичные индикаторы в стиле терминала
     // Используем очень тонкие границы в приглушенных тонах
     const styles: Record<string, string> = {
-      "Sportradar": "border-l border-l-muted-foreground/30",
-      "SportsDataIO": "border-l border-l-muted-foreground/30",
-      "API-Sports": "border-l border-l-muted-foreground/30",
-      "TheSportsDB": "border-l border-l-muted-foreground/30",
-      "PandaScore": "border-l border-l-muted-foreground/30",
+      "Jack": "border-l border-l-muted-foreground/30",
+      "Johnny": "border-l border-l-muted-foreground/30",
+      "Sam": "border-l border-l-muted-foreground/30",
+      "Mike": "border-l border-l-muted-foreground/30",
+      "Alex": "border-l border-l-muted-foreground/30",
     };
     return styles[sourceName] || "";
   };
@@ -184,7 +185,7 @@ const UnifiedSportsFeed = ({ matches, onMatchClick }: UnifiedSportsFeedProps) =>
                     >
                       <TableCell className="font-medium text-xs px-3">
                         <div className="flex items-center gap-2">
-                          <span className="text-lg">{match.homeTeam.logo}</span>
+                          <TeamLogo team={match.homeTeam} sport={match.sport.toLowerCase()} size="sm" />
                           <div className="flex-1 min-w-0">
                             <div className="truncate">{match.homeTeam.name}</div>
                             <div className="text-[10px] text-muted-foreground truncate">

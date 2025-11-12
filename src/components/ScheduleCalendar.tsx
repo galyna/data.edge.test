@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Match } from "@/types/match";
 import { CalendarIcon, Clock } from "lucide-react";
 import { format } from "date-fns";
+import { TeamLogo } from "./TeamLogo";
 
 interface ScheduleCalendarProps {
   matches: Match[];
@@ -123,7 +124,7 @@ const ScheduleCalendar = ({ matches }: ScheduleCalendarProps) => {
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-1.5 flex-1 min-w-0">
-                          <span className="text-xs">{match.homeTeam.logo}</span>
+                          <TeamLogo team={match.homeTeam} sport={match.sport.toLowerCase()} size="sm" />
                           <div className="text-[9px] min-w-0">
                             <div className="font-medium truncate">{match.homeTeam.shortName} vs {match.awayTeam.shortName}</div>
                             <div className="text-muted-foreground truncate">{match.league}</div>
@@ -159,7 +160,7 @@ const ScheduleCalendar = ({ matches }: ScheduleCalendarProps) => {
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1.5 flex-1 min-w-0">
-                      <span className="text-sm">{match.homeTeam.logo}</span>
+                      <TeamLogo team={match.homeTeam} sport={match.sport.toLowerCase()} size="sm" />
                       <div className="text-[9px] min-w-0">
                         <div className="font-medium truncate">{match.homeTeam.shortName} vs {match.awayTeam.shortName}</div>
                         <div className="text-muted-foreground truncate">{match.league}</div>
