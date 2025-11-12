@@ -45,7 +45,7 @@ const DataQualityIndicator = ({ sources }: DataQualityIndicatorProps) => {
     <div className="terminal-card p-3">
       <div className="flex items-center gap-2 mb-3">
         <Activity className="h-4 w-4 text-primary" />
-        <h3 className="text-sm font-bold uppercase tracking-wide text-foreground">DATA QUALITY</h3>
+        <h3 className="text-sm font-bold uppercase tracking-wide text-foreground">IN-HOUSE SYSTEMS STATUS</h3>
       </div>
 
       {/* Summary */}
@@ -59,7 +59,7 @@ const DataQualityIndicator = ({ sources }: DataQualityIndicatorProps) => {
         <div className="p-1.5 bg-muted/30 border border-border">
           <div className="text-[10px] text-muted-foreground mb-0.5">Latency</div>
           <div className={`font-mono text-base ${
-            averageLatency > 300 ? "text-destructive" : "text-foreground"
+            averageLatency > 50 ? "text-destructive" : "text-signal"
           }`}>
             {averageLatency}ms
           </div>
@@ -120,23 +120,23 @@ const DataQualityIndicator = ({ sources }: DataQualityIndicatorProps) => {
       </div>
 
       {/* Warnings */}
-      {averageReliability < 85 && (
+      {averageReliability < 95 && (
         <div className="mt-2 border border-border bg-muted/10 p-1.5">
           <div className="flex items-start gap-1.5">
             <AlertTriangle className="h-2.5 w-2.5 text-muted-foreground mt-0.5 flex-shrink-0" />
             <div className="text-[10px] text-muted-foreground font-mono">
-              Reliability: {averageReliability}%
+              In-House Reliability: {averageReliability}%
             </div>
           </div>
         </div>
       )}
 
-      {averageLatency > 300 && (
+      {averageLatency > 50 && (
         <div className="mt-1.5 border border-border bg-muted/10 p-1.5">
           <div className="flex items-start gap-1.5">
             <AlertTriangle className="h-2.5 w-2.5 text-muted-foreground mt-0.5 flex-shrink-0" />
             <div className="text-[10px] text-muted-foreground font-mono">
-              Latency: {averageLatency}ms
+              In-House Latency: {averageLatency}ms
             </div>
           </div>
         </div>

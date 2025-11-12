@@ -7,7 +7,6 @@ import UnifiedSportsFeed from "@/components/UnifiedSportsFeed";
 import MultiSourceComparison from "@/components/MultiSourceComparison";
 import OddsAggregator from "@/components/OddsAggregator";
 import ScheduleCalendar from "@/components/ScheduleCalendar";
-import DataQualityIndicator from "@/components/DataQualityIndicator";
 import ValueRadar from "@/components/ValueRadar";
 import { mockMatches, mockDataSources, mockValueSignals } from "@/data/mockMatches";
 import { useRealtimeData } from "@/hooks/useRealtimeData";
@@ -15,7 +14,7 @@ import { Match } from "@/types/match";
 import MatchDetailDialog from "@/components/MatchDetailDialog";
 
 export default function Home() {
-  const { matches, dataSources, lastUpdate } = useRealtimeData(mockMatches, mockDataSources, 8000);
+  const { matches, lastUpdate } = useRealtimeData(mockMatches, mockDataSources, 8000);
   
   // Initialize selectedMatch with first match that has sources (using function to avoid re-computation)
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(() => {
@@ -90,11 +89,6 @@ export default function Home() {
               {/* Value Radar - 3 columns (Compact signals) */}
               <div className="col-span-3">
                 <ValueRadar signals={mockValueSignals} />
-              </div>
-              
-              {/* Row 3: Data Quality Indicator - Full Width */}
-              <div className="col-span-12">
-                <DataQualityIndicator sources={dataSources} />
               </div>
               
             </div>

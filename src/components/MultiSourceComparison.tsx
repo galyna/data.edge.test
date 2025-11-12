@@ -352,11 +352,16 @@ const MultiSourceComparison = ({ match, matches = [], onMatchSelect }: MultiSour
         {mounted && chartData.length > 0 && (
         <div className="mt-3 pt-3 border-t border-border">
           <div className="mb-3">
-            <h4 className="text-[11px] font-semibold uppercase tracking-wide text-foreground mb-1">
-              ODDS MOVEMENT: {match.homeTeam.shortName} WIN
+            <h4 className="text-[11px] font-semibold uppercase tracking-wide text-foreground mb-1 flex items-center gap-2">
+              ODDS MOVEMENT: 
+              <TeamLogo team={match.homeTeam} sport={match.sport.toLowerCase()} size="sm" />
+              <span>{match.homeTeam.name} WIN</span>
             </h4>
             <p className="text-[10px] text-muted-foreground leading-relaxed mb-2">
-              Shows how odds for <span className="font-medium text-foreground">{match.homeTeam.name} to win</span> have changed over the last 6 hours. 
+              Shows how odds for <span className="font-medium text-foreground inline-flex items-center gap-1.5">
+
+                {match.homeTeam.name} to win
+              </span> have changed over the last 6 hours. 
               Each line represents predictions from our analysts. The green line is the aggregated consensus.
             </p>
             {/* Compact horizontal legend */}

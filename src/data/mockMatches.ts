@@ -2,49 +2,49 @@ import { Match, DataSource, Anomaly, ValueSignal } from "@/types/match";
 
 export const mockDataSources: DataSource[] = [
   { 
-    id: "sportradar", 
-    name: "Jack", 
-    provider: "Jack", 
+    id: "inhouse-analytics", 
+    name: "Analytics Engine", 
+    provider: "In-House", 
     status: "online", 
-    latency: 120, 
-    lastUpdate: "3s ago",
+    latency: 8, 
+    lastUpdate: "1s ago",
+    reliability: 99
+  },
+  { 
+    id: "inhouse-odds", 
+    name: "Odds Calculator", 
+    provider: "In-House", 
+    status: "online", 
+    latency: 5, 
+    lastUpdate: "1s ago",
+    reliability: 99
+  },
+  { 
+    id: "inhouse-ml", 
+    name: "ML Predictions", 
+    provider: "In-House", 
+    status: "online", 
+    latency: 12, 
+    lastUpdate: "2s ago",
+    reliability: 97
+  },
+  { 
+    id: "inhouse-stats", 
+    name: "Stats Aggregator", 
+    provider: "In-House", 
+    status: "online", 
+    latency: 6, 
+    lastUpdate: "1s ago",
     reliability: 98
   },
   { 
-    id: "sportsdataio", 
-    name: "Johnny", 
-    provider: "Johnny", 
+    id: "inhouse-recommendations", 
+    name: "Recommendation System", 
+    provider: "In-House", 
     status: "online", 
-    latency: 95, 
-    lastUpdate: "4s ago",
-    reliability: 95
-  },
-  { 
-    id: "apisports", 
-    name: "Sam", 
-    provider: "Sam", 
-    status: "slow", 
-    latency: 450, 
-    lastUpdate: "12s ago",
-    reliability: 88
-  },
-  { 
-    id: "pandascore", 
-    name: "Alex", 
-    provider: "Alex", 
-    status: "offline", 
-    latency: 0, 
-    lastUpdate: "2m ago",
-    reliability: 75
-  },
-  { 
-    id: "thesportsdb", 
-    name: "Mike", 
-    provider: "Mike", 
-    status: "online", 
-    latency: 180, 
-    lastUpdate: "5s ago",
-    reliability: 92
+    latency: 10, 
+    lastUpdate: "2s ago",
+    reliability: 99
   },
 ];
 
