@@ -5,7 +5,6 @@ import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import UnifiedSportsFeed from "@/components/UnifiedSportsFeed";
 import MultiSourceComparison from "@/components/MultiSourceComparison";
-import ScheduleCalendar from "@/components/ScheduleCalendar";
 import OddsAggregator from "@/components/OddsAggregator";
 import ValueRadar from "@/components/ValueRadar";
 import { mockMatches, mockDataSources, mockValueSignals } from "@/data/mockMatches";
@@ -13,7 +12,6 @@ import { useRealtimeData } from "@/hooks/useRealtimeData";
 import { Match } from "@/types/match";
 import MatchDetailDialog from "@/components/MatchDetailDialog";
 import { useMatchStore } from "@/store/matchStore";
-// import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"; - No longer needed
 
 export default function Home() {
   const { matches, lastUpdate } = useRealtimeData(mockMatches, mockDataSources, 8000);
