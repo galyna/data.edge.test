@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { Match } from '@/types/match';
+import { create } from "zustand";
+import { Match } from "@/types/match";
 
 interface MatchStore {
   selectedMatch: Match | null;
@@ -14,4 +14,3 @@ export const useMatchStore = create<MatchStore>((set) => ({
   isMatchDetailDialogOpen: false,
   setMatchDetailDialogOpen: (isOpen) => set({ isMatchDetailDialogOpen: isOpen }),
 }));
-

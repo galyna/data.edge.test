@@ -31,8 +31,8 @@ const OddsChart = () => {
     const now = Date.now();
     for (let i = 60; i >= 0; i--) {
       const date = new Date(now - i * 60000);
-      const hours = date.getUTCHours().toString().padStart(2, '0');
-      const minutes = date.getUTCMinutes().toString().padStart(2, '0');
+      const hours = date.getUTCHours().toString().padStart(2, "0");
+      const minutes = date.getUTCMinutes().toString().padStart(2, "0");
       data.push({
         time: `${hours}:${minutes}`,
         bookmaker1: 1.85 + Math.random() * 0.1,
@@ -84,47 +84,54 @@ const OddsChart = () => {
         ctx.shadowColor = color;
         ctx.shadowBlur = 15;
       }
-      
+
       ctx.strokeStyle = color;
       ctx.lineWidth = 2;
       ctx.stroke();
-      
+
       ctx.shadowBlur = 0;
     };
 
     // Draw multiple bookmaker lines
-    drawLine(data.map(d => d.bookmaker1), "#39FF14", true);
-    drawLine(data.map(d => d.bookmaker2), "#00FFFF", false);
-    drawLine(data.map(d => d.bookmaker3), "#FF00FF", false);
+    drawLine(
+      data.map((d) => d.bookmaker1),
+      "#39FF14",
+      true
+    );
+    drawLine(
+      data.map((d) => d.bookmaker2),
+      "#00FFFF",
+      false
+    );
+    drawLine(
+      data.map((d) => d.bookmaker3),
+      "#FF00FF",
+      false
+    );
 
     // Draw labels
     ctx.fillStyle = "#666";
     ctx.font = "10px monospace";
     ctx.fillText("1.70", 5, height - padding + 15);
     ctx.fillText("2.10", 5, padding);
-
   }, []);
 
   return (
-    <div className="w-full h-full relative">
-      <canvas
-        ref={canvasRef}
-        className="w-full h-full"
-        style={{ width: "100%", height: "100%" }}
-      />
-      
+    <div className="relative h-full w-full">
+      <canvas ref={canvasRef} className="h-full w-full" style={{ width: "100%", height: "100%" }} />
+
       {/* Legend */}
-      <div className="absolute top-4 right-4 bg-card/80 backdrop-blur border border-border rounded-lg p-3 space-y-2 text-xs">
+      <div className="absolute right-4 top-4 space-y-2 rounded-lg border border-border bg-card/80 p-3 text-xs backdrop-blur">
         <div className="flex items-center gap-2">
-          <div className="w-4 h-0.5 bg-primary glow-primary"></div>
+          <div className="glow-primary h-0.5 w-4 bg-primary"></div>
           <span>Bookmaker A</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-0.5 bg-cyan-400"></div>
+          <div className="h-0.5 w-4 bg-cyan-400"></div>
           <span>Bookmaker B</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-0.5 bg-fuchsia-400"></div>
+          <div className="h-0.5 w-4 bg-fuchsia-400"></div>
           <span>Bookmaker C</span>
         </div>
       </div>

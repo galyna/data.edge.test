@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+.next/
+dist/
+build/
+
+# Build outputs
+*.tsbuildinfo
+.next/
+out/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Git
+.git/
+

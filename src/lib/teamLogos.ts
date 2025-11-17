@@ -11,7 +11,7 @@ export interface TeamLogoConfig {
 /**
  * Normalizes team name for URL generation
  */
-const normalizeTeamName = (name: string): string => {
+const _normalizeTeamName = (name: string): string => {
   return name
     .toLowerCase()
     .replace(/\s+/g, "-")
@@ -24,22 +24,22 @@ const normalizeTeamName = (name: string): string => {
  * Team name mappings for better logo matching
  */
 const teamNameMappings: Record<string, string> = {
-  "arsenal": "arsenal-fc",
-  "chelsea": "chelsea-fc",
+  arsenal: "arsenal-fc",
+  chelsea: "chelsea-fc",
   "man city": "manchester-city-fc",
-  "liverpool": "liverpool-fc",
-  "barcelona": "fc-barcelona",
+  liverpool: "liverpool-fc",
+  barcelona: "fc-barcelona",
   "real madrid": "real-madrid-cf",
   "bayern munich": "fc-bayern-munich",
   "borussia dortmund": "borussia-dortmund",
-  "psg": "paris-saint-germain-psg",
-  "marseille": "olympique-de-marseille",
-  "lakers": "los-angeles-lakers",
-  "warriors": "golden-state-warriors",
-  "djokovic": "novak-djokovic",
-  "alcaraz": "carlos-alcaraz",
+  psg: "paris-saint-germain-psg",
+  marseille: "olympique-de-marseille",
+  lakers: "los-angeles-lakers",
+  warriors: "golden-state-warriors",
+  djokovic: "novak-djokovic",
+  alcaraz: "carlos-alcaraz",
   "g2 esports": "g2-esports",
-  "fnatic": "fnatic",
+  fnatic: "fnatic",
 };
 
 /**
@@ -47,43 +47,41 @@ const teamNameMappings: Record<string, string> = {
  */
 export const getTeamLogoUrl = (teamName: string, sport: string = "football"): string => {
   // Check for mapped name first
-  const mappedName = teamNameMappings[teamName.toLowerCase()];
-  const normalized = mappedName || normalizeTeamName(teamName);
-  
+  const _mappedName = teamNameMappings[teamName.toLowerCase()];
+
   // Map sports to team IDs for different sports
   const teamIds: Record<string, number> = {
     // Premier League
-    "arsenal": 42,
-    "chelsea": 49,
+    arsenal: 42,
+    chelsea: 49,
     "man city": 50,
     "manchester city": 50,
-    "liverpool": 40,
+    liverpool: 40,
     // La Liga
-    "barcelona": 529,
+    barcelona: 529,
     "real madrid": 541,
     // Bundesliga
     "bayern munich": 157,
     "borussia dortmund": 165,
     // Ligue 1
-    "psg": 85,
+    psg: 85,
     "paris saint-germain": 85,
-    "marseille": 81,
+    marseille: 81,
     // NBA
-    "lakers": 145,
+    lakers: 145,
     "los angeles lakers": 145,
-    "warriors": 137,
+    warriors: 137,
     "golden state warriors": 137,
   };
 
   const teamId = teamIds[teamName.toLowerCase()];
-  
+
   if (teamId && sport.toLowerCase() === "football") {
     // Use API-Football CDN (более надежный для футбола)
     return `https://media.api-sports.io/football/teams/${teamId}.png`;
   }
-  
+
   // Fallback: use placeholder service with team initial
-  const initial = teamName.charAt(0).toUpperCase();
   return `https://ui-avatars.com/api/?name=${encodeURIComponent(teamName)}&background=random&color=fff&size=128`;
 };
 
@@ -102,4 +100,3 @@ export const getTeamLogo = (team: { name: string }, sport: string = "football"):
   const primaryUrl = getTeamLogoUrl(team.name, sport);
   return primaryUrl;
 };
-

@@ -1,7 +1,6 @@
-import { TrendingUp, Circle, TrendingDown } from "lucide-react";
+import { TrendingUp, Circle } from "lucide-react";
 import { ValueSignal } from "@/types/match";
 import AnimatedValue from "./AnimatedValue";
-import { TeamLogo } from "./TeamLogo";
 
 interface ValueRadarProps {
   signals: ValueSignal[];
@@ -10,29 +9,31 @@ interface ValueRadarProps {
 const ValueRadar = ({ signals }: ValueRadarProps) => {
   return (
     <div className="terminal-card p-2.5">
-      <div className="flex items-center gap-2 mb-3">
-        <TrendingUp className="w-4 h-4 text-signal" />
+      <div className="mb-3 flex items-center gap-2">
+        <TrendingUp className="text-signal h-4 w-4" />
         <h3 className="text-sm font-bold uppercase tracking-wide text-foreground">VALUE SIGNALS</h3>
       </div>
 
       <div className="space-y-1.5">
         {signals.map((signal) => (
-          <div 
-            key={signal.id} 
-            className="border border-border p-1.5 hover:bg-muted/20 cursor-pointer transition-colors"
+          <div
+            key={signal.id}
+            className="cursor-pointer border border-border p-1.5 transition-colors hover:bg-muted/20"
           >
-            <div className="flex items-start justify-between mb-1">
-              <div className="flex items-center gap-2 flex-1 min-w-0">
-                <Circle className="w-1 h-1 fill-primary text-primary flex-shrink-0 mt-1" />
-                <span className="text-[9px] font-medium truncate">{signal.match}</span>
+            <div className="mb-1 flex items-start justify-between">
+              <div className="flex min-w-0 flex-1 items-center gap-2">
+                <Circle className="mt-1 h-1 w-1 flex-shrink-0 fill-primary text-primary" />
+                <span className="truncate text-[9px] font-medium">{signal.match}</span>
               </div>
-              <span className={`text-[8px] px-1 py-0 ${
-                signal.spread === "Low" 
-                  ? "bg-positive text-primary-foreground" 
-                  : signal.spread === "High"
-                  ? "bg-negative text-destructive-foreground"
-                  : "bg-muted text-muted-foreground"
-              }`}>
+              <span
+                className={`px-1 py-0 text-[8px] ${
+                  signal.spread === "Low"
+                    ? "bg-positive text-primary-foreground"
+                    : signal.spread === "High"
+                      ? "bg-negative text-destructive-foreground"
+                      : "bg-muted text-muted-foreground"
+                }`}
+              >
                 {signal.spread}
               </span>
             </div>
@@ -44,18 +45,18 @@ const ValueRadar = ({ signals }: ValueRadarProps) => {
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Best:</span>
-                <AnimatedValue 
+                <AnimatedValue
                   value={signal.best}
                   format={(val) => val.toFixed(2)}
-                  className="font-mono text-signal"
+                  className="text-signal font-mono"
                 />
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Edge:</span>
-                <AnimatedValue 
+                <AnimatedValue
                   value={signal.edge}
                   format={(val) => `+${val.toFixed(1)}%`}
-                  className="font-mono text-positive font-semibold"
+                  className="text-positive font-mono font-semibold"
                 />
               </div>
               <div className="flex justify-between">
@@ -65,16 +66,19 @@ const ValueRadar = ({ signals }: ValueRadarProps) => {
             </div>
 
             {/* Confidence bar */}
-            <div className="mt-1 pt-1 border-t border-border/50">
-              <div className="flex items-center justify-between text-[8px] mb-0.5">
+            <div className="mt-1 border-t border-border/50 pt-1">
+              <div className="mb-0.5 flex items-center justify-between text-[8px]">
                 <span className="text-muted-foreground">Conf</span>
                 <span className="font-mono text-foreground">{signal.confidence}%</span>
               </div>
-              <div className="h-0.5 bg-muted/30 overflow-hidden">
-                <div 
+              <div className="h-0.5 overflow-hidden bg-muted/30">
+                <div
                   className={`h-full transition-all duration-500 ${
-                    signal.confidence >= 90 ? 'bg-signal' : 
-                    signal.confidence >= 80 ? 'bg-primary' : 'bg-muted-foreground'
+                    signal.confidence >= 90
+                      ? "bg-signal"
+                      : signal.confidence >= 80
+                        ? "bg-primary"
+                        : "bg-muted-foreground"
                   }`}
                   style={{ width: `${signal.confidence}%` }}
                 />

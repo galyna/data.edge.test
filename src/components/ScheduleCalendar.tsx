@@ -2,9 +2,14 @@
 
 import { useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Match } from "@/types/match";
 import { CalendarIcon, Clock } from "lucide-react";
@@ -58,21 +63,35 @@ const ScheduleCalendar = ({ matches }: ScheduleCalendarProps) => {
   const getStatusBadge = (status: Match["status"]) => {
     switch (status) {
       case "live":
-        return <Badge variant="destructive" className="text-[10px] animate-pulse">LIVE</Badge>;
+        return (
+          <Badge variant="destructive" className="animate-pulse text-[10px]">
+            LIVE
+          </Badge>
+        );
       case "scheduled":
-        return <Badge variant="outline" className="text-[10px]">UPCOMING</Badge>;
+        return (
+          <Badge variant="outline" className="text-[10px]">
+            UPCOMING
+          </Badge>
+        );
       case "finished":
-        return <Badge variant="secondary" className="text-[10px]">FINISHED</Badge>;
+        return (
+          <Badge variant="secondary" className="text-[10px]">
+            FINISHED
+          </Badge>
+        );
     }
   };
 
   return (
     <div className="terminal-card p-3">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-bold uppercase tracking-wide text-foreground">MATCH SCHEDULE</h3>
-        <div className="flex gap-2 items-center">
+      <div className="mb-3 flex items-center justify-between">
+        <h3 className="text-sm font-bold uppercase tracking-wide text-foreground">
+          MATCH SCHEDULE
+        </h3>
+        <div className="flex items-center gap-2">
           <Select value={selectedSport} onValueChange={setSelectedSport}>
-            <SelectTrigger className="w-[120px] h-7 text-[10px]">
+            <SelectTrigger className="h-7 w-[120px] text-[10px]">
               <SelectValue placeholder="All Sports" />
             </SelectTrigger>
             <SelectContent>
@@ -87,16 +106,16 @@ const ScheduleCalendar = ({ matches }: ScheduleCalendarProps) => {
       </div>
 
       <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as "calendar" | "list")}>
-        <TabsList className="h-7 mb-2">
-          <TabsTrigger value="calendar" className="text-[10px] px-2">
-            <CalendarIcon className="w-3 h-3 mr-1" />
+        <TabsList className="mb-2 h-7">
+          <TabsTrigger value="calendar" className="px-2 text-[10px]">
+            <CalendarIcon className="mr-1 h-3 w-3" />
             Cal
           </TabsTrigger>
-          <TabsTrigger value="list" className="text-[10px] px-2">
+          <TabsTrigger value="list" className="px-2 text-[10px]">
             List
           </TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="calendar" className="mt-0">
           {viewMode === "calendar" ? (
             <div className="space-y-2">
@@ -113,27 +132,36 @@ const ScheduleCalendar = ({ matches }: ScheduleCalendarProps) => {
                 }}
               />
               {selectedDate && (
-                <div className="space-y-1.5 max-h-[200px] overflow-y-auto">
-                  <div className="text-[10px] text-muted-foreground mb-1 font-mono">
-                    {getMatchesForDate(selectedDate).length} matches on {format(selectedDate, "MMM dd")}
+                <div className="max-h-[200px] space-y-1.5 overflow-y-auto">
+                  <div className="mb-1 font-mono text-[10px] text-muted-foreground">
+                    {getMatchesForDate(selectedDate).length} matches on{" "}
+                    {format(selectedDate, "MMM dd")}
                   </div>
                   {getMatchesForDate(selectedDate).map((match) => (
                     <div
                       key={match.id}
-                      className="p-1.5 border border-border hover:bg-muted/20 cursor-pointer transition-colors"
+                      className="cursor-pointer border border-border p-1.5 transition-colors hover:bg-muted/20"
                     >
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 flex-1 min-w-0">
-                          <TeamLogo team={match.homeTeam} sport={match.sport.toLowerCase()} size="sm" />
-                          <div className="text-[9px] font-medium truncate flex-1 text-center">
+                        <div className="flex min-w-0 flex-1 items-center gap-2">
+                          <TeamLogo
+                            team={match.homeTeam}
+                            sport={match.sport.toLowerCase()}
+                            size="sm"
+                          />
+                          <div className="flex-1 truncate text-center text-[9px] font-medium">
                             {match.homeTeam.shortName} vs {match.awayTeam.shortName}
                           </div>
-                          <TeamLogo team={match.awayTeam} sport={match.sport.toLowerCase()} size="sm" />
+                          <TeamLogo
+                            team={match.awayTeam}
+                            sport={match.sport.toLowerCase()}
+                            size="sm"
+                          />
                         </div>
-                        <div className="flex items-center gap-1.5 ml-2">
+                        <div className="ml-2 flex items-center gap-1.5">
                           {getStatusBadge(match.status)}
-                          <div className="flex items-center gap-0.5 text-[9px] text-muted-foreground font-mono">
-                            <Clock className="w-2 h-2" />
+                          <div className="flex items-center gap-0.5 font-mono text-[9px] text-muted-foreground">
+                            <Clock className="h-2 w-2" />
                             {format(new Date(match.startTime), "HH:mm")}
                           </div>
                         </div>
@@ -147,28 +175,28 @@ const ScheduleCalendar = ({ matches }: ScheduleCalendarProps) => {
         </TabsContent>
 
         <TabsContent value="list" className="mt-0">
-          <div className="space-y-1 max-h-[400px] overflow-y-auto">
+          <div className="max-h-[400px] space-y-1 overflow-y-auto">
             {filteredMatches.length === 0 ? (
-              <div className="text-center py-4">
+              <div className="py-4 text-center">
                 <p className="text-[10px] text-muted-foreground">No matches found</p>
               </div>
             ) : (
               filteredMatches.map((match) => (
                 <div
                   key={match.id}
-                  className="p-1.5 border border-border hover:bg-muted/20 cursor-pointer transition-colors"
+                  className="cursor-pointer border border-border p-1.5 transition-colors hover:bg-muted/20"
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                    <div className="flex min-w-0 flex-1 items-center gap-2">
                       <TeamLogo team={match.homeTeam} sport={match.sport.toLowerCase()} size="sm" />
-                      <div className="text-[9px] font-medium truncate flex-1 text-center">
+                      <div className="flex-1 truncate text-center text-[9px] font-medium">
                         {match.homeTeam.shortName} vs {match.awayTeam.shortName}
                       </div>
                       <TeamLogo team={match.awayTeam} sport={match.sport.toLowerCase()} size="sm" />
                     </div>
-                    <div className="flex items-center gap-1.5 ml-2">
+                    <div className="ml-2 flex items-center gap-1.5">
                       {getStatusBadge(match.status)}
-                      <div className="text-[9px] font-mono text-muted-foreground">
+                      <div className="font-mono text-[9px] text-muted-foreground">
                         {format(new Date(match.startTime), "MMM dd, HH:mm")}
                       </div>
                     </div>

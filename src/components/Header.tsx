@@ -20,28 +20,18 @@ const sports = [
 ];
 
 const Header = ({ selectedSport, onSportChange }: HeaderProps) => {
-  const pathname = usePathname();
-  const isActive = (path: string) => pathname === path;
-  
-  const getLinkClass = (path: string) => {
-    return `px-3 py-1 text-xs font-medium uppercase tracking-wider transition-all ${
-      isActive(path)
-        ? "bg-primary/20 text-primary border border-primary/50"
-        : "text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-transparent"
-    }`;
-  };
+  const _pathname = usePathname();
 
   return (
-    <header className="h-14 border-b border-border bg-card flex items-center justify-between px-6">
+    <header className="flex h-14 items-center justify-between border-b border-border bg-card px-6">
       {/* Left: Logo + Navigation */}
       <div className="flex items-center gap-6">
-        <Link href="/" className="hover:opacity-80 transition-opacity">
-          <h1 className="text-base font-bold text-signal tracking-tight">DATA EDGE</h1>
+        <Link href="/" className="transition-opacity hover:opacity-80">
+          <h1 className="text-signal text-base font-bold tracking-tight">DATA EDGE</h1>
         </Link>
-        
-        
+
         {/* League Filters */}
-        <div className="flex items-center gap-1 ml-4">
+        <div className="ml-4 flex items-center gap-1">
           {sports.map((sport) => (
             <button
               key={sport.id}
@@ -49,8 +39,8 @@ const Header = ({ selectedSport, onSportChange }: HeaderProps) => {
               className={cn(
                 "px-2 py-1 text-xs font-medium uppercase tracking-wider transition-all",
                 selectedSport === sport.id
-                  ? "bg-primary/20 text-primary border border-primary/50"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-transparent"
+                  ? "border border-primary/50 bg-primary/20 text-primary"
+                  : "border border-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground"
               )}
             >
               {sport.name}
@@ -62,13 +52,13 @@ const Header = ({ selectedSport, onSportChange }: HeaderProps) => {
       {/* Right: Status & Actions */}
       <div className="flex items-center gap-4">
         {/* Data Sources Status */}
-        <div className="flex items-center gap-2 px-3 py-1 bg-muted/30 border border-border">
-          <Circle className="w-2 h-2 fill-primary text-primary" />
-          <span className="text-xs font-mono text-foreground">3/5 Sources Live</span>
+        <div className="flex items-center gap-2 border border-border bg-muted/30 px-3 py-1">
+          <Circle className="h-2 w-2 fill-primary text-primary" />
+          <span className="font-mono text-xs text-foreground">3/5 Sources Live</span>
         </div>
 
         {/* Last Sync */}
-        <div className="text-xs font-mono text-muted-foreground">
+        <div className="font-mono text-xs text-muted-foreground">
           Last sync: <span className="text-signal">5s ago</span>
         </div>
 
@@ -76,20 +66,20 @@ const Header = ({ selectedSport, onSportChange }: HeaderProps) => {
 
         {/* Search */}
         <div className="relative">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+          <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
           <input
             type="text"
             placeholder="Search markets..."
-            className="pl-8 pr-3 py-1.5 bg-muted/50 border border-border text-xs focus:outline-none focus:border-primary transition-colors w-48"
+            className="w-48 border border-border bg-muted/50 py-1.5 pl-8 pr-3 text-xs transition-colors focus:border-primary focus:outline-none"
           />
         </div>
 
         {/* Action Buttons */}
-        <button className="w-8 h-8 bg-muted/50 hover:bg-primary/20 hover:text-primary transition-colors flex items-center justify-center border border-border">
-          <Bell className="w-3.5 h-3.5" />
+        <button className="flex h-8 w-8 items-center justify-center border border-border bg-muted/50 transition-colors hover:bg-primary/20 hover:text-primary">
+          <Bell className="h-3.5 w-3.5" />
         </button>
-        <button className="w-8 h-8 bg-muted/50 hover:bg-primary/20 hover:text-primary transition-colors flex items-center justify-center border border-border">
-          <User className="w-3.5 h-3.5" />
+        <button className="flex h-8 w-8 items-center justify-center border border-border bg-muted/50 transition-colors hover:bg-primary/20 hover:text-primary">
+          <User className="h-3.5 w-3.5" />
         </button>
       </div>
     </header>

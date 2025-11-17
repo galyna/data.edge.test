@@ -14,7 +14,7 @@ const AnimatedValue = ({ value, format, className = "" }: AnimatedValueProps) =>
     if (value !== prevValue) {
       setIsUpdating(true);
       setPrevValue(value);
-      
+
       const timer = setTimeout(() => {
         setIsUpdating(false);
       }, 1000);
@@ -26,9 +26,9 @@ const AnimatedValue = ({ value, format, className = "" }: AnimatedValueProps) =>
   const displayValue = format ? format(value) : value.toString();
 
   return (
-    <span 
+    <span
       className={`${className} transition-all duration-300 ${
-        isUpdating ? 'text-signal scale-105' : ''
+        isUpdating ? "text-signal scale-105" : ""
       }`}
     >
       {displayValue}

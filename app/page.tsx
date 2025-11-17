@@ -14,25 +14,21 @@ import MatchDetailDialog from "@/components/MatchDetailDialog";
 import { useMatchStore } from "@/store/matchStore";
 
 export default function Home() {
-  const { matches, lastUpdate } = useRealtimeData(mockMatches, mockDataSources, 8000);
+  const { matches } = useRealtimeData(mockMatches, mockDataSources, 8000);
   const [selectedSport, setSelectedSport] = useState("football");
-  
-  const { selectedMatch, setSelectedMatch, isMatchDetailDialogOpen, setMatchDetailDialogOpen } = useMatchStore();
+
+  const { selectedMatch, setSelectedMatch, isMatchDetailDialogOpen, setMatchDetailDialogOpen } =
+    useMatchStore();
 
   // Initialize selectedMatch with first match that has sources (using function to avoid re-computation)
   useEffect(() => {
     if (!selectedMatch && matches.length > 0) {
-      const firstMatchWithSources = matches.find(m => m.sources && m.sources.length > 0);
+      const firstMatchWithSources = matches.find((m) => m.sources && m.sources.length > 0);
       if (firstMatchWithSources) {
         setSelectedMatch(firstMatchWithSources);
       }
     }
   }, [matches, selectedMatch, setSelectedMatch]);
-
-  const handleMatchClick = (match: Match) => {
-    setSelectedMatch(match);
-    setMatchDetailDialogOpen(true);
-  };
 
   const handleMatchSelect = (match: Match) => {
     setSelectedMatch(match);
@@ -40,19 +36,18 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-background grid-pattern flex">
+    <div className="grid-pattern flex min-h-screen bg-background">
       {/* Sidebar */}
       <Sidebar />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex flex-1 flex-col">
         {/* Header */}
         <Header selectedSport={selectedSport} onSportChange={setSelectedSport} />
 
         {/* Dashboard Content */}
-        <main className="flex-1 p-2 overflow-auto">
-          <div className="max-w-[2000px] mx-auto grid grid-cols-12 gap-2">
-            
+        <main className="flex-1 overflow-auto p-2">
+          <div className="mx-auto grid max-w-[2000px] grid-cols-12 gap-2">
             {/* Left Column (Main Content) */}
             <div className="col-span-8 space-y-2">
               {/* Hero: Unified Sports Feed */}
@@ -62,8 +57,8 @@ export default function Home() {
 
               {/* Multi-Source Comparison */}
               <div>
-                <MultiSourceComparison 
-                  match={selectedMatch} 
+                <MultiSourceComparison
+                  match={selectedMatch}
                   matches={matches}
                   onMatchSelect={handleMatchSelect}
                 />
@@ -76,19 +71,18 @@ export default function Home() {
               <div>
                 <OddsAggregator match={selectedMatch} />
               </div>
-              
+
               {/* Value Signals */}
               <div>
                 <ValueRadar signals={mockValueSignals} />
               </div>
             </div>
-
           </div>
         </main>
       </div>
 
       {/* Match Detail Dialog */}
-      <MatchDetailDialog 
+      <MatchDetailDialog
         match={selectedMatch}
         open={isMatchDetailDialogOpen}
         onOpenChange={setMatchDetailDialogOpen}
@@ -96,4 +90,3 @@ export default function Home() {
     </div>
   );
 }
-

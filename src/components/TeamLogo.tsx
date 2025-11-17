@@ -19,7 +19,12 @@ const sizeMap = {
   xl: 64,
 };
 
-export const TeamLogo = ({ team, sport = "football", size = "md", className = "" }: TeamLogoProps) => {
+export const TeamLogo = ({
+  team,
+  sport = "football",
+  size = "md",
+  className = "",
+}: TeamLogoProps) => {
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
 
@@ -29,18 +34,17 @@ export const TeamLogo = ({ team, sport = "football", size = "md", className = ""
   // If image failed to load or is emoji, show emoji fallback
   if (imageError || (!logoUrl.includes("http") && team.logo)) {
     const emojiSizeClass = size === "sm" ? "text-lg" : size === "md" ? "text-xl" : "text-2xl";
-    return (
-      <span className={`${emojiSizeClass} ${className}`}>
-        {team.logo}
-      </span>
-    );
+    return <span className={`${emojiSizeClass} ${className}`}>{team.logo}</span>;
   }
 
   return (
-    <div className={`relative flex-shrink-0 ${className}`} style={{ width: sizePx, height: sizePx }}>
+    <div
+      className={`relative flex-shrink-0 ${className}`}
+      style={{ width: sizePx, height: sizePx }}
+    >
       {imageLoading && (
-        <div 
-          className="absolute inset-0 bg-muted animate-pulse rounded"
+        <div
+          className="absolute inset-0 animate-pulse rounded bg-muted"
           style={{ width: sizePx, height: sizePx }}
         />
       )}
@@ -60,4 +64,3 @@ export const TeamLogo = ({ team, sport = "football", size = "md", className = ""
     </div>
   );
 };
-

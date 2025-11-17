@@ -32,14 +32,18 @@ export const useRealtimeData = (
 
         const newHomeOdds = Math.max(1.01, match.aggregatedOdds.home + homeChange);
         const newAwayOdds = Math.max(1.01, match.aggregatedOdds.away + awayChange);
-        const newDrawOdds = drawChange ? Math.max(1.01, (match.aggregatedOdds.draw || 0) + drawChange) : match.aggregatedOdds.draw;
+        const newDrawOdds = drawChange
+          ? Math.max(1.01, (match.aggregatedOdds.draw || 0) + drawChange)
+          : match.aggregatedOdds.draw;
 
         // Update sources with similar changes
         const newSources = match.sources.map((source) => ({
           ...source,
           odds: {
             home: Math.max(1.01, source.odds.home + homeChange + (Math.random() - 0.5) * 0.05),
-            draw: source.odds.draw ? Math.max(1.01, source.odds.draw + (drawChange || 0) + (Math.random() - 0.5) * 0.05) : undefined,
+            draw: source.odds.draw
+              ? Math.max(1.01, source.odds.draw + (drawChange || 0) + (Math.random() - 0.5) * 0.05)
+              : undefined,
             away: Math.max(1.01, source.odds.away + awayChange + (Math.random() - 0.5) * 0.05),
           },
           timestamp: new Date().toISOString(),
@@ -82,7 +86,8 @@ export const useRealtimeData = (
           ...source,
           latency: Math.round(newLatency),
           status: newStatus,
-          lastUpdate: Math.random() > 0.3 ? `${Math.floor(Math.random() * 10) + 1}s ago` : source.lastUpdate,
+          lastUpdate:
+            Math.random() > 0.3 ? `${Math.floor(Math.random() * 10) + 1}s ago` : source.lastUpdate,
         };
       })
     );

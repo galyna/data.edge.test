@@ -43,24 +43,28 @@ const DataQualityIndicator = ({ sources }: DataQualityIndicatorProps) => {
 
   return (
     <div className="terminal-card p-3">
-      <div className="flex items-center gap-2 mb-3">
+      <div className="mb-3 flex items-center gap-2">
         <Activity className="h-4 w-4 text-primary" />
-        <h3 className="text-sm font-bold uppercase tracking-wide text-foreground">IN-HOUSE SYSTEMS STATUS</h3>
+        <h3 className="text-sm font-bold uppercase tracking-wide text-foreground">
+          IN-HOUSE SYSTEMS STATUS
+        </h3>
       </div>
 
       {/* Summary */}
-      <div className="grid grid-cols-2 gap-1.5 mb-2">
-        <div className="p-1.5 bg-muted/30 border border-border">
-          <div className="text-[10px] text-muted-foreground mb-0.5">Online</div>
-          <div className="font-mono text-base text-signal">
+      <div className="mb-2 grid grid-cols-2 gap-1.5">
+        <div className="border border-border bg-muted/30 p-1.5">
+          <div className="mb-0.5 text-[10px] text-muted-foreground">Online</div>
+          <div className="text-signal font-mono text-base">
             {onlineCount}/{sources.length}
           </div>
         </div>
-        <div className="p-1.5 bg-muted/30 border border-border">
-          <div className="text-[10px] text-muted-foreground mb-0.5">Latency</div>
-          <div className={`font-mono text-base ${
-            averageLatency > 50 ? "text-destructive" : "text-signal"
-          }`}>
+        <div className="border border-border bg-muted/30 p-1.5">
+          <div className="mb-0.5 text-[10px] text-muted-foreground">Latency</div>
+          <div
+            className={`font-mono text-base ${
+              averageLatency > 50 ? "text-destructive" : "text-signal"
+            }`}
+          >
             {averageLatency}ms
           </div>
         </div>
@@ -71,15 +75,15 @@ const DataQualityIndicator = ({ sources }: DataQualityIndicatorProps) => {
         {sources.map((source) => (
           <div
             key={source.id}
-            className="flex items-center justify-between p-1.5 border border-border hover:bg-muted/20 transition-colors"
+            className="flex items-center justify-between border border-border p-1.5 transition-colors hover:bg-muted/20"
           >
-            <div className="flex items-center gap-1.5 flex-1 min-w-0">
+            <div className="flex min-w-0 flex-1 items-center gap-1.5">
               <Tooltip>
                 <TooltipTrigger>
                   <span className="text-[10px]">{getStatusIcon(source.status)}</span>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <div className="text-xs space-y-1">
+                  <div className="space-y-1 text-xs">
                     <p>Status: {source.status}</p>
                     <p>Latency: {source.latency}ms</p>
                     <p>Reliability: {source.reliability}%</p>
@@ -87,31 +91,28 @@ const DataQualityIndicator = ({ sources }: DataQualityIndicatorProps) => {
                   </div>
                 </TooltipContent>
               </Tooltip>
-              <div className="flex-1 min-w-0">
+              <div className="min-w-0 flex-1">
                 <div className="flex items-baseline justify-between">
-                  <span className="text-[10px] font-medium truncate">
-                    {source.name}
-                  </span>
+                  <span className="truncate text-[10px] font-medium">{source.name}</span>
                   <Badge
                     variant={source.reliability >= 90 ? "default" : "secondary"}
-                    className="text-[9px] ml-1.5 px-1.5 py-0"
+                    className="ml-1.5 px-1.5 py-0 text-[9px]"
                   >
                     {source.reliability}%
                   </Badge>
                 </div>
-                <div className="flex items-center gap-2 text-[9px] text-muted-foreground mt-0.5">
+                <div className="mt-0.5 flex items-center gap-2 text-[9px] text-muted-foreground">
                   <span className="font-mono">{source.latency}ms</span>
                   <span className="font-mono">{source.lastUpdate}</span>
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-1.5 ml-1.5">
-              <Progress
-                value={source.reliability}
-                className="w-12 h-1.5"
-              />
-              <span className={`text-[9px] font-mono w-10 text-right ${getQualityColor(source.reliability)}`}>
+            <div className="ml-1.5 flex items-center gap-1.5">
+              <Progress value={source.reliability} className="h-1.5 w-12" />
+              <span
+                className={`w-10 text-right font-mono text-[9px] ${getQualityColor(source.reliability)}`}
+              >
                 {getQualityLabel(source.reliability)}
               </span>
             </div>
@@ -123,8 +124,8 @@ const DataQualityIndicator = ({ sources }: DataQualityIndicatorProps) => {
       {averageReliability < 95 && (
         <div className="mt-2 border border-border bg-muted/10 p-1.5">
           <div className="flex items-start gap-1.5">
-            <AlertTriangle className="h-2.5 w-2.5 text-muted-foreground mt-0.5 flex-shrink-0" />
-            <div className="text-[10px] text-muted-foreground font-mono">
+            <AlertTriangle className="mt-0.5 h-2.5 w-2.5 flex-shrink-0 text-muted-foreground" />
+            <div className="font-mono text-[10px] text-muted-foreground">
               In-House Reliability: {averageReliability}%
             </div>
           </div>
@@ -134,8 +135,8 @@ const DataQualityIndicator = ({ sources }: DataQualityIndicatorProps) => {
       {averageLatency > 50 && (
         <div className="mt-1.5 border border-border bg-muted/10 p-1.5">
           <div className="flex items-start gap-1.5">
-            <AlertTriangle className="h-2.5 w-2.5 text-muted-foreground mt-0.5 flex-shrink-0" />
-            <div className="text-[10px] text-muted-foreground font-mono">
+            <AlertTriangle className="mt-0.5 h-2.5 w-2.5 flex-shrink-0 text-muted-foreground" />
+            <div className="font-mono text-[10px] text-muted-foreground">
               In-House Latency: {averageLatency}ms
             </div>
           </div>

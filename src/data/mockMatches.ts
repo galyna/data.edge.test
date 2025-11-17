@@ -1,50 +1,50 @@
 import { Match, DataSource, Anomaly, ValueSignal } from "@/types/match";
 
 export const mockDataSources: DataSource[] = [
-  { 
-    id: "inhouse-analytics", 
-    name: "Analytics Engine", 
-    provider: "In-House", 
-    status: "online", 
-    latency: 8, 
+  {
+    id: "inhouse-analytics",
+    name: "Analytics Engine",
+    provider: "In-House",
+    status: "online",
+    latency: 8,
     lastUpdate: "1s ago",
-    reliability: 99
+    reliability: 99,
   },
-  { 
-    id: "inhouse-odds", 
-    name: "Odds Calculator", 
-    provider: "In-House", 
-    status: "online", 
-    latency: 5, 
+  {
+    id: "inhouse-odds",
+    name: "Odds Calculator",
+    provider: "In-House",
+    status: "online",
+    latency: 5,
     lastUpdate: "1s ago",
-    reliability: 99
+    reliability: 99,
   },
-  { 
-    id: "inhouse-ml", 
-    name: "ML Predictions", 
-    provider: "In-House", 
-    status: "online", 
-    latency: 12, 
+  {
+    id: "inhouse-ml",
+    name: "ML Predictions",
+    provider: "In-House",
+    status: "online",
+    latency: 12,
     lastUpdate: "2s ago",
-    reliability: 97
+    reliability: 97,
   },
-  { 
-    id: "inhouse-stats", 
-    name: "Stats Aggregator", 
-    provider: "In-House", 
-    status: "online", 
-    latency: 6, 
+  {
+    id: "inhouse-stats",
+    name: "Stats Aggregator",
+    provider: "In-House",
+    status: "online",
+    latency: 6,
     lastUpdate: "1s ago",
-    reliability: 98
+    reliability: 98,
   },
-  { 
-    id: "inhouse-recommendations", 
-    name: "Recommendation System", 
-    provider: "In-House", 
-    status: "online", 
-    latency: 10, 
+  {
+    id: "inhouse-recommendations",
+    name: "Recommendation System",
+    provider: "In-House",
+    status: "online",
+    latency: 10,
     lastUpdate: "2s ago",
-    reliability: 99
+    reliability: 99,
   },
 ];
 
@@ -56,12 +56,12 @@ export const mockMatches: Match[] = [
     homeTeam: {
       name: "Arsenal",
       shortName: "ARS",
-      logo: "⚽"
+      logo: "⚽",
     },
     awayTeam: {
       name: "Chelsea",
       shortName: "CHE",
-      logo: "⚽"
+      logo: "⚽",
     },
     status: "live",
     startTime: new Date(new Date().setDate(new Date().getDate())).toISOString(),
@@ -70,12 +70,12 @@ export const mockMatches: Match[] = [
       awayScore: 1,
       time: "67'",
       period: "2nd Half",
-      lastUpdate: new Date().toISOString()
+      lastUpdate: new Date().toISOString(),
     },
     aggregatedOdds: {
       home: 2.15,
-      draw: 3.40,
-      away: 3.20
+      draw: 3.4,
+      away: 3.2,
     },
     sources: [
       {
@@ -84,23 +84,23 @@ export const mockMatches: Match[] = [
         odds: { home: 2.12, draw: 3.35, away: 3.25 },
         timestamp: "2025-01-15T14:32:00Z",
         latency: 120,
-        scorePrediction: { home: 2, away: 1 }
+        scorePrediction: { home: 2, away: 1 },
       },
       {
         sourceId: "sportsdataio",
         sourceName: "Johnny",
-        odds: { home: 2.25, draw: 3.40, away: 3.15 },
+        odds: { home: 2.25, draw: 3.4, away: 3.15 },
         timestamp: "2025-01-15T14:32:05Z",
         latency: 95,
-        scorePrediction: { home: 2, away: 0 }
+        scorePrediction: { home: 2, away: 0 },
       },
       {
         sourceId: "apisports",
         sourceName: "Sam",
-        odds: { home: 2.10, draw: 3.45, away: 3.20 },
+        odds: { home: 2.1, draw: 3.45, away: 3.2 },
         timestamp: "2025-01-15T14:31:50Z",
         latency: 450,
-        scorePrediction: { home: 1, away: 1 }
+        scorePrediction: { home: 1, away: 1 },
       },
       {
         sourceId: "thesportsdb",
@@ -108,13 +108,13 @@ export const mockMatches: Match[] = [
         odds: { home: 2.18, draw: 3.38, away: 3.22 },
         timestamp: "2025-01-15T14:32:02Z",
         latency: 180,
-        scorePrediction: { home: 3, away: 1 }
-      }
+        scorePrediction: { home: 3, away: 1 },
+      },
     ],
     spread: 0.08,
     spreadQuality: "low",
     bestSource: "Johnny",
-    value: 12.3
+    value: 12.3,
   },
   {
     id: "match-2",
@@ -123,50 +123,50 @@ export const mockMatches: Match[] = [
     homeTeam: {
       name: "Man City",
       shortName: "MCI",
-      logo: "⚽"
+      logo: "⚽",
     },
     awayTeam: {
       name: "Liverpool",
       shortName: "LIV",
-      logo: "⚽"
+      logo: "⚽",
     },
     status: "scheduled",
     startTime: new Date(new Date().setDate(new Date().getDate())).toISOString(),
     aggregatedOdds: {
       home: 1.85,
-      draw: 3.60,
-      away: 4.20
+      draw: 3.6,
+      away: 4.2,
     },
     sources: [
       {
         sourceId: "sportradar",
         sourceName: "Jack",
-        odds: { home: 1.92, draw: 3.55, away: 4.10 },
+        odds: { home: 1.92, draw: 3.55, away: 4.1 },
         timestamp: "2025-01-15T14:32:00Z",
         latency: 120,
-        scorePrediction: { home: 2, away: 1 }
+        scorePrediction: { home: 2, away: 1 },
       },
       {
         sourceId: "sportsdataio",
         sourceName: "Johnny",
-        odds: { home: 1.82, draw: 3.70, away: 4.25 },
+        odds: { home: 1.82, draw: 3.7, away: 4.25 },
         timestamp: "2025-01-15T14:32:05Z",
         latency: 95,
-        scorePrediction: { home: 3, away: 1 }
+        scorePrediction: { home: 3, away: 1 },
       },
       {
         sourceId: "apisports",
         sourceName: "Sam",
-        odds: { home: 1.78, draw: 3.50, away: 4.35 },
+        odds: { home: 1.78, draw: 3.5, away: 4.35 },
         timestamp: "2025-01-15T14:31:50Z",
         latency: 450,
-        scorePrediction: { home: 1, away: 0 }
-      }
+        scorePrediction: { home: 1, away: 0 },
+      },
     ],
     spread: 0.15,
     spreadQuality: "high",
     bestSource: "Jack",
-    value: 8.7
+    value: 8.7,
   },
   {
     id: "match-3",
@@ -175,19 +175,19 @@ export const mockMatches: Match[] = [
     homeTeam: {
       name: "Barcelona",
       shortName: "BAR",
-      logo: "⚽"
+      logo: "⚽",
     },
     awayTeam: {
       name: "Real Madrid",
       shortName: "RMA",
-      logo: "⚽"
+      logo: "⚽",
     },
     status: "scheduled",
     startTime: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
     aggregatedOdds: {
       home: 2.45,
-      draw: 3.30,
-      away: 2.90
+      draw: 3.3,
+      away: 2.9,
     },
     sources: [
       {
@@ -196,23 +196,23 @@ export const mockMatches: Match[] = [
         odds: { home: 2.42, draw: 3.25, away: 2.95 },
         timestamp: "2025-01-15T14:32:00Z",
         latency: 120,
-        scorePrediction: { home: 1, away: 2 }
+        scorePrediction: { home: 1, away: 2 },
       },
       {
         sourceId: "sportsdataio",
         sourceName: "Johnny",
-        odds: { home: 2.58, draw: 3.30, away: 2.82 },
+        odds: { home: 2.58, draw: 3.3, away: 2.82 },
         timestamp: "2025-01-15T14:32:05Z",
         latency: 95,
-        scorePrediction: { home: 2, away: 1 }
+        scorePrediction: { home: 2, away: 1 },
       },
       {
         sourceId: "apisports",
         sourceName: "Sam",
-        odds: { home: 2.40, draw: 3.35, away: 2.92 },
+        odds: { home: 2.4, draw: 3.35, away: 2.92 },
         timestamp: "2025-01-15T14:31:50Z",
         latency: 450,
-        scorePrediction: { home: 0, away: 1 }
+        scorePrediction: { home: 0, away: 1 },
       },
       {
         sourceId: "thesportsdb",
@@ -220,13 +220,13 @@ export const mockMatches: Match[] = [
         odds: { home: 2.48, draw: 3.28, away: 2.88 },
         timestamp: "2025-01-15T14:32:02Z",
         latency: 180,
-        scorePrediction: { home: 1, away: 1 }
-      }
+        scorePrediction: { home: 1, away: 1 },
+      },
     ],
     spread: 0.06,
     spreadQuality: "low",
     bestSource: "Johnny",
-    value: 15.2
+    value: 15.2,
   },
   {
     id: "match-4",
@@ -235,28 +235,28 @@ export const mockMatches: Match[] = [
     homeTeam: {
       name: "Bayern Munich",
       shortName: "BAY",
-      logo: "⚽"
+      logo: "⚽",
     },
     awayTeam: {
       name: "Borussia Dortmund",
       shortName: "DOR",
-      logo: "⚽"
+      logo: "⚽",
     },
     status: "scheduled",
     startTime: new Date(new Date().setDate(new Date().getDate())).toISOString(),
     aggregatedOdds: {
       home: 1.75,
-      draw: 3.80,
-      away: 4.50
+      draw: 3.8,
+      away: 4.5,
     },
     sources: [
       {
         sourceId: "sportradar",
         sourceName: "Jack",
-        odds: { home: 1.72, draw: 3.75, away: 4.60 },
+        odds: { home: 1.72, draw: 3.75, away: 4.6 },
         timestamp: "2025-01-15T14:32:00Z",
         latency: 120,
-        scorePrediction: { home: 3, away: 1 }
+        scorePrediction: { home: 3, away: 1 },
       },
       {
         sourceId: "sportsdataio",
@@ -264,7 +264,7 @@ export const mockMatches: Match[] = [
         odds: { home: 1.81, draw: 3.85, away: 4.35 },
         timestamp: "2025-01-15T14:32:05Z",
         latency: 95,
-        scorePrediction: { home: 2, away: 0 }
+        scorePrediction: { home: 2, away: 0 },
       },
       {
         sourceId: "thesportsdb",
@@ -272,13 +272,13 @@ export const mockMatches: Match[] = [
         odds: { home: 1.78, draw: 3.82, away: 4.48 },
         timestamp: "2025-01-15T14:32:02Z",
         latency: 180,
-        scorePrediction: { home: 2, away: 1 }
-      }
+        scorePrediction: { home: 2, away: 1 },
+      },
     ],
     spread: 0.12,
     spreadQuality: "medium",
     bestSource: "Johnny",
-    value: 6.4
+    value: 6.4,
   },
   {
     id: "match-5",
@@ -287,36 +287,36 @@ export const mockMatches: Match[] = [
     homeTeam: {
       name: "PSG",
       shortName: "PSG",
-      logo: "⚽"
+      logo: "⚽",
     },
     awayTeam: {
       name: "Marseille",
       shortName: "MAR",
-      logo: "⚽"
+      logo: "⚽",
     },
     status: "scheduled",
     startTime: new Date(new Date().setDate(new Date().getDate())).toISOString(),
     aggregatedOdds: {
       home: 1.55,
-      draw: 4.20,
-      away: 5.80
+      draw: 4.2,
+      away: 5.8,
     },
     sources: [
       {
         sourceId: "sportradar",
         sourceName: "Jack",
-        odds: { home: 1.62, draw: 4.10, away: 5.60 },
+        odds: { home: 1.62, draw: 4.1, away: 5.6 },
         timestamp: "2025-01-15T14:32:00Z",
         latency: 120,
-        scorePrediction: { home: 2, away: 0 }
+        scorePrediction: { home: 2, away: 0 },
       },
       {
         sourceId: "sportsdataio",
         sourceName: "Johnny",
-        odds: { home: 1.48, draw: 4.35, away: 6.10 },
+        odds: { home: 1.48, draw: 4.35, away: 6.1 },
         timestamp: "2025-01-15T14:32:05Z",
         latency: 95,
-        scorePrediction: { home: 3, away: 1 }
+        scorePrediction: { home: 3, away: 1 },
       },
       {
         sourceId: "apisports",
@@ -324,13 +324,13 @@ export const mockMatches: Match[] = [
         odds: { home: 1.52, draw: 4.15, away: 5.75 },
         timestamp: "2025-01-15T14:31:50Z",
         latency: 450,
-        scorePrediction: { home: 1, away: 0 }
-      }
+        scorePrediction: { home: 1, away: 0 },
+      },
     ],
     spread: 0.18,
     spreadQuality: "high",
     bestSource: "Jack",
-    value: 4.1
+    value: 4.1,
   },
   {
     id: "match-6",
@@ -339,12 +339,12 @@ export const mockMatches: Match[] = [
     homeTeam: {
       name: "Lakers",
       shortName: "LAL",
-      logo: "🏀"
+      logo: "🏀",
     },
     awayTeam: {
       name: "Warriors",
       shortName: "GSW",
-      logo: "🏀"
+      logo: "🏀",
     },
     status: "live",
     startTime: new Date(new Date().setDate(new Date().getDate())).toISOString(),
@@ -353,11 +353,11 @@ export const mockMatches: Match[] = [
       awayScore: 102,
       time: "Q3 8:24",
       period: "3rd Quarter",
-      lastUpdate: new Date().toISOString()
+      lastUpdate: new Date().toISOString(),
     },
     aggregatedOdds: {
-      home: 1.90,
-      away: 1.95
+      home: 1.9,
+      away: 1.95,
     },
     sources: [
       {
@@ -366,7 +366,7 @@ export const mockMatches: Match[] = [
         odds: { home: 1.92, away: 1.93 },
         timestamp: "2025-01-15T14:32:00Z",
         latency: 120,
-        scorePrediction: { home: 105, away: 98 }
+        scorePrediction: { home: 105, away: 98 },
       },
       {
         sourceId: "sportsdataio",
@@ -374,13 +374,13 @@ export const mockMatches: Match[] = [
         odds: { home: 1.88, away: 1.97 },
         timestamp: "2025-01-15T14:32:05Z",
         latency: 95,
-        scorePrediction: { home: 108, away: 102 }
-      }
+        scorePrediction: { home: 108, away: 102 },
+      },
     ],
     spread: 0.05,
     spreadQuality: "low",
     bestSource: "Jack",
-    value: 8.5
+    value: 8.5,
   },
   {
     id: "match-7",
@@ -389,18 +389,18 @@ export const mockMatches: Match[] = [
     homeTeam: {
       name: "Djokovic",
       shortName: "DJK",
-      logo: "🎾"
+      logo: "🎾",
     },
     awayTeam: {
       name: "Alcaraz",
       shortName: "ALC",
-      logo: "🎾"
+      logo: "🎾",
     },
     status: "scheduled",
     startTime: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
     aggregatedOdds: {
       home: 1.75,
-      away: 2.10
+      away: 2.1,
     },
     sources: [
       {
@@ -409,7 +409,7 @@ export const mockMatches: Match[] = [
         odds: { home: 1.72, away: 2.15 },
         timestamp: "2025-01-15T14:32:00Z",
         latency: 120,
-        scorePrediction: { home: 3, away: 1 }
+        scorePrediction: { home: 3, away: 1 },
       },
       {
         sourceId: "sportsdataio",
@@ -417,13 +417,13 @@ export const mockMatches: Match[] = [
         odds: { home: 1.78, away: 2.05 },
         timestamp: "2025-01-15T14:32:05Z",
         latency: 95,
-        scorePrediction: { home: 3, away: 0 }
-      }
+        scorePrediction: { home: 3, away: 0 },
+      },
     ],
     spread: 0.06,
     spreadQuality: "low",
     bestSource: "Johnny",
-    value: 10.2
+    value: 10.2,
   },
   {
     id: "match-8",
@@ -432,12 +432,12 @@ export const mockMatches: Match[] = [
     homeTeam: {
       name: "G2 Esports",
       shortName: "G2",
-      logo: "🎮"
+      logo: "🎮",
     },
     awayTeam: {
       name: "Fnatic",
       shortName: "FNC",
-      logo: "🎮"
+      logo: "🎮",
     },
     status: "live",
     startTime: new Date(new Date().setDate(new Date().getDate())).toISOString(),
@@ -446,35 +446,35 @@ export const mockMatches: Match[] = [
       awayScore: 0,
       time: "Game 2",
       period: "Best of 3",
-      lastUpdate: new Date().toISOString()
+      lastUpdate: new Date().toISOString(),
     },
     aggregatedOdds: {
       home: 1.65,
-      away: 2.25
+      away: 2.25,
     },
     sources: [
       {
         sourceId: "sportradar",
         sourceName: "Jack",
-        odds: { home: 1.62, away: 2.30 },
+        odds: { home: 1.62, away: 2.3 },
         timestamp: "2025-01-15T14:32:00Z",
         latency: 120,
-        scorePrediction: { home: 2, away: 1 }
+        scorePrediction: { home: 2, away: 1 },
       },
       {
         sourceId: "sportsdataio",
         sourceName: "Johnny",
-        odds: { home: 1.68, away: 2.20 },
+        odds: { home: 1.68, away: 2.2 },
         timestamp: "2025-01-15T14:32:05Z",
         latency: 95,
-        scorePrediction: { home: 2, away: 0 }
-      }
+        scorePrediction: { home: 2, away: 0 },
+      },
     ],
     spread: 0.06,
     spreadQuality: "low",
     bestSource: "Jack",
-    value: 7.8
-  }
+    value: 7.8,
+  },
 ];
 
 export const mockAnomalies: Anomaly[] = [
@@ -485,7 +485,7 @@ export const mockAnomalies: Anomaly[] = [
     description: "Sam deviates +0.15 from aggregate",
     severity: "high",
     timestamp: "2025-01-15T14:30:00Z",
-    sourceId: "apisports"
+    sourceId: "apisports",
   },
   {
     id: "anomaly-2",
@@ -493,7 +493,7 @@ export const mockAnomalies: Anomaly[] = [
     match: "Man City vs Liverpool",
     description: "Unusual spread variance detected",
     severity: "medium",
-    timestamp: "2025-01-15T14:28:00Z"
+    timestamp: "2025-01-15T14:28:00Z",
   },
   {
     id: "anomaly-3",
@@ -502,8 +502,8 @@ export const mockAnomalies: Anomaly[] = [
     description: "Jack late update (45s delay)",
     severity: "low",
     timestamp: "2025-01-15T14:25:00Z",
-    sourceId: "sportradar"
-  }
+    sourceId: "sportradar",
+  },
 ];
 
 export const mockValueSignals: ValueSignal[] = [
@@ -576,7 +576,7 @@ export const mockValueSignals: ValueSignal[] = [
     id: "signal-6",
     matchId: "match-6",
     match: "Lakers vs Warriors",
-    avg: 1.90,
+    avg: 1.9,
     best: 1.92,
     edge: 8.5,
     sources: 2,
@@ -615,7 +615,7 @@ export const mockValueSignals: ValueSignal[] = [
     id: "signal-9",
     matchId: "match-1",
     match: "Tottenham vs Newcastle",
-    avg: 2.30,
+    avg: 2.3,
     best: 2.45,
     edge: 6.5,
     sources: 4,
@@ -636,5 +636,5 @@ export const mockValueSignals: ValueSignal[] = [
     confidence: 91,
     homeTeam: { name: "Atletico Madrid", shortName: "ATM", logo: "⚽" },
     awayTeam: { name: "Sevilla", shortName: "SEV", logo: "⚽" },
-  }
+  },
 ];

@@ -1,7 +1,6 @@
 "use client";
 
 import { Circle } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Match } from "@/types/match";
@@ -42,7 +41,8 @@ const LiveMatchCard = ({ match, showSource = true, showStats = false }: LiveMatc
     if (!match.sources || match.sources.length === 0) {
       return match.bestSource || "Unknown";
     }
-    const primarySource = match.sources.find((s) => s.sourceName === match.bestSource) || match.sources[0];
+    const primarySource =
+      match.sources.find((s) => s.sourceName === match.bestSource) || match.sources[0];
     return primarySource?.sourceName || match.bestSource || "Unknown";
   };
 
@@ -50,38 +50,37 @@ const LiveMatchCard = ({ match, showSource = true, showStats = false }: LiveMatc
   const getAwayScore = () => match.liveData?.awayScore ?? match.awayTeam.logo;
 
   return (
-    <div className="terminal-card p-3 hover-lift cursor-pointer">
-      
+    <div className="terminal-card hover-lift cursor-pointer p-3">
       {/* Header: Sport, League, Status */}
-      <div className="flex items-center justify-between mb-3 pb-2 border-b border-border">
+      <div className="mb-3 flex items-center justify-between border-b border-border pb-2">
         <div className="flex flex-col gap-1">
-          <span className="text-xs text-muted-foreground uppercase tracking-wider">
+          <span className="text-xs uppercase tracking-wider text-muted-foreground">
             {match.sport}
           </span>
-          <span className="text-[10px] text-muted-foreground/70">
-            {match.league}
-          </span>
+          <span className="text-[10px] text-muted-foreground/70">{match.league}</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5">
-            <Circle 
+            <Circle
               className={`h-2 w-2 fill-current ${getStatusColor()} ${
-                match.status === 'live' ? 'animate-pulse' : ''
+                match.status === "live" ? "animate-pulse" : ""
               }`}
             />
-            <span className={`text-[10px] uppercase tracking-wider font-semibold ${getStatusColor()}`}>
+            <span
+              className={`text-[10px] font-semibold uppercase tracking-wider ${getStatusColor()}`}
+            >
               {getStatusText()}
             </span>
           </div>
           {showSource && (
             <Tooltip>
               <TooltipTrigger>
-                <div className="inline-flex items-center px-2 py-0.5 text-[10px] font-mono text-muted-foreground border border-border">
+                <div className="inline-flex items-center border border-border px-2 py-0.5 font-mono text-[10px] text-muted-foreground">
                   {getSourceBadge()}
                 </div>
               </TooltipTrigger>
               <TooltipContent>
-                <div className="text-xs space-y-1">
+                <div className="space-y-1 text-xs">
                   <p>Primary source: {getSourceBadge()}</p>
                   <p>Total sources: {match.sources?.length || 0}</p>
                   <p>Best source: {match.bestSource || "Unknown"}</p>
@@ -94,17 +93,16 @@ const LiveMatchCard = ({ match, showSource = true, showStats = false }: LiveMatc
 
       {/* Match Content */}
       <div className="space-y-3">
-        
         {/* Home Team */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 flex-1">
+          <div className="flex flex-1 items-center gap-2">
             <TeamLogo team={match.homeTeam} sport={match.sport.toLowerCase()} size="md" />
-            <span className="text-sm text-foreground font-medium truncate">
+            <span className="truncate text-sm font-medium text-foreground">
               {match.homeTeam.name}
             </span>
           </div>
           {match.liveData && (
-            <span className="text-2xl font-mono font-bold text-foreground ml-2">
+            <span className="ml-2 font-mono text-2xl font-bold text-foreground">
               {getHomeScore()}
             </span>
           )}
@@ -112,29 +110,28 @@ const LiveMatchCard = ({ match, showSource = true, showStats = false }: LiveMatc
 
         {/* Away Team */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 flex-1">
+          <div className="flex flex-1 items-center gap-2">
             <TeamLogo team={match.awayTeam} sport={match.sport.toLowerCase()} size="md" />
-            <span className="text-sm text-foreground font-medium truncate">
+            <span className="truncate text-sm font-medium text-foreground">
               {match.awayTeam.name}
             </span>
           </div>
           {match.liveData && (
-            <span className="text-2xl font-mono font-bold text-foreground ml-2">
+            <span className="ml-2 font-mono text-2xl font-bold text-foreground">
               {getAwayScore()}
             </span>
           )}
         </div>
-
       </div>
 
       {/* Stats (if available and enabled) */}
       {showStats && match.liveData && (
-        <div className="mt-3 pt-3 border-t border-border space-y-2">
+        <div className="mt-3 space-y-2 border-t border-border pt-3">
           {/* Example: Possession or other stats */}
           <div>
-            <div className="flex justify-between text-xs mb-1">
+            <div className="mb-1 flex justify-between text-xs">
               <span className="text-muted-foreground">Value</span>
-              <span className="font-mono text-signal">+{match.value.toFixed(1)}%</span>
+              <span className="text-signal font-mono">+{match.value.toFixed(1)}%</span>
             </div>
             <Progress value={Math.min(match.value * 10, 100)} className="h-1" />
           </div>
@@ -142,34 +139,37 @@ const LiveMatchCard = ({ match, showSource = true, showStats = false }: LiveMatc
       )}
 
       {/* Footer: Time/Period */}
-      <div className="mt-3 pt-2 border-t border-border">
+      <div className="mt-3 border-t border-border pt-2">
         <div className="flex items-center justify-between">
-          <span className="text-xs text-muted-foreground font-mono" suppressHydrationWarning>
-            {match.liveData?.time || (() => {
-              const date = new Date(match.startTime);
-              const hours = date.getUTCHours().toString().padStart(2, '0');
-              const minutes = date.getUTCMinutes().toString().padStart(2, '0');
-              return `${hours}:${minutes}`;
-            })()}
+          <span className="font-mono text-xs text-muted-foreground" suppressHydrationWarning>
+            {match.liveData?.time ||
+              (() => {
+                const date = new Date(match.startTime);
+                const hours = date.getUTCHours().toString().padStart(2, "0");
+                const minutes = date.getUTCMinutes().toString().padStart(2, "0");
+                return `${hours}:${minutes}`;
+              })()}
           </span>
           {match.liveData?.period && (
-            <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
               {match.liveData.period}
             </span>
           )}
           {!match.liveData && (
-            <span className="text-[10px] text-muted-foreground uppercase tracking-wider" suppressHydrationWarning>
+            <span
+              className="text-[10px] uppercase tracking-wider text-muted-foreground"
+              suppressHydrationWarning
+            >
               {(() => {
                 const date = new Date(match.startTime);
-                const day = date.getUTCDate().toString().padStart(2, '0');
-                const month = (date.getUTCMonth() + 1).toString().padStart(2, '0');
+                const day = date.getUTCDate().toString().padStart(2, "0");
+                const month = (date.getUTCMonth() + 1).toString().padStart(2, "0");
                 return `${day}.${month}`;
               })()}
             </span>
           )}
         </div>
       </div>
-
     </div>
   );
 };

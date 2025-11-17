@@ -19,7 +19,7 @@ const mockMatches: Match[] = [
     homeTeam: { name: "Arsenal", logo: "⚽", shortName: "ARS" },
     awayTeam: { name: "Chelsea", logo: "⚽", shortName: "CHE" },
     startTime: new Date(Date.now() - 67 * 60000).toISOString(),
-    aggregatedOdds: { home: 2.15, draw: 3.40, away: 3.20 },
+    aggregatedOdds: { home: 2.15, draw: 3.4, away: 3.2 },
     sources: [],
     spread: 0.05,
     spreadQuality: "low",
@@ -30,8 +30,8 @@ const mockMatches: Match[] = [
       awayScore: 1,
       period: "2nd Half",
       time: "67'",
-      lastUpdate: new Date().toISOString()
-    }
+      lastUpdate: new Date().toISOString(),
+    },
   },
   {
     id: "2",
@@ -52,8 +52,8 @@ const mockMatches: Match[] = [
       awayScore: 102,
       period: "3rd Quarter",
       time: "Q3 8:24",
-      lastUpdate: new Date().toISOString()
-    }
+      lastUpdate: new Date().toISOString(),
+    },
   },
   {
     id: "3",
@@ -63,12 +63,12 @@ const mockMatches: Match[] = [
     homeTeam: { name: "Real Madrid", logo: "⚽", shortName: "RMA" },
     awayTeam: { name: "Barcelona", logo: "⚽", shortName: "FCB" },
     startTime: new Date(Date.now() + 2 * 60 * 60000).toISOString(),
-    aggregatedOdds: { home: 2.45, draw: 3.20, away: 2.90 },
+    aggregatedOdds: { home: 2.45, draw: 3.2, away: 2.9 },
     sources: [],
     spread: 0.08,
     spreadQuality: "medium",
     value: 6.2,
-    bestSource: "Source C"
+    bestSource: "Source C",
   },
   {
     id: "4",
@@ -89,8 +89,8 @@ const mockMatches: Match[] = [
       awayScore: 1,
       period: "4th Set",
       time: "Set 4",
-      lastUpdate: new Date().toISOString()
-    }
+      lastUpdate: new Date().toISOString(),
+    },
   },
   {
     id: "5",
@@ -111,8 +111,8 @@ const mockMatches: Match[] = [
       awayScore: 3,
       period: "Game Finished",
       time: "Final",
-      lastUpdate: new Date(Date.now() - 30 * 60000).toISOString()
-    }
+      lastUpdate: new Date(Date.now() - 30 * 60000).toISOString(),
+    },
   },
   {
     id: "6",
@@ -122,7 +122,7 @@ const mockMatches: Match[] = [
     homeTeam: { name: "G2 Esports", logo: "🎮", shortName: "G2" },
     awayTeam: { name: "Fnatic", logo: "🎮", shortName: "FNC" },
     startTime: new Date(Date.now() - 45 * 60000).toISOString(),
-    aggregatedOdds: { home: 1.55, draw: 0, away: 2.40 },
+    aggregatedOdds: { home: 1.55, draw: 0, away: 2.4 },
     sources: [],
     spread: 0.06,
     spreadQuality: "medium",
@@ -133,8 +133,8 @@ const mockMatches: Match[] = [
       awayScore: 0,
       period: "Best of 3",
       time: "Game 2",
-      lastUpdate: new Date().toISOString()
-    }
+      lastUpdate: new Date().toISOString(),
+    },
   },
   {
     id: "7",
@@ -144,7 +144,7 @@ const mockMatches: Match[] = [
     homeTeam: { name: "Bayern", logo: "⚽", shortName: "BAY" },
     awayTeam: { name: "Dortmund", logo: "⚽", shortName: "DOR" },
     startTime: new Date(Date.now() - 78 * 60000).toISOString(),
-    aggregatedOdds: { home: 1.85, draw: 3.60, away: 4.20 },
+    aggregatedOdds: { home: 1.85, draw: 3.6, away: 4.2 },
     sources: [],
     spread: 0.07,
     spreadQuality: "medium",
@@ -155,8 +155,8 @@ const mockMatches: Match[] = [
       awayScore: 2,
       period: "2nd Half",
       time: "78'",
-      lastUpdate: new Date().toISOString()
-    }
+      lastUpdate: new Date().toISOString(),
+    },
   },
   {
     id: "8",
@@ -166,13 +166,13 @@ const mockMatches: Match[] = [
     homeTeam: { name: "Celtics", logo: "🏀", shortName: "BOS" },
     awayTeam: { name: "Heat", logo: "🏀", shortName: "MIA" },
     startTime: new Date(Date.now() + 90 * 60000).toISOString(),
-    aggregatedOdds: { home: 1.70, draw: 0, away: 2.10 },
+    aggregatedOdds: { home: 1.7, draw: 0, away: 2.1 },
     sources: [],
     spread: 0.05,
     spreadQuality: "low",
     value: 3.4,
-    bestSource: "Source C"
-  }
+    bestSource: "Source C",
+  },
 ];
 
 export default function LiveScoresPage() {
@@ -184,32 +184,30 @@ export default function LiveScoresPage() {
   const filteredMatches = mockMatches.filter((match) => {
     const sportMatch = selectedSport === "All" || match.sport === selectedSport;
     const statusMatch = selectedStatus === "All" || match.status === selectedStatus.toLowerCase();
-    const searchMatch = 
+    const searchMatch =
       searchQuery === "" ||
       match.homeTeam.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       match.awayTeam.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       match.league.toLowerCase().includes(searchQuery.toLowerCase());
-    
+
     return sportMatch && statusMatch && searchMatch;
   });
 
   return (
-    <div className="min-h-screen bg-background grid-pattern flex">
+    <div className="grid-pattern flex min-h-screen bg-background">
       <Sidebar />
 
-      <div className="flex-1 flex flex-col">
+      <div className="flex flex-1 flex-col">
         <Header selectedSport={headerSport} onSportChange={setHeaderSport} />
 
-        <main className="flex-1 p-3 overflow-auto">
-          <div className="max-w-[2000px] mx-auto space-y-3">
-            
+        <main className="flex-1 overflow-auto p-3">
+          <div className="mx-auto max-w-[2000px] space-y-3">
             {/* Filters Section */}
             <div className="terminal-card p-3">
               <div className="flex flex-col gap-3">
-                
                 {/* Sport Filters */}
                 <div>
-                  <span className="text-xs text-muted-foreground uppercase tracking-wider mb-2 block">
+                  <span className="mb-2 block text-xs uppercase tracking-wider text-muted-foreground">
                     Sport
                   </span>
                   <div className="flex flex-wrap gap-2">
@@ -229,7 +227,7 @@ export default function LiveScoresPage() {
 
                 {/* Status Filters */}
                 <div>
-                  <span className="text-xs text-muted-foreground uppercase tracking-wider mb-2 block">
+                  <span className="mb-2 block text-xs uppercase tracking-wider text-muted-foreground">
                     Status
                   </span>
                   <div className="flex flex-wrap gap-2">
@@ -249,7 +247,7 @@ export default function LiveScoresPage() {
 
                 {/* Search */}
                 <div>
-                  <span className="text-xs text-muted-foreground uppercase tracking-wider mb-2 block">
+                  <span className="mb-2 block text-xs uppercase tracking-wider text-muted-foreground">
                     Search
                   </span>
                   <input
@@ -257,17 +255,16 @@ export default function LiveScoresPage() {
                     placeholder="Search teams or leagues..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full max-w-md bg-card border border-border px-3 py-2 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary"
+                    className="w-full max-w-md border border-border bg-card px-3 py-2 text-xs text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
                   />
                 </div>
-
               </div>
             </div>
 
             {/* Results Count */}
             <div className="flex items-center justify-between px-1">
-              <span className="text-xs text-muted-foreground uppercase tracking-wider">
-                {filteredMatches.length} {filteredMatches.length === 1 ? 'Match' : 'Matches'} Found
+              <span className="text-xs uppercase tracking-wider text-muted-foreground">
+                {filteredMatches.length} {filteredMatches.length === 1 ? "Match" : "Matches"} Found
               </span>
               <span className="text-xs text-muted-foreground">
                 Auto-refresh: <span className="text-primary">ON</span>
@@ -275,7 +272,7 @@ export default function LiveScoresPage() {
             </div>
 
             {/* Match Cards Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
               {filteredMatches.map((match) => (
                 <LiveMatchCard key={match.id} match={match} />
               ))}
@@ -283,17 +280,15 @@ export default function LiveScoresPage() {
 
             {/* No Results */}
             {filteredMatches.length === 0 && (
-              <div className="terminal-card p-8 flex items-center justify-center">
+              <div className="terminal-card flex items-center justify-center p-8">
                 <span className="text-sm text-muted-foreground">
                   No matches found. Try adjusting your filters.
                 </span>
               </div>
             )}
-
           </div>
         </main>
       </div>
     </div>
   );
 }
-

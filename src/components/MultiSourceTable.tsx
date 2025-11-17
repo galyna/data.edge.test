@@ -1,5 +1,12 @@
-import { ArrowUp, ArrowDown, TrendingUp } from "lucide-react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { ArrowUp, ArrowDown } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Match } from "@/types/match";
 import { useState } from "react";
 import MatchDetailDialog from "./MatchDetailDialog";
@@ -35,15 +42,19 @@ const MultiSourceTable = ({ matches, lastUpdate }: MultiSourceTableProps) => {
 
   return (
     <div className="terminal-card p-4">
-      <div className="flex items-center justify-between mb-3">
+      <div className="mb-3 flex items-center justify-between">
         <div>
-          <h2 className="text-sm font-semibold uppercase tracking-wide">Multi-Source Odds Comparison</h2>
-          <p className="text-xs text-muted-foreground mt-0.5">Aggregated data from active sources</p>
+          <h2 className="text-sm font-semibold uppercase tracking-wide">
+            Multi-Source Odds Comparison
+          </h2>
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            Aggregated data from active sources
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <span className="text-xs text-muted-foreground">Last update:</span>
-          <span className="text-xs font-mono text-signal">
-            {lastUpdate ? formatTime(lastUpdate) : '0s ago'}
+          <span className="text-signal font-mono text-xs">
+            {lastUpdate ? formatTime(lastUpdate) : "0s ago"}
           </span>
         </div>
       </div>
@@ -51,28 +62,40 @@ const MultiSourceTable = ({ matches, lastUpdate }: MultiSourceTableProps) => {
       <Table>
         <TableHeader>
           <TableRow className="border-border hover:bg-transparent">
-            <TableHead className="text-muted-foreground font-semibold text-xs uppercase h-9 px-3">Match</TableHead>
-            <TableHead className="text-muted-foreground font-semibold text-xs uppercase h-9 px-3">Aggregated Odds</TableHead>
-            <TableHead className="text-muted-foreground font-semibold text-xs uppercase h-9 px-3">Spread</TableHead>
-            <TableHead className="text-muted-foreground font-semibold text-xs uppercase h-9 px-3">Best Source</TableHead>
-            <TableHead className="text-muted-foreground font-semibold text-xs uppercase h-9 px-3 text-right">Value %</TableHead>
+            <TableHead className="h-9 px-3 text-xs font-semibold uppercase text-muted-foreground">
+              Match
+            </TableHead>
+            <TableHead className="h-9 px-3 text-xs font-semibold uppercase text-muted-foreground">
+              Aggregated Odds
+            </TableHead>
+            <TableHead className="h-9 px-3 text-xs font-semibold uppercase text-muted-foreground">
+              Spread
+            </TableHead>
+            <TableHead className="h-9 px-3 text-xs font-semibold uppercase text-muted-foreground">
+              Best Source
+            </TableHead>
+            <TableHead className="h-9 px-3 text-right text-xs font-semibold uppercase text-muted-foreground">
+              Value %
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {matches.map((match) => (
-            <TableRow 
-              key={match.id} 
-              className="border-border hover-lift cursor-pointer h-11 transition-all"
+            <TableRow
+              key={match.id}
+              className="hover-lift h-11 cursor-pointer border-border transition-all"
               onClick={() => handleMatchClick(match)}
             >
-              <TableCell className="font-medium text-xs px-3">
+              <TableCell className="px-3 text-xs font-medium">
                 <div className="flex items-center gap-2">
                   <TeamLogo team={match.homeTeam} sport={match.sport.toLowerCase()} size="sm" />
-                  <span>{match.homeTeam.name} vs {match.awayTeam.name}</span>
+                  <span>
+                    {match.homeTeam.name} vs {match.awayTeam.name}
+                  </span>
                 </div>
               </TableCell>
-              <TableCell className="font-mono text-xs px-3">
-                <AnimatedValue 
+              <TableCell className="px-3 font-mono text-xs">
+                <AnimatedValue
                   value={match.aggregatedOdds.home}
                   format={() => formatOdds(match)}
                   className="font-mono text-xs"
@@ -80,37 +103,39 @@ const MultiSourceTable = ({ matches, lastUpdate }: MultiSourceTableProps) => {
               </TableCell>
               <TableCell className="px-3">
                 <div className="flex items-center gap-1.5">
-                  <AnimatedValue 
+                  <AnimatedValue
                     value={match.spread}
                     format={(val) => `±${val.toFixed(2)}`}
                     className={`font-mono text-xs ${
-                      match.spreadQuality === "low" 
-                        ? "text-positive" 
-                        : match.spreadQuality === "high" 
-                        ? "text-negative" 
-                        : "text-muted-foreground"
+                      match.spreadQuality === "low"
+                        ? "text-positive"
+                        : match.spreadQuality === "high"
+                          ? "text-negative"
+                          : "text-muted-foreground"
                     }`}
                   />
-                  <span className={`text-[10px] px-1.5 py-0.5 ${
-                    match.spreadQuality === "low" 
-                      ? "bg-positive text-primary-foreground" 
-                      : match.spreadQuality === "high" 
-                      ? "bg-negative text-destructive-foreground" 
-                      : "bg-muted text-muted-foreground"
-                  }`}>
+                  <span
+                    className={`px-1.5 py-0.5 text-[10px] ${
+                      match.spreadQuality === "low"
+                        ? "bg-positive text-primary-foreground"
+                        : match.spreadQuality === "high"
+                          ? "bg-negative text-destructive-foreground"
+                          : "bg-muted text-muted-foreground"
+                    }`}
+                  >
                     {match.spreadQuality.toUpperCase()}
                   </span>
                 </div>
               </TableCell>
-              <TableCell className="text-xs px-3">{match.bestSource}</TableCell>
-              <TableCell className="text-right px-3">
+              <TableCell className="px-3 text-xs">{match.bestSource}</TableCell>
+              <TableCell className="px-3 text-right">
                 <div className="flex items-center justify-end gap-1">
                   {match.value > 10 ? (
-                    <ArrowUp className="w-3 h-3 text-positive" />
+                    <ArrowUp className="text-positive h-3 w-3" />
                   ) : (
-                    <ArrowDown className="w-3 h-3 text-muted-foreground" />
+                    <ArrowDown className="h-3 w-3 text-muted-foreground" />
                   )}
-                  <AnimatedValue 
+                  <AnimatedValue
                     value={match.value}
                     format={(val) => `+${val.toFixed(1)}%`}
                     className={`font-mono text-xs font-semibold ${
@@ -124,11 +149,7 @@ const MultiSourceTable = ({ matches, lastUpdate }: MultiSourceTableProps) => {
         </TableBody>
       </Table>
 
-      <MatchDetailDialog 
-        match={selectedMatch}
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-      />
+      <MatchDetailDialog match={selectedMatch} open={dialogOpen} onOpenChange={setDialogOpen} />
     </div>
   );
 };
