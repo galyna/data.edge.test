@@ -1,6 +1,5 @@
 import { TrendingUp, Circle } from "lucide-react";
 import { ValueSignal } from "@/types/match";
-import AnimatedValue from "./AnimatedValue";
 
 interface ValueRadarProps {
   signals: ValueSignal[];
@@ -45,19 +44,11 @@ const ValueRadar = ({ signals }: ValueRadarProps) => {
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Best:</span>
-                <AnimatedValue
-                  value={signal.best}
-                  format={(val) => val.toFixed(2)}
-                  className="text-signal font-mono"
-                />
+                <span className="text-signal font-mono">{signal.best.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Edge:</span>
-                <AnimatedValue
-                  value={signal.edge}
-                  format={(val) => `+${val.toFixed(1)}%`}
-                  className="text-positive font-mono font-semibold"
-                />
+                <span className="text-positive font-mono font-semibold">+{signal.edge.toFixed(1)}%</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Src:</span>
