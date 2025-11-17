@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, memo, useMemo, useCallback } from "react";
 import { Team } from "@/types/match";
 import { getTeamLogo } from "@/lib/teamLogos";
 import Image from "next/image";
@@ -17,9 +17,9 @@ const sizeMap = {
   md: 32,
   lg: 48,
   xl: 64,
-};
+} as const;
 
-export const TeamLogo = ({
+export const TeamLogo = memo(({
   team,
   sport = "football",
   size = "md",
@@ -28,8 +28,19 @@ export const TeamLogo = ({
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
 
-  const logoUrl = getTeamLogo(team, sport);
+  // Memoize logo URL to avoid recalculation
+  const logoUrl = useMemo(() => getTeamLogo(team, sport), [team, sport]);
   const sizePx = sizeMap[size];
+  
+  // Memoize callbacks
+  const handleError = useCallback(() => {
+    setImageError(true);
+    setImageLoading(false);
+  }, []);
+  
+  const handleLoad = useCallback(() => {
+    setImageLoading(false);
+  }, []);
 
   // If image failed to load or is emoji, show emoji fallback
   if (imageError || (!logoUrl.includes("http") && team.logo)) {
@@ -54,13 +65,22 @@ export const TeamLogo = ({
         width={sizePx}
         height={sizePx}
         className={`object-contain ${imageLoading ? "opacity-0" : "opacity-100"} transition-opacity`}
-        onError={() => {
-          setImageError(true);
-          setImageLoading(false);
-        }}
-        onLoad={() => setImageLoading(false)}
+        onError={handleError}
+        onLoad={handleLoad}
         unoptimized
+        priority={size === "lg" || size === "xl"} // Priority for larger logos
       />
     </div>
   );
-};
+}, (prevProps, nextProps) => {
+  // Custom comparison function for better performance
+  return (
+    prevProps.team.name === nextProps.team.name &&
+    prevProps.team.logo === nextProps.team.logo &&
+    prevProps.sport === nextProps.sport &&
+    prevProps.size === nextProps.size &&
+    prevProps.className === nextProps.className
+  );
+});
+
+TeamLogo.displayName = "TeamLogo";

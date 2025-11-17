@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo, memo } from "react";
 import {
   Table,
   TableBody,
@@ -18,7 +19,31 @@ interface OddsAggregatorProps {
   match: Match | null;
 }
 
-const OddsAggregator = ({ match }: OddsAggregatorProps) => {
+const OddsAggregator = memo(({ match }: OddsAggregatorProps) => {
+  // Memoize best odds calculations - hooks must be called before early returns
+  const { bestHome, bestAway, bestDraw } = useMemo(() => {
+    if (!match?.sources || match.sources.length === 0) {
+      return { bestHome: 0, bestAway: 0, bestDraw: null };
+    }
+    return {
+      bestHome: Math.max(...match.sources.map((s) => s.odds.home)),
+      bestAway: Math.max(...match.sources.map((s) => s.odds.away)),
+      bestDraw: match.aggregatedOdds.draw
+        ? Math.max(...match.sources.map((s) => s.odds.draw || 0))
+        : null,
+    };
+  }, [match?.sources, match?.aggregatedOdds.draw]);
+
+  const getBestSource = useMemo(
+    () => (outcome: "home" | "draw" | "away") => {
+      if (outcome === "draw" && !bestDraw) return null;
+      const bestValue = outcome === "home" ? bestHome : outcome === "draw" ? bestDraw! : bestAway;
+      return match?.sources.find((s) => s.odds[outcome] === bestValue)?.sourceName || null;
+    },
+    [match?.sources, bestHome, bestAway, bestDraw]
+  );
+
+  // Early returns after hooks
   if (!match) {
     return (
       <div className="terminal-card p-4">
@@ -40,19 +65,6 @@ const OddsAggregator = ({ match }: OddsAggregatorProps) => {
       </div>
     );
   }
-
-  // Find best odds for each outcome
-  const bestHome = Math.max(...match.sources.map((s) => s.odds.home));
-  const bestAway = Math.max(...match.sources.map((s) => s.odds.away));
-  const bestDraw = match.aggregatedOdds.draw
-    ? Math.max(...match.sources.map((s) => s.odds.draw || 0))
-    : null;
-
-  const getBestSource = (outcome: "home" | "draw" | "away") => {
-    if (outcome === "draw" && !bestDraw) return null;
-    const bestValue = outcome === "home" ? bestHome : outcome === "draw" ? bestDraw! : bestAway;
-    return match.sources.find((s) => s.odds[outcome] === bestValue)?.sourceName;
-  };
 
   return (
     <div className="terminal-card p-3">
@@ -183,6 +195,8 @@ const OddsAggregator = ({ match }: OddsAggregatorProps) => {
       )}
     </div>
   );
-};
+});
+
+OddsAggregator.displayName = "OddsAggregator";
 
 export default OddsAggregator;

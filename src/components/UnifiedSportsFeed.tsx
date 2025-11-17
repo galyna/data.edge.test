@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useCallback, memo, useMemo } from "react";
 import {
   Table,
   TableBody,
@@ -13,22 +13,29 @@ import { Badge } from "@/components/ui/badge";
 import { Match } from "@/types/match";
 import { Clock } from "lucide-react";
 import { TeamLogo } from "./TeamLogo";
-import { useMatchStore } from "@/store/matchStore";
+import { useSelectedMatch, useSetSelectedMatch } from "@/store/matchStore";
 
 interface UnifiedSportsFeedProps {
-  matches: Match[];
-  selectedSport: string;
+  matches: Match[]; // Already filtered by sport
+  selectedSport: string; // For display purposes
 }
 
-const UnifiedSportsFeed = ({ matches, selectedSport }: UnifiedSportsFeedProps) => {
-  const { setSelectedMatch, selectedMatch } = useMatchStore();
+const UnifiedSportsFeed = memo(({ matches }: UnifiedSportsFeedProps) => {
+  // Use optimized Zustand selectors
+  const setSelectedMatch = useSetSelectedMatch();
+  const selectedMatch = useSelectedMatch();
 
-  const handleMatchClick = (match: Match) => {
-    setSelectedMatch(match);
-    // setMatchDetailDialogOpen(true); // Now handled by clicking on a row if needed, not by default
-  };
+  // Memoize selected match ID for comparison
+  const selectedMatchId = useMemo(() => selectedMatch?.id ?? null, [selectedMatch]);
 
-  const getStatusBadge = (status: Match["status"]) => {
+  const handleMatchClick = useCallback(
+    (match: Match) => {
+      setSelectedMatch(match);
+    },
+    [setSelectedMatch]
+  );
+
+  const getStatusBadge = useCallback((status: Match["status"]) => {
     switch (status) {
       case "live":
         return (
@@ -49,20 +56,16 @@ const UnifiedSportsFeed = ({ matches, selectedSport }: UnifiedSportsFeedProps) =
           </Badge>
         );
     }
-  };
+  }, []);
 
-  const filteredMatches = useMemo(() => {
-    return matches.filter((match) => match.sport.toLowerCase() === selectedSport);
-  }, [matches, selectedSport]);
-
-  const formatOdds = (match: Match) => {
+  const formatOdds = useCallback((match: Match) => {
     if (match.aggregatedOdds.draw) {
       return `${match.aggregatedOdds.home.toFixed(2)} / ${match.aggregatedOdds.draw.toFixed(2)} / ${match.aggregatedOdds.away.toFixed(2)}`;
     }
     return `${match.aggregatedOdds.home.toFixed(2)} / ${match.aggregatedOdds.away.toFixed(2)}`;
-  };
+  }, []);
 
-  const formatTime = (match: Match) => {
+  const formatTime = useCallback((match: Match) => {
     if (match.status === "live" && match.liveData) {
       return match.liveData.time;
     }
@@ -73,7 +76,7 @@ const UnifiedSportsFeed = ({ matches, selectedSport }: UnifiedSportsFeedProps) =
       return `${hours}:${minutes}`;
     }
     return "FT";
-  };
+  }, []);
 
   return (
     <div className="terminal-card p-3">
@@ -83,13 +86,13 @@ const UnifiedSportsFeed = ({ matches, selectedSport }: UnifiedSportsFeedProps) =
             UNIFIED SPORTS FEED
           </h3>
           <p className="text-[10px] text-muted-foreground">
-            Live scores and data from all sources. Matches: {filteredMatches.length}
+            Live scores and data from all sources. Matches: {matches.length}
           </p>
         </div>
         {/* The filters (Tabs) are removed from here */}
       </div>
 
-      {filteredMatches.length === 0 ? (
+      {matches.length === 0 ? (
         <div className="py-8 text-center text-muted-foreground">
           No matches available for the selected sport.
         </div>
@@ -115,14 +118,16 @@ const UnifiedSportsFeed = ({ matches, selectedSport }: UnifiedSportsFeedProps) =
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredMatches.map((match) => (
-              <TableRow
-                key={match.id}
-                className={`hover-lift h-11 cursor-pointer border-border transition-all ${
-                  selectedMatch?.id === match.id ? "border-primary/50 bg-primary/10" : ""
-                }`}
-                onClick={() => handleMatchClick(match)}
-              >
+            {matches.map((match) => {
+              const isSelected = selectedMatchId === match.id;
+              return (
+                <TableRow
+                  key={match.id}
+                  className={`hover-lift h-11 cursor-pointer border-border transition-all ${
+                    isSelected ? "border-primary/50 bg-primary/10" : ""
+                  }`}
+                  onClick={() => handleMatchClick(match)}
+                >
                 <TableCell className="px-3 text-xs font-medium">
                   <div className="flex items-center gap-2">
                     <TeamLogo team={match.homeTeam} sport={match.sport.toLowerCase()} size="sm" />
@@ -156,12 +161,34 @@ const UnifiedSportsFeed = ({ matches, selectedSport }: UnifiedSportsFeedProps) =
                   </div>
                 </TableCell>
               </TableRow>
-            ))}
+              );
+            })}
           </TableBody>
         </Table>
       )}
     </div>
   );
-};
+}, (prevProps, nextProps) => {
+  // Custom comparison for better performance
+  // Only re-render if matches array reference changed or length changed
+  if (prevProps.matches.length !== nextProps.matches.length) {
+    return false;
+  }
+  // Shallow compare matches array
+  if (prevProps.matches !== nextProps.matches) {
+    // Check if any match IDs changed
+    for (let i = 0; i < prevProps.matches.length; i++) {
+      if (prevProps.matches[i].id !== nextProps.matches[i].id) {
+        return false;
+      }
+    }
+  }
+  if (prevProps.selectedSport !== nextProps.selectedSport) {
+    return false;
+  }
+  return true;
+});
+
+UnifiedSportsFeed.displayName = "UnifiedSportsFeed";
 
 export default UnifiedSportsFeed;

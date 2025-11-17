@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, memo } from "react";
 import {
   Table,
   TableBody,
@@ -24,7 +24,7 @@ interface MultiSourceComparisonProps {
   onMatchSelect?: (match: Match) => void;
 }
 
-const MultiSourceComparison = ({ match }: MultiSourceComparisonProps) => {
+const MultiSourceComparison = memo(({ match }: MultiSourceComparisonProps) => {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -538,6 +538,8 @@ const MultiSourceComparison = ({ match }: MultiSourceComparisonProps) => {
       </div>
     </div>
   );
-};
+});
+
+MultiSourceComparison.displayName = "MultiSourceComparison";
 
 export default MultiSourceComparison;

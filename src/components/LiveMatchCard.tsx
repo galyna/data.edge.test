@@ -5,6 +5,7 @@ import { Progress } from "@/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Match } from "@/types/match";
 import { TeamLogo } from "./TeamLogo";
+import { memo, useMemo } from "react";
 
 interface LiveMatchCardProps {
   match: Match;
@@ -12,8 +13,9 @@ interface LiveMatchCardProps {
   showStats?: boolean;
 }
 
-const LiveMatchCard = ({ match, showSource = true, showStats = false }: LiveMatchCardProps) => {
-  const getStatusColor = () => {
+const LiveMatchCard = memo(({ match, showSource = true, showStats = false }: LiveMatchCardProps) => {
+  // Memoize computed values to avoid recalculation on each render
+  const statusColor = useMemo(() => {
     switch (match.status) {
       case "live":
         return "text-negative";
@@ -24,9 +26,9 @@ const LiveMatchCard = ({ match, showSource = true, showStats = false }: LiveMatc
       default:
         return "text-muted-foreground";
     }
-  };
+  }, [match.status]);
 
-  const getStatusText = () => {
+  const statusText = useMemo(() => {
     switch (match.status) {
       case "live":
         return "LIVE";
@@ -35,19 +37,26 @@ const LiveMatchCard = ({ match, showSource = true, showStats = false }: LiveMatc
       case "finished":
         return "FINISHED";
     }
-  };
+  }, [match.status]);
 
-  const getSourceBadge = () => {
+  const sourceBadge = useMemo(() => {
     if (!match.sources || match.sources.length === 0) {
       return match.bestSource || "Unknown";
     }
     const primarySource =
       match.sources.find((s) => s.sourceName === match.bestSource) || match.sources[0];
     return primarySource?.sourceName || match.bestSource || "Unknown";
-  };
+  }, [match.sources, match.bestSource]);
 
-  const getHomeScore = () => match.liveData?.homeScore ?? match.homeTeam.logo;
-  const getAwayScore = () => match.liveData?.awayScore ?? match.awayTeam.logo;
+  const homeScore = useMemo(
+    () => match.liveData?.homeScore ?? match.homeTeam.logo,
+    [match.liveData?.homeScore, match.homeTeam.logo]
+  );
+  
+  const awayScore = useMemo(
+    () => match.liveData?.awayScore ?? match.awayTeam.logo,
+    [match.liveData?.awayScore, match.awayTeam.logo]
+  );
 
   return (
     <div className="terminal-card hover-lift cursor-pointer p-3">
@@ -62,26 +71,26 @@ const LiveMatchCard = ({ match, showSource = true, showStats = false }: LiveMatc
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5">
             <Circle
-              className={`h-2 w-2 fill-current ${getStatusColor()} ${
+              className={`h-2 w-2 fill-current ${statusColor} ${
                 match.status === "live" ? "animate-pulse" : ""
               }`}
             />
             <span
-              className={`text-[10px] font-semibold uppercase tracking-wider ${getStatusColor()}`}
+              className={`text-[10px] font-semibold uppercase tracking-wider ${statusColor}`}
             >
-              {getStatusText()}
+              {statusText}
             </span>
           </div>
           {showSource && (
             <Tooltip>
               <TooltipTrigger>
                 <div className="inline-flex items-center border border-border px-2 py-0.5 font-mono text-[10px] text-muted-foreground">
-                  {getSourceBadge()}
+                  {sourceBadge}
                 </div>
               </TooltipTrigger>
               <TooltipContent>
                 <div className="space-y-1 text-xs">
-                  <p>Primary source: {getSourceBadge()}</p>
+                  <p>Primary source: {sourceBadge}</p>
                   <p>Total sources: {match.sources?.length || 0}</p>
                   <p>Best source: {match.bestSource || "Unknown"}</p>
                 </div>
@@ -103,7 +112,7 @@ const LiveMatchCard = ({ match, showSource = true, showStats = false }: LiveMatc
           </div>
           {match.liveData && (
             <span className="ml-2 font-mono text-2xl font-bold text-foreground">
-              {getHomeScore()}
+              {homeScore}
             </span>
           )}
         </div>
@@ -118,7 +127,7 @@ const LiveMatchCard = ({ match, showSource = true, showStats = false }: LiveMatc
           </div>
           {match.liveData && (
             <span className="ml-2 font-mono text-2xl font-bold text-foreground">
-              {getAwayScore()}
+              {awayScore}
             </span>
           )}
         </div>
@@ -172,6 +181,8 @@ const LiveMatchCard = ({ match, showSource = true, showStats = false }: LiveMatc
       </div>
     </div>
   );
-};
+});
+
+LiveMatchCard.displayName = "LiveMatchCard";
 
 export default LiveMatchCard;

@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { TrendingUp, Circle } from "lucide-react";
 import { ValueSignal } from "@/types/match";
 
@@ -5,7 +6,7 @@ interface ValueRadarProps {
   signals: ValueSignal[];
 }
 
-const ValueRadar = ({ signals }: ValueRadarProps) => {
+const ValueRadar = memo(({ signals }: ValueRadarProps) => {
   return (
     <div className="terminal-card p-2.5">
       <div className="mb-3 flex items-center gap-2">
@@ -80,6 +81,8 @@ const ValueRadar = ({ signals }: ValueRadarProps) => {
       </div>
     </div>
   );
-};
+});
+
+ValueRadar.displayName = "ValueRadar";
 
 export default ValueRadar;

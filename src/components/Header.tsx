@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { Bell, User, Circle, Search } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -17,9 +18,9 @@ const sports = [
   { id: "nhl", name: "NHL", icon: "🏒" },
   { id: "tennis", name: "Tennis", icon: "🎾" },
   { id: "esports", name: "E-sports", icon: "🎮" },
-];
+] as const;
 
-const Header = ({ selectedSport, onSportChange }: HeaderProps) => {
+const Header = memo(({ selectedSport, onSportChange }: HeaderProps) => {
   const _pathname = usePathname();
 
   return (
@@ -84,6 +85,8 @@ const Header = ({ selectedSport, onSportChange }: HeaderProps) => {
       </div>
     </header>
   );
-};
+});
+
+Header.displayName = "Header";
 
 export default Header;

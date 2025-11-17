@@ -1,27 +1,33 @@
 "use client";
 
+import { memo, useMemo } from "react";
 import { TrendingUp, BarChart3, Database, Activity, Gamepad2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const Sidebar = () => {
+const Sidebar = memo(() => {
   const pathname = usePathname();
 
-  const menuItems = [
-    { id: "dashboard", icon: Database, label: "Data Feeds", path: "/" },
-    { id: "analysis", icon: BarChart3, label: "Analysis & Tips", path: "/analysis" },
-    { id: "live-scores", icon: Activity, label: "Live Scores", path: "/live-scores" },
-    { id: "esports", icon: Gamepad2, label: "E-sports", path: "/esports" },
-    { id: "news", icon: TrendingUp, label: "News", path: "/news" },
-    // { id: "analytics", icon: Target, label: "Analytics", path: "#" },
-    // { id: "settings", icon: Settings, label: "Settings", path: "#" },
-  ];
+  // Memoize menu items to prevent recreation on each render
+  const menuItems = useMemo(
+    () => [
+      { id: "dashboard", icon: Database, label: "Data Feeds", path: "/" },
+      { id: "analysis", icon: BarChart3, label: "Analysis & Tips", path: "/analysis" },
+      { id: "live-scores", icon: Activity, label: "Live Scores", path: "/live-scores" },
+      { id: "esports", icon: Gamepad2, label: "E-sports", path: "/esports" },
+      { id: "news", icon: TrendingUp, label: "News", path: "/news" },
+    ],
+    []
+  );
 
-  const isActive = (path: string) => {
-    if (path === "/") return pathname === "/";
-    return pathname === path;
-  };
+  const isActive = useMemo(
+    () => (path: string) => {
+      if (path === "/") return pathname === "/";
+      return pathname === path;
+    },
+    [pathname]
+  );
 
   return (
     <aside className="flex w-20 flex-col items-center gap-6 border-r border-sidebar-border bg-sidebar py-6">
@@ -67,6 +73,8 @@ const Sidebar = () => {
       </nav>
     </aside>
   );
-};
+});
+
+Sidebar.displayName = "Sidebar";
 
 export default Sidebar;
