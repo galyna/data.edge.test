@@ -6,9 +6,17 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
+interface SourceData {
+  name: string;
+  available: boolean;
+  configured: boolean;
+}
+
 interface HeaderProps {
   selectedSport: string;
   onSportChange: (sport: string) => void;
+  sources?: SourceData[];
+  lastUpdate?: string | null;
 }
 
 const sports = [
@@ -20,8 +28,25 @@ const sports = [
   { id: "esports", name: "E-sports", icon: "🎮" },
 ] as const;
 
-const Header = memo(({ selectedSport, onSportChange }: HeaderProps) => {
+const Header = memo(({ selectedSport, onSportChange, sources = [], lastUpdate }: HeaderProps) => {
   const _pathname = usePathname();
+
+  // Calculate available sources
+  const availableSources = sources.filter(s => s.available).length;
+  const totalSources = sources.length;
+
+  // Calculate time since last update
+  const getTimeSinceUpdate = () => {
+    if (!lastUpdate) return "Never";
+    const now = new Date().getTime();
+    const updateTime = new Date(lastUpdate).getTime();
+    const diffMs = now - updateTime;
+    const diffSec = Math.floor(diffMs / 1000);
+    
+    if (diffSec < 60) return `${diffSec}s ago`;
+    if (diffSec < 3600) return `${Math.floor(diffSec / 60)}m ago`;
+    return `${Math.floor(diffSec / 3600)}h ago`;
+  };
 
   return (
     <header className="flex h-14 items-center justify-between border-b border-border bg-card px-6">
@@ -53,14 +78,29 @@ const Header = memo(({ selectedSport, onSportChange }: HeaderProps) => {
       {/* Right: Status & Actions */}
       <div className="flex items-center gap-4">
         {/* Data Sources Status */}
-        <div className="hidden items-center gap-2 border border-border bg-muted/30 px-3 py-1">
-          <Circle className="h-2 w-2 fill-primary text-primary" />
-          <span className="font-mono text-xs text-foreground">3/5 Sources Live</span>
-        </div>
+        {totalSources > 0 && (
+          <div className="flex items-center gap-2 border border-border bg-muted/30 px-3 py-1">
+            <Circle 
+              className={cn(
+                "h-2 w-2",
+                availableSources > 0 
+                  ? "fill-primary text-primary" 
+                  : "fill-muted-foreground text-muted-foreground"
+              )} 
+            />
+            <span className="font-mono text-xs text-foreground">
+              {availableSources}/{totalSources} Sources Live
+            </span>
+          </div>
+        )}
 
         {/* Last Sync */}
         <div className="font-mono text-xs text-muted-foreground">
-          Last sync: <span className="text-signal">5s ago</span>
+          Last sync: <span className={cn(
+            lastUpdate ? "text-signal" : "text-muted-foreground"
+          )}>
+            {getTimeSinceUpdate()}
+          </span>
         </div>
 
         <div className="h-4 w-px bg-border" />

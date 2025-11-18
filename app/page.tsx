@@ -6,8 +6,8 @@ import Header from "@/components/Header";
 import UnifiedSportsFeed from "@/components/UnifiedSportsFeed";
 import OddsAggregator from "@/components/OddsAggregator";
 import ValueRadar from "@/components/ValueRadar";
-import { mockMatches, mockDataSources, mockValueSignals } from "@/data/mockMatches";
-import { useRealtimeData } from "@/hooks/useRealtimeData";
+import { mockValueSignals } from "@/data/mockMatches";
+import { useLiveSportsData } from "@/hooks/useLiveSportsData";
 import { Match } from "@/types/match";
 import { useMatchDetail } from "@/store/matchStore";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -17,7 +17,7 @@ const MultiSourceComparison = lazy(() => import("@/components/MultiSourceCompari
 const MatchDetailDialog = lazy(() => import("@/components/MatchDetailDialog"));
 
 export default function Home() {
-  const { matches } = useRealtimeData(mockMatches, mockDataSources, 8000);
+  const { matches, sources, isLoading, lastUpdate } = useLiveSportsData(30000); // Auto refetch every 30s
   const [selectedSport, setSelectedSport] = useState("football");
 
   // Use optimized Zustand selectors - prevents unnecessary re-renders
@@ -64,11 +64,22 @@ export default function Home() {
       {/* Main Content */}
       <div className="flex flex-1 flex-col">
         {/* Header */}
-        <Header selectedSport={selectedSport} onSportChange={handleSportChange} />
+        <Header 
+          selectedSport={selectedSport} 
+          onSportChange={handleSportChange}
+          sources={sources}
+          lastUpdate={lastUpdate}
+        />
 
         {/* Dashboard Content */}
         <main className="flex-1 overflow-auto p-2">
-          <div className="mx-auto grid max-w-[2000px] grid-cols-12 gap-2">
+          {isLoading && matches.length === 0 ? (
+            <div className="mx-auto max-w-[2000px] space-y-2">
+              <Skeleton className="h-96 w-full" />
+              <Skeleton className="h-64 w-full" />
+            </div>
+          ) : (
+            <div className="mx-auto grid max-w-[2000px] grid-cols-12 gap-2">
             {/* Left Column (Main Content) */}
             <div className="col-span-8 space-y-2">
               {/* Hero: Unified Sports Feed */}
@@ -107,6 +118,7 @@ export default function Home() {
               </div>
             </div>
           </div>
+          )}
         </main>
       </div>
 
