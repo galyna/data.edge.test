@@ -53,7 +53,7 @@ const Header = memo(({ selectedSport, onSportChange }: HeaderProps) => {
       {/* Right: Status & Actions */}
       <div className="flex items-center gap-4">
         {/* Data Sources Status */}
-        <div className="flex items-center gap-2 border border-border bg-muted/30 px-3 py-1">
+        <div className="hidden items-center gap-2 border border-border bg-muted/30 px-3 py-1">
           <Circle className="h-2 w-2 fill-primary text-primary" />
           <span className="font-mono text-xs text-foreground">3/5 Sources Live</span>
         </div>
