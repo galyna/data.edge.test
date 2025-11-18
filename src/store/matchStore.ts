@@ -88,8 +88,10 @@ const getDialogOpenServerSnapshot = () => initialState.isMatchDetailDialogOpen;
 export const useSelectedMatch = (): Match | null =>
   useMatchStore(
     (state) => state.selectedMatch,
-    (a, b) => a === b,
-    getSelectedMatchServerSnapshot
+    {
+      equalityFn: (a, b) => a === b,
+      getServerSnapshot: getSelectedMatchServerSnapshot,
+    }
   );
 
 export const useSetSelectedMatch = () =>
@@ -98,8 +100,10 @@ export const useSetSelectedMatch = () =>
 export const useMatchDialogOpen = (): boolean =>
   useMatchStore(
     (state) => state.isMatchDetailDialogOpen,
-    (a, b) => a === b,
-    getDialogOpenServerSnapshot
+    {
+      equalityFn: (a, b) => a === b,
+      getServerSnapshot: getDialogOpenServerSnapshot,
+    }
   );
 
 export const useSetMatchDialogOpen = () =>
