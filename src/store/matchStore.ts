@@ -86,25 +86,13 @@ const getDialogOpenServerSnapshot = () => initialState.isMatchDetailDialogOpen;
 
 // Optimized selectors to prevent unnecessary re-renders
 export const useSelectedMatch = (): Match | null =>
-  useMatchStore(
-    (state) => state.selectedMatch,
-    {
-      equalityFn: (a, b) => a === b,
-      getServerSnapshot: getSelectedMatchServerSnapshot,
-    }
-  );
+  useMatchStore((state) => state.selectedMatch);
 
 export const useSetSelectedMatch = () =>
   useMatchStore((state) => state.setSelectedMatch);
 
 export const useMatchDialogOpen = (): boolean =>
-  useMatchStore(
-    (state) => state.isMatchDetailDialogOpen,
-    {
-      equalityFn: (a, b) => a === b,
-      getServerSnapshot: getDialogOpenServerSnapshot,
-    }
-  );
+  useMatchStore((state) => state.isMatchDetailDialogOpen);
 
 export const useSetMatchDialogOpen = () =>
   useMatchStore((state) => state.setMatchDetailDialogOpen);
