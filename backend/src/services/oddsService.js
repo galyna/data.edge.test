@@ -15,7 +15,16 @@ export class OddsService {
    * Check if service is configured
    */
   isConfigured() {
-    return !!config.apiKeys.theOdds;
+    const key = config.apiKeys.theOdds;
+    return !!key && key !== "your_key_here" && key !== "your_theodds_key_here";
+  }
+
+  /**
+   * Check if API key is a placeholder
+   */
+  isPlaceholderKey() {
+    const key = config.apiKeys.theOdds;
+    return !key || key === "your_key_here" || key === "your_theodds_key_here";
   }
 
   /**
@@ -51,9 +60,18 @@ export class OddsService {
    * @param {string} sport - Sport key (e.g., "soccer_epl", "basketball_nba")
    */
   async getOdds(sport = "soccer_epl") {
+    if (this.isPlaceholderKey()) {
+      return {
+        available: false,
+        configured: false,
+        error: "API key not configured. Please set THEODDS_API_KEY in .env file",
+      };
+    }
+
     if (!this.isConfigured()) {
       return {
         available: false,
+        configured: false,
         error: "API key not configured",
       };
     }
@@ -61,10 +79,25 @@ export class OddsService {
     const url = config.endpoints.theOdds.odds(sport);
     const data = await safeFetch(url, {}, this.timeout);
 
-    if (!data) {
+    if (!data || data.error) {
+      let errorMessage = "Failed to fetch odds";
+      if (data?.error === "HTTP_ERROR") {
+        if (data.status === 401) {
+          errorMessage = "Unauthorized. Please check your The Odds API key.";
+        } else if (data.status === 500) {
+          errorMessage = "The Odds API server error (500). The service may be temporarily unavailable.";
+        } else {
+          errorMessage = data.message || `HTTP ${data.status} error`;
+        }
+      } else if (data?.message) {
+        errorMessage = data.message;
+      }
+
       return {
         available: false,
-        error: "Failed to fetch odds",
+        error: errorMessage,
+        rateLimit: data?.error === "RATE_LIMIT_EXCEEDED",
+        retryAfter: data?.retryAfter,
       };
     }
 

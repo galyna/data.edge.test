@@ -19,8 +19,6 @@ PORT=3001
 NODE_ENV=development
 
 # API Keys
-THESPORTSDB_API_KEY=your_key_here
-APISPORTS_API_KEY=your_key_here
 THEODDS_API_KEY=your_key_here
 
 # Settings
@@ -30,15 +28,7 @@ ENABLE_CORS=true
 
 ### Получение API ключей
 
-1. **TheSportsDB** - https://www.thesportsdb.com/api.php
-   - Free tier: 1 доступен для тестирования
-   - Paid tier: $3/month для полного доступа
-
-2. **API-Sports** - https://api-sports.io
-   - Free tier: 100 requests/day
-   - Paid: от $10/month
-
-3. **The Odds API** - https://the-odds-api.com
+1. **The Odds API** - https://the-odds-api.com
    - Free tier: 500 requests/month
    - Paid: от $10/month
 
@@ -81,24 +71,6 @@ Health check endpoint
   "duration": "1234ms",
   "sources": [
     {
-      "name": "TheSportsDB",
-      "available": true,
-      "configured": true,
-      "duration": "456ms",
-      "eventsCount": 10,
-      "events": [...],
-      "error": null
-    },
-    {
-      "name": "API-Sports",
-      "available": true,
-      "configured": true,
-      "duration": "678ms",
-      "eventsCount": 15,
-      "events": [...],
-      "error": null
-    },
-    {
       "name": "TheOddsAPI",
       "available": true,
       "configured": true,
@@ -109,9 +81,9 @@ Health check endpoint
     }
   ],
   "summary": {
-    "totalSources": 3,
-    "availableSources": 3,
-    "totalEvents": 33
+    "totalSources": 1,
+    "availableSources": 1,
+    "totalEvents": 8
   }
 }
 ```
@@ -120,14 +92,14 @@ Health check endpoint
 Получить данные от конкретного источника
 
 **Параметры:**
-- `sourceName`: `sportsdb` | `apisports` | `odds`
+- `sourceName`: `odds`
 
 **Response:**
 ```json
 {
   "timestamp": "2025-01-18T10:00:00.000Z",
   "source": {
-    "name": "TheSportsDB",
+    "name": "TheOddsAPI",
     "available": true,
     "events": [...]
   }
@@ -144,8 +116,6 @@ backend/
 │   ├── routes/
 │   │   └── initialRoute.js    # /api/initial endpoint
 │   ├── services/
-│   │   ├── sportsdbService.js    # TheSportsDB интеграция
-│   │   ├── apisportsService.js   # API-Sports интеграция
 │   │   └── oddsService.js        # The Odds API интеграция
 │   ├── middleware/
 │   │   └── errorHandler.js    # Обработка ошибок
@@ -181,8 +151,6 @@ curl http://localhost:3001/health
 curl http://localhost:3001/api/initial
 
 # Fetch specific source
-curl http://localhost:3001/api/initial/source/sportsdb
-curl http://localhost:3001/api/initial/source/apisports
 curl http://localhost:3001/api/initial/source/odds
 ```
 

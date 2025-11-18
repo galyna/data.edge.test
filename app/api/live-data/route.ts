@@ -3,12 +3,16 @@ import { NextResponse } from "next/server";
 const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3001";
 
 /**
- * GET /api/live-data
+ * GET /api/live-data?sport=mlb
  * Proxy endpoint to backend /api/initial
+ * @param {string} sport - Sport filter (football, nba, mlb, nhl, tennis, esports)
  */
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const response = await fetch(`${BACKEND_URL}/api/initial`, {
+    const { searchParams } = new URL(request.url);
+    const sport = searchParams.get("sport") || "football";
+    
+    const response = await fetch(`${BACKEND_URL}/api/initial?sport=${encodeURIComponent(sport)}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

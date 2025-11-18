@@ -1,31 +1,42 @@
 import { Router } from "express";
 import { asyncHandler } from "../middleware/errorHandler.js";
-import { SportsDBService } from "../services/sportsdbService.js";
-import { ApiSportsService } from "../services/apisportsService.js";
 import { OddsService } from "../services/oddsService.js";
 
 const router = Router();
 
 // Initialize services
-const sportsDBService = new SportsDBService();
-const apiSportsService = new ApiSportsService();
 const oddsService = new OddsService();
 
 /**
- * GET /api/initial
+ * Map header sport IDs to API sport names
+ * Header IDs: football, nba, mlb, nhl, tennis, esports
+ */
+const sportMapping = {
+  // The Odds API sport keys
+  // For football, use general soccer key to get all European leagues
+  odds: {
+    football: "soccer", // General soccer (includes all European leagues: EPL, La Liga, Serie A, Bundesliga, etc.)
+    nba: "basketball_nba",
+    mlb: "baseball_mlb",
+    nhl: "icehockey_nhl",
+    tennis: "tennis_atp",
+    esports: null, // Not supported by The Odds API
+  },
+};
+
+/**
+ * GET /api/initial?sport=mlb
  * Fetch initial data from all configured sources
+ * @param {string} sport - Sport filter (football, nba, mlb, nhl, tennis, esports)
  */
 router.get(
   "/",
   asyncHandler(async (req, res) => {
     const startTime = Date.now();
+    const selectedSport = req.query.sport || "football"; // Default to football
 
-    // Parallel fetch from all sources
-    const [sportsDBResult, apiSportsResult, oddsResult] = await Promise.all([
-      fetchSportsDB(),
-      fetchApiSports(),
-      fetchOdds(),
-    ]);
+    // Fetch from The Odds API
+    const oddsResult = await fetchOdds(selectedSport);
 
     const duration = Date.now() - startTime;
 
@@ -33,18 +44,12 @@ router.get(
     const response = {
       timestamp: new Date().toISOString(),
       duration: `${duration}ms`,
-      sources: [sportsDBResult, apiSportsResult, oddsResult],
+      sport: selectedSport,
+      sources: [oddsResult],
       summary: {
-        totalSources: 3,
-        availableSources: [
-          sportsDBResult,
-          apiSportsResult,
-          oddsResult,
-        ].filter((s) => s.available).length,
-        totalEvents: [sportsDBResult, apiSportsResult, oddsResult].reduce(
-          (sum, s) => sum + (s.eventsCount || 0),
-          0
-        ),
+        totalSources: 1,
+        availableSources: oddsResult.available ? 1 : 0,
+        totalEvents: oddsResult.eventsCount || 0,
       },
     };
 
@@ -64,12 +69,6 @@ router.get(
     let result;
 
     switch (sourceName.toLowerCase()) {
-      case "sportsdb":
-        result = await fetchSportsDB();
-        break;
-      case "apisports":
-        result = await fetchApiSports();
-        break;
       case "odds":
         result = await fetchOdds();
         break;
@@ -77,7 +76,7 @@ router.get(
         return res.status(404).json({
           error: {
             message: `Unknown source: ${sourceName}`,
-            availableSources: ["sportsdb", "apisports", "odds"],
+            availableSources: ["odds"],
           },
         });
     }
@@ -89,80 +88,33 @@ router.get(
   })
 );
 
-/**
- * Fetch data from TheSportsDB
- */
-async function fetchSportsDB() {
-  const startTime = Date.now();
-
-  try {
-    // Get live scores for Soccer
-    const result = await sportsDBService.getLiveScores("Soccer");
-
-    return {
-      name: sportsDBService.name,
-      available: result.available,
-      configured: sportsDBService.isConfigured(),
-      duration: `${Date.now() - startTime}ms`,
-      eventsCount: result.data?.length || 0,
-      rawCount: result.rawCount || 0,
-      events: result.data || [],
-      error: result.error || null,
-    };
-  } catch (error) {
-    return {
-      name: sportsDBService.name,
-      available: false,
-      configured: sportsDBService.isConfigured(),
-      duration: `${Date.now() - startTime}ms`,
-      eventsCount: 0,
-      error: error.message,
-    };
-  }
-}
-
-/**
- * Fetch data from API-Sports
- */
-async function fetchApiSports() {
-  const startTime = Date.now();
-
-  try {
-    // Get live football fixtures
-    const result = await apiSportsService.getLiveFixtures();
-
-    return {
-      name: apiSportsService.name,
-      available: result.available,
-      configured: apiSportsService.isConfigured(),
-      duration: `${Date.now() - startTime}ms`,
-      eventsCount: result.data?.length || 0,
-      rawCount: result.rawCount || 0,
-      requestsRemaining: result.requestsRemaining || null,
-      events: result.data || [],
-      error: result.error || null,
-    };
-  } catch (error) {
-    return {
-      name: apiSportsService.name,
-      available: false,
-      configured: apiSportsService.isConfigured(),
-      duration: `${Date.now() - startTime}ms`,
-      eventsCount: 0,
-      error: error.message,
-    };
-  }
-}
 
 /**
  * Fetch data from The Odds API
+ * @param {string} selectedSport - Sport ID from header (football, nba, mlb, etc.)
  */
-async function fetchOdds() {
+async function fetchOdds(selectedSport = "football") {
   const startTime = Date.now();
 
   try {
-    // Get odds for English Premier League
-    const result = await oddsService.getOdds("soccer_epl");
+    // Map header sport to The Odds API sport key
+    const sportKey = sportMapping.odds[selectedSport];
+    
+    // If sport not supported, return empty result
+    if (!sportKey) {
+      return {
+        name: oddsService.name,
+        available: false,
+        configured: oddsService.isConfigured(),
+        duration: `${Date.now() - startTime}ms`,
+        eventsCount: 0,
+        rawCount: 0,
+        events: [],
+        error: `Sport '${selectedSport}' not supported by The Odds API`,
+      };
+    }
+
+    const result = await oddsService.getOdds(sportKey);
 
     return {
       name: oddsService.name,

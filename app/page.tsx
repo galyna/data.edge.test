@@ -17,8 +17,8 @@ const MultiSourceComparison = lazy(() => import("@/components/MultiSourceCompari
 const MatchDetailDialog = lazy(() => import("@/components/MatchDetailDialog"));
 
 export default function Home() {
-  const { matches, sources, isLoading, lastUpdate } = useLiveSportsData(30000); // Auto refetch every 30s
   const [selectedSport, setSelectedSport] = useState("football");
+  const { matches, sources, isLoading, lastUpdate } = useLiveSportsData(30000, selectedSport); // Auto refetch every 30s
 
   // Use optimized Zustand selectors - prevents unnecessary re-renders
   const {
@@ -28,10 +28,11 @@ export default function Home() {
     setOpen: setMatchDetailDialogOpen,
   } = useMatchDetail();
 
-  // Memoize filtered matches to avoid recalculation
+  // Backend already filters by sport, so we can use matches directly
+  // Keep filteredMatches for compatibility, but backend handles filtering
   const filteredMatches = useMemo(
-    () => matches.filter((m) => m.sport.toLowerCase() === selectedSport),
-    [matches, selectedSport]
+    () => matches, // Backend already filters by selectedSport
+    [matches]
   );
 
   // Initialize selectedMatch with first match that has sources

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Match } from "@/types/match";
+import { Match, Team } from "@/types/match";
 
 interface SourceData {
   name: string;
@@ -36,9 +36,11 @@ interface UseLiveSportsDataResult {
 /**
  * Hook for fetching live sports data from backend
  * @param autoRefetch - Auto refetch interval in ms (0 to disable)
+ * @param sport - Sport filter (football, nba, mlb, nhl, tennis, esports)
  */
 export function useLiveSportsData(
-  autoRefetch: number = 0
+  autoRefetch: number = 0,
+  sport: string = "football"
 ): UseLiveSportsDataResult {
   const [matches, setMatches] = useState<Match[]>([]);
   const [sources, setSources] = useState<SourceData[]>([]);
@@ -54,7 +56,7 @@ export function useLiveSportsData(
       setIsLoading(true);
       setError(null);
 
-      const response = await fetch("/api/live-data", {
+      const response = await fetch(`/api/live-data?sport=${encodeURIComponent(sport)}`, {
         cache: "no-store",
       });
 
@@ -86,7 +88,7 @@ export function useLiveSportsData(
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [sport]);
 
   // Initial fetch
   useEffect(() => {
@@ -119,43 +121,87 @@ export function useLiveSportsData(
  * Transform event from any source to Match format
  */
 function transformEventToMatch(event: any, sourceName: string): Match {
+  // Если homeTeam и awayTeam уже объекты (из нормализованных данных бэкенда), используем их
+  // Иначе создаем базовые объекты Team
+  const homeTeam: Team = typeof event.homeTeam === "object" && event.homeTeam !== null
+    ? {
+        name: event.homeTeam.name || "Unknown",
+        shortName: event.homeTeam.shortName || event.homeTeam.name || "Unknown",
+        logo: event.homeTeam.logo || "",
+      }
+    : {
+        name: typeof event.homeTeam === "string" ? event.homeTeam : "Unknown",
+        shortName: typeof event.homeTeam === "string" ? event.homeTeam.split(" ").slice(0, 2).join(" ") : "Unknown",
+        logo: "",
+      };
+
+  const awayTeam: Team = typeof event.awayTeam === "object" && event.awayTeam !== null
+    ? {
+        name: event.awayTeam.name || "Unknown",
+        shortName: event.awayTeam.shortName || event.awayTeam.name || "Unknown",
+        logo: event.awayTeam.logo || "",
+      }
+    : {
+        name: typeof event.awayTeam === "string" ? event.awayTeam : "Unknown",
+        shortName: typeof event.awayTeam === "string" ? event.awayTeam.split(" ").slice(0, 2).join(" ") : "Unknown",
+        logo: "",
+      };
+
+  // Базовые odds (используем из события если есть, иначе генерируем)
+  let aggregatedOdds = event.aggregatedOdds || {
+    home: 1.8 + Math.random() * 0.4,
+    draw: 3.0 + Math.random() * 0.5,
+    away: 2.0 + Math.random() * 0.5,
+  };
+
   // Base match structure
   const match: Match = {
     id: event.id || `${sourceName}-${Math.random()}`,
-    homeTeam: event.homeTeam || "Unknown",
-    awayTeam: event.awayTeam || "Unknown",
+    homeTeam,
+    awayTeam,
     homeScore: event.homeScore || 0,
     awayScore: event.awayScore || 0,
     status: mapStatus(event.status),
-    time: event.time || event.dateTime || new Date().toISOString(),
+    startTime: event.startTime || event.time || event.dateTime || new Date().toISOString(),
     sport: event.sport || "football",
     league: event.league || event.sportTitle || "Unknown League",
+    aggregatedOdds,
     sources: [],
+    spread: event.spread || Math.abs(aggregatedOdds.home - aggregatedOdds.away),
+    spreadQuality: event.spreadQuality || (Math.abs(aggregatedOdds.home - aggregatedOdds.away) < 0.3 ? "low" : Math.abs(aggregatedOdds.home - aggregatedOdds.away) < 0.6 ? "medium" : "high"),
+    bestSource: event.bestSource || sourceName,
+    value: event.value || Math.random() * 10,
+    liveData: event.liveData,
   };
 
   // Add source information
   if (event.bookmakers) {
     // The Odds API format
     match.sources = event.bookmakers.map((bookmaker: any) => ({
+      sourceId: bookmaker.key || `${sourceName}-${Math.random()}`,
       sourceName: bookmaker.title || bookmaker.name,
       odds: extractOdds(bookmaker),
-      latency: 0,
-      reliability: 95,
       timestamp: new Date().toISOString(),
+      latency: 0,
+    }));
+  } else if (event.sources && Array.isArray(event.sources)) {
+    // Используем sources из нормализованных данных бэкенда
+    match.sources = event.sources.map((source: any) => ({
+      sourceId: source.sourceId || `${sourceName}-${Math.random()}`,
+      sourceName: source.sourceName || sourceName,
+      odds: source.odds || aggregatedOdds,
+      timestamp: source.timestamp || new Date().toISOString(),
+      latency: source.latency || 100 + Math.random() * 200,
     }));
   } else {
-    // TheSportsDB or API-Sports format
+    // TheSportsDB or API-Sports format (fallback)
     match.sources = [
       {
+        sourceId: `${sourceName}-${match.id}`,
         sourceName: sourceName,
-        odds: {
-          home: 1.5 + Math.random(),
-          away: 2.5 + Math.random(),
-          draw: 3.0 + Math.random(),
-        },
-        latency: 100 + Math.random() * 200,
-        reliability: 90 + Math.random() * 10,
+        odds: aggregatedOdds,
         timestamp: new Date().toISOString(),
+        latency: 100 + Math.random() * 200,
       },
     ];
   }
@@ -165,11 +211,12 @@ function transformEventToMatch(event: any, sourceName: string): Match {
 
 /**
  * Map various status formats to our standard format
+ * Соответствует типу Match: "live" | "scheduled" | "finished"
  */
 function mapStatus(
   status: string
-): "live" | "upcoming" | "finished" | "postponed" {
-  if (!status) return "upcoming";
+): "live" | "scheduled" | "finished" {
+  if (!status) return "scheduled";
 
   const statusLower = status.toLowerCase();
 
@@ -179,7 +226,10 @@ function mapStatus(
     statusLower.includes("1h") ||
     statusLower.includes("2h") ||
     statusLower.includes("ht") ||
-    statusLower === "in play"
+    statusLower === "in play" ||
+    statusLower.includes("half") ||
+    statusLower.includes("1st") ||
+    statusLower.includes("2nd")
   ) {
     return "live";
   }
@@ -194,17 +244,18 @@ function mapStatus(
     return "finished";
   }
 
-  // Postponed statuses
+  // Postponed/Cancelled/Abandoned тоже считаем scheduled
+  // (тип Match не поддерживает "postponed", только "live" | "scheduled" | "finished")
   if (
     statusLower.includes("postponed") ||
     statusLower.includes("cancelled") ||
     statusLower.includes("abandoned")
   ) {
-    return "postponed";
+    return "scheduled";
   }
 
-  // Default to upcoming
-  return "upcoming";
+  // Default to scheduled (было "upcoming", но тип требует "scheduled")
+  return "scheduled";
 }
 
 /**

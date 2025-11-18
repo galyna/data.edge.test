@@ -56,12 +56,6 @@ app.listen(PORT, () => {
   console.log(`   GET  /api/initial/source/:name - Fetch specific source`);
   console.log(`\n⚙️  API Configuration:`);
   console.log(
-    `   TheSportsDB: ${config.apiKeys.theSportsDB ? "✅ Configured" : "❌ Not configured"}`
-  );
-  console.log(
-    `   API-Sports:  ${config.apiKeys.apiSports ? "✅ Configured" : "❌ Not configured"}`
-  );
-  console.log(
     `   The Odds:    ${config.apiKeys.theOdds ? "✅ Configured" : "❌ Not configured"}`
   );
   console.log(`\n⏱  Request timeout: ${config.timeout}ms\n`);
