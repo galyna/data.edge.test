@@ -53,7 +53,9 @@ export const useMatchStore = create<MatchStore>()(
               // Limit cache size to 100 items
               if (newCache.size > 100) {
                 const firstKey = newCache.keys().next().value;
-                newCache.delete(firstKey);
+                if (firstKey !== undefined) {
+                  newCache.delete(firstKey);
+                }
               }
               return { matchCache: newCache };
             },
