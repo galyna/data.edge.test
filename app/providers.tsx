@@ -24,7 +24,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
             
             // Performance optimizations for high-frequency updates
             structuralSharing: true, // Enable structural sharing to reduce re-renders
-            notifyOnChangeProps: "tracked", // Only notify on tracked props
             
             // Network mode
             networkMode: "online", // Only fetch when online
