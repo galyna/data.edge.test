@@ -59,14 +59,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="dns-prefetch" href="https://media.api-sports.io" />
         <link rel="dns-prefetch" href="https://ui-avatars.com" />
         
-        {/* Preload critical resources */}
-        <link
-          rel="preload"
-          href="/workers/dataAggregator.worker.js"
-          as="script"
-          crossOrigin="anonymous"
-        />
-        
         {/* Resource hints for performance */}
         <meta httpEquiv="x-dns-prefetch-control" content="on" />
       </head>
