@@ -1,74 +1,96 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback, lazy, Suspense } from "react";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import UnifiedSportsFeed from "@/components/UnifiedSportsFeed";
-import MultiSourceComparison from "@/components/MultiSourceComparison";
-import ScheduleCalendar from "@/components/ScheduleCalendar";
 import OddsAggregator from "@/components/OddsAggregator";
 import ValueRadar from "@/components/ValueRadar";
 import { mockMatches, mockDataSources, mockValueSignals } from "@/data/mockMatches";
 import { useRealtimeData } from "@/hooks/useRealtimeData";
 import { Match } from "@/types/match";
-import MatchDetailDialog from "@/components/MatchDetailDialog";
-import { useMatchStore } from "@/store/matchStore";
-// import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"; - No longer needed
+import { useMatchDetail } from "@/store/matchStore";
+import { Skeleton } from "@/components/ui/skeleton";
+
+// Lazy load heavy components
+const MultiSourceComparison = lazy(() => import("@/components/MultiSourceComparison"));
+const MatchDetailDialog = lazy(() => import("@/components/MatchDetailDialog"));
 
 export default function Home() {
-  const { matches, lastUpdate } = useRealtimeData(mockMatches, mockDataSources, 8000);
+  const { matches } = useRealtimeData(mockMatches, mockDataSources, 8000);
   const [selectedSport, setSelectedSport] = useState("football");
-  
-  const { selectedMatch, setSelectedMatch, isMatchDetailDialogOpen, setMatchDetailDialogOpen } = useMatchStore();
 
-  // Initialize selectedMatch with first match that has sources (using function to avoid re-computation)
+  // Use optimized Zustand selectors - prevents unnecessary re-renders
+  const {
+    match: selectedMatch,
+    isOpen: isMatchDetailDialogOpen,
+    setMatch: setSelectedMatch,
+    setOpen: setMatchDetailDialogOpen,
+  } = useMatchDetail();
+
+  // Memoize filtered matches to avoid recalculation
+  const filteredMatches = useMemo(
+    () => matches.filter((m) => m.sport.toLowerCase() === selectedSport),
+    [matches, selectedSport]
+  );
+
+  // Initialize selectedMatch with first match that has sources
   useEffect(() => {
-    if (!selectedMatch && matches.length > 0) {
-      const firstMatchWithSources = matches.find(m => m.sources && m.sources.length > 0);
+    if (!selectedMatch && filteredMatches.length > 0) {
+      const firstMatchWithSources = filteredMatches.find((m) => m.sources && m.sources.length > 0);
       if (firstMatchWithSources) {
         setSelectedMatch(firstMatchWithSources);
       }
     }
-  }, [matches, selectedMatch, setSelectedMatch]);
+  }, [filteredMatches, selectedMatch, setSelectedMatch]);
 
-  const handleMatchClick = (match: Match) => {
-    setSelectedMatch(match);
-    setMatchDetailDialogOpen(true);
-  };
+  // Memoize callback to prevent unnecessary re-renders
+  const handleMatchSelect = useCallback(
+    (match: Match) => {
+      setSelectedMatch(match);
+    },
+    [setSelectedMatch]
+  );
 
-  const handleMatchSelect = (match: Match) => {
-    setSelectedMatch(match);
-    // Don't open dialog, just select for comparison
-  };
+  const handleSportChange = useCallback((sport: string) => {
+    setSelectedSport(sport);
+  }, []);
 
   return (
-    <div className="min-h-screen bg-background grid-pattern flex">
+    <div className="grid-pattern flex min-h-screen bg-background">
       {/* Sidebar */}
       <Sidebar />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex flex-1 flex-col">
         {/* Header */}
-        <Header selectedSport={selectedSport} onSportChange={setSelectedSport} />
+        <Header selectedSport={selectedSport} onSportChange={handleSportChange} />
 
         {/* Dashboard Content */}
-        <main className="flex-1 p-2 overflow-auto">
-          <div className="max-w-[2000px] mx-auto grid grid-cols-12 gap-2">
-            
+        <main className="flex-1 overflow-auto p-2">
+          <div className="mx-auto grid max-w-[2000px] grid-cols-12 gap-2">
             {/* Left Column (Main Content) */}
             <div className="col-span-8 space-y-2">
               {/* Hero: Unified Sports Feed */}
               <div>
-                <UnifiedSportsFeed matches={matches} selectedSport={selectedSport} />
+                <UnifiedSportsFeed matches={filteredMatches} selectedSport={selectedSport} />
               </div>
 
-              {/* Multi-Source Comparison */}
+              {/* Multi-Source Comparison - Lazy loaded */}
               <div>
-                <MultiSourceComparison 
-                  match={selectedMatch} 
-                  matches={matches}
-                  onMatchSelect={handleMatchSelect}
-                />
+                <Suspense
+                  fallback={
+                    <div className="terminal-card p-4">
+                      <Skeleton className="h-64 w-full" />
+                    </div>
+                  }
+                >
+                  <MultiSourceComparison
+                    match={selectedMatch}
+                    matches={filteredMatches}
+                    onMatchSelect={handleMatchSelect}
+                  />
+                </Suspense>
               </div>
             </div>
 
@@ -78,24 +100,24 @@ export default function Home() {
               <div>
                 <OddsAggregator match={selectedMatch} />
               </div>
-              
+
               {/* Value Signals */}
               <div>
                 <ValueRadar signals={mockValueSignals} />
               </div>
             </div>
-
           </div>
         </main>
       </div>
 
-      {/* Match Detail Dialog */}
-      <MatchDetailDialog 
-        match={selectedMatch}
-        open={isMatchDetailDialogOpen}
-        onOpenChange={setMatchDetailDialogOpen}
-      />
+      {/* Match Detail Dialog - Lazy loaded */}
+      <Suspense fallback={null}>
+        <MatchDetailDialog
+          match={selectedMatch}
+          open={isMatchDetailDialogOpen}
+          onOpenChange={setMatchDetailDialogOpen}
+        />
+      </Suspense>
     </div>
   );
 }
-

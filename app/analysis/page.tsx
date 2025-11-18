@@ -6,114 +6,8 @@ import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { Team } from "@/types/match";
 import { TeamLogo } from "@/components/TeamLogo";
-
-interface Prediction {
-  id: string;
-  match: string;
-  league: string;
-  sport: string;
-  homeTeam: Team;
-  awayTeam: Team;
-  prediction: string;
-  confidence: number;
-  analyst: string;
-  timestamp: string;
-  roi: number;
-  status: "pending" | "won" | "lost";
-}
-
-const mockPredictions: Prediction[] = [
-  {
-    id: "1",
-    match: "Manchester City vs Arsenal",
-    league: "Premier League",
-    sport: "Football",
-    homeTeam: {
-      name: "Manchester City",
-      shortName: "MCI",
-      logo: "⚽"
-    },
-    awayTeam: {
-      name: "Arsenal",
-      shortName: "ARS",
-      logo: "⚽"
-    },
-    prediction: "Manchester City Win",
-    confidence: 87,
-    analyst: "Alex Thompson",
-    timestamp: "2 hours ago",
-    roi: 15.4,
-    status: "pending"
-  },
-  {
-    id: "2",
-    match: "Lakers vs Warriors",
-    league: "NBA",
-    sport: "Basketball",
-    homeTeam: {
-      name: "Los Angeles Lakers",
-      shortName: "LAL",
-      logo: "🏀"
-    },
-    awayTeam: {
-      name: "Golden State Warriors",
-      shortName: "GSW",
-      logo: "🏀"
-    },
-    prediction: "Over 225.5 Points",
-    confidence: 92,
-    analyst: "Sarah Mitchell",
-    timestamp: "4 hours ago",
-    roi: 22.1,
-    status: "won"
-  },
-  {
-    id: "3",
-    match: "Real Madrid vs Barcelona",
-    league: "La Liga",
-    sport: "Football",
-    homeTeam: {
-      name: "Real Madrid",
-      shortName: "RMA",
-      logo: "⚽"
-    },
-    awayTeam: {
-      name: "Barcelona",
-      shortName: "BAR",
-      logo: "⚽"
-    },
-    prediction: "BTTS Yes",
-    confidence: 78,
-    analyst: "James Rodriguez",
-    timestamp: "5 hours ago",
-    roi: 18.7,
-    status: "pending"
-  },
-  {
-    id: "4",
-    match: "Djokovic vs Alcaraz",
-    league: "ATP Finals",
-    sport: "Tennis",
-    homeTeam: {
-      name: "Novak Djokovic",
-      shortName: "DJK",
-      logo: "🎾"
-    },
-    awayTeam: {
-      name: "Carlos Alcaraz",
-      shortName: "ALC",
-      logo: "🎾"
-    },
-    prediction: "Alcaraz Win",
-    confidence: 65,
-    analyst: "Emma Wilson",
-    timestamp: "1 day ago",
-    roi: -5.2,
-    status: "lost"
-  }
-];
+import { mockPredictions } from "@/data/mockPredictions";
 
 export default function AnalysisPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -124,9 +18,10 @@ export default function AnalysisPage() {
   const sports = ["all", "Football", "Basketball", "Tennis"];
   const statuses = ["all", "pending", "won", "lost"];
 
-  const filteredPredictions = mockPredictions.filter(prediction => {
-    const matchesSearch = prediction.match.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         prediction.league.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredPredictions = mockPredictions.filter((prediction) => {
+    const matchesSearch =
+      prediction.match.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      prediction.league.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesSport = selectedSport === "all" || prediction.sport === selectedSport;
     const matchesStatus = selectedStatus === "all" || prediction.status === selectedStatus;
     return matchesSearch && matchesSport && matchesStatus;
@@ -139,41 +34,47 @@ export default function AnalysisPage() {
   };
 
   const getStatusBadge = (status: string) => {
-    switch(status) {
+    switch (status) {
       case "won":
         return <Badge className="bg-signal/20 text-signal border-signal/50">Won</Badge>;
       case "lost":
-        return <Badge className="bg-destructive/20 text-destructive border-destructive/50">Lost</Badge>;
+        return (
+          <Badge className="border-destructive/50 bg-destructive/20 text-destructive">Lost</Badge>
+        );
       default:
-        return <Badge className="bg-muted/50 text-muted-foreground border-border">Pending</Badge>;
+        return <Badge className="border-border bg-muted/50 text-muted-foreground">Pending</Badge>;
     }
   };
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="flex min-h-screen bg-background">
       <Sidebar />
-      
-      <div className="flex-1 flex flex-col">
+
+      <div className="flex flex-1 flex-col">
         <Header selectedSport={headerSport} onSportChange={setHeaderSport} />
-        
+
         <main className="flex-1 p-6">
           {/* Page Header */}
           <div className="mb-6">
-            <h1 className="text-2xl font-bold text-foreground mb-2">Expert Analysis & Match Tips</h1>
-            <p className="text-sm text-muted-foreground">Professional predictions and insights from our expert analysts</p>
+            <h1 className="mb-2 text-2xl font-bold text-foreground">
+              Expert Analysis & Match Tips
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Professional predictions and insights from our expert analysts
+            </p>
           </div>
 
           {/* Filters */}
-          <div className="mb-6 flex flex-wrap gap-4 items-center">
+          <div className="mb-6 flex flex-wrap items-center gap-4">
             {/* Search */}
-            <div className="relative flex-1 min-w-[300px]">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <div className="relative min-w-[300px] flex-1">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <input
                 type="text"
                 placeholder="Search predictions..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-muted/50 border border-border text-sm focus:outline-none focus:border-primary transition-colors"
+                className="w-full border border-border bg-muted/50 py-2 pl-10 pr-4 text-sm transition-colors focus:border-primary focus:outline-none"
               />
             </div>
 
@@ -185,8 +86,8 @@ export default function AnalysisPage() {
                   onClick={() => setSelectedSport(sport)}
                   className={`px-4 py-2 text-xs font-medium uppercase tracking-wider transition-all ${
                     selectedSport === sport
-                      ? "bg-primary/20 text-primary border border-primary/50"
-                      : "bg-muted/50 text-muted-foreground hover:bg-muted border border-transparent"
+                      ? "border border-primary/50 bg-primary/20 text-primary"
+                      : "border border-transparent bg-muted/50 text-muted-foreground hover:bg-muted"
                   }`}
                 >
                   {sport}
@@ -202,8 +103,8 @@ export default function AnalysisPage() {
                   onClick={() => setSelectedStatus(status)}
                   className={`px-4 py-2 text-xs font-medium uppercase tracking-wider transition-all ${
                     selectedStatus === status
-                      ? "bg-primary/20 text-primary border border-primary/50"
-                      : "bg-muted/50 text-muted-foreground hover:bg-muted border border-transparent"
+                      ? "border border-primary/50 bg-primary/20 text-primary"
+                      : "border border-transparent bg-muted/50 text-muted-foreground hover:bg-muted"
                   }`}
                 >
                   {status}
@@ -213,50 +114,50 @@ export default function AnalysisPage() {
           </div>
 
           {/* Stats Overview */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <Card className="p-4 bg-card border-border">
+          <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-4">
+            <Card className="border-border bg-card p-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-primary/10 border border-primary/30 flex items-center justify-center">
-                  <Target className="w-5 h-5 text-primary" />
+                <div className="flex h-10 w-10 items-center justify-center border border-primary/30 bg-primary/10">
+                  <Target className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground mb-1">Win Rate</p>
-                  <p className="text-xl font-bold text-signal">73.5%</p>
+                  <p className="mb-1 text-xs text-muted-foreground">Win Rate</p>
+                  <p className="text-signal text-xl font-bold">73.5%</p>
                 </div>
               </div>
             </Card>
 
-            <Card className="p-4 bg-card border-border">
+            <Card className="border-border bg-card p-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-primary/10 border border-primary/30 flex items-center justify-center">
-                  <TrendingUp className="w-5 h-5 text-primary" />
+                <div className="flex h-10 w-10 items-center justify-center border border-primary/30 bg-primary/10">
+                  <TrendingUp className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground mb-1">Avg ROI</p>
-                  <p className="text-xl font-bold text-signal">+18.3%</p>
+                  <p className="mb-1 text-xs text-muted-foreground">Avg ROI</p>
+                  <p className="text-signal text-xl font-bold">+18.3%</p>
                 </div>
               </div>
             </Card>
 
-            <Card className="p-4 bg-card border-border">
+            <Card className="border-border bg-card p-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-primary/10 border border-primary/30 flex items-center justify-center">
-                  <Award className="w-5 h-5 text-primary" />
+                <div className="flex h-10 w-10 items-center justify-center border border-primary/30 bg-primary/10">
+                  <Award className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground mb-1">Total Tips</p>
+                  <p className="mb-1 text-xs text-muted-foreground">Total Tips</p>
                   <p className="text-xl font-bold text-foreground">1,247</p>
                 </div>
               </div>
             </Card>
 
-            <Card className="p-4 bg-card border-border">
+            <Card className="border-border bg-card p-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-primary/10 border border-primary/30 flex items-center justify-center">
-                  <TrendingUp className="w-5 h-5 text-primary" />
+                <div className="flex h-10 w-10 items-center justify-center border border-primary/30 bg-primary/10">
+                  <TrendingUp className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground mb-1">Active Now</p>
+                  <p className="mb-1 text-xs text-muted-foreground">Active Now</p>
                   <p className="text-xl font-bold text-primary">28</p>
                 </div>
               </div>
@@ -266,39 +167,57 @@ export default function AnalysisPage() {
           {/* Predictions List */}
           <div className="space-y-4">
             {filteredPredictions.map((prediction) => (
-              <Card key={prediction.id} className="p-4 bg-card border-border hover:border-primary/50 transition-all cursor-pointer group">
+              <Card
+                key={prediction.id}
+                className="group cursor-pointer border-border bg-card p-4 transition-all hover:border-primary/50"
+              >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <TeamLogo team={prediction.homeTeam} sport={prediction.sport.toLowerCase()} size="sm" />
-                      <h3 className="text-base font-bold text-foreground group-hover:text-primary transition-colors">
+                    <div className="mb-2 flex items-center gap-3">
+                      <TeamLogo
+                        team={prediction.homeTeam}
+                        sport={prediction.sport.toLowerCase()}
+                        size="sm"
+                      />
+                      <h3 className="text-base font-bold text-foreground transition-colors group-hover:text-primary">
                         {prediction.homeTeam.shortName} vs {prediction.awayTeam.shortName}
                       </h3>
-                      <TeamLogo team={prediction.awayTeam} sport={prediction.sport.toLowerCase()} size="sm" />
+                      <TeamLogo
+                        team={prediction.awayTeam}
+                        sport={prediction.sport.toLowerCase()}
+                        size="sm"
+                      />
                       {getStatusBadge(prediction.status)}
                     </div>
-                    
-                    <div className="flex items-center gap-4 mb-3">
+
+                    <div className="mb-3 flex items-center gap-4">
                       <span className="text-xs text-muted-foreground">{prediction.league}</span>
                       <span className="text-xs text-muted-foreground">•</span>
                       <span className="text-xs text-muted-foreground">{prediction.sport}</span>
                     </div>
 
-                    <div className="flex items-center gap-6 mb-3">
+                    <div className="mb-3 flex items-center gap-6">
                       <div>
-                        <p className="text-xs text-muted-foreground mb-1">Prediction</p>
-                        <p className="text-sm font-medium text-foreground">{prediction.prediction}</p>
+                        <p className="mb-1 text-xs text-muted-foreground">Prediction</p>
+                        <p className="text-sm font-medium text-foreground">
+                          {prediction.prediction}
+                        </p>
                       </div>
                       <div>
-                        <p className="text-xs text-muted-foreground mb-1">Confidence</p>
-                        <p className={`text-sm font-bold ${getConfidenceColor(prediction.confidence)}`}>
+                        <p className="mb-1 text-xs text-muted-foreground">Confidence</p>
+                        <p
+                          className={`text-sm font-bold ${getConfidenceColor(prediction.confidence)}`}
+                        >
                           {prediction.confidence}%
                         </p>
                       </div>
                       <div>
-                        <p className="text-xs text-muted-foreground mb-1">ROI</p>
-                        <p className={`text-sm font-bold ${prediction.roi > 0 ? 'text-signal' : 'text-destructive'}`}>
-                          {prediction.roi > 0 ? '+' : ''}{prediction.roi}%
+                        <p className="mb-1 text-xs text-muted-foreground">ROI</p>
+                        <p
+                          className={`text-sm font-bold ${prediction.roi > 0 ? "text-signal" : "text-destructive"}`}
+                        >
+                          {prediction.roi > 0 ? "+" : ""}
+                          {prediction.roi}%
                         </p>
                       </div>
                     </div>
@@ -310,14 +229,14 @@ export default function AnalysisPage() {
                     </div>
                   </div>
 
-                  <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                  <ChevronRight className="h-5 w-5 text-muted-foreground transition-colors group-hover:text-primary" />
                 </div>
               </Card>
             ))}
           </div>
 
           {filteredPredictions.length === 0 && (
-            <div className="text-center py-12">
+            <div className="py-12 text-center">
               <p className="text-muted-foreground">No predictions found</p>
             </div>
           )}
@@ -326,4 +245,3 @@ export default function AnalysisPage() {
     </div>
   );
 }
-

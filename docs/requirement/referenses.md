@@ -1,9 +1,9 @@
 Action Network
 
-Provides extensive analysis & insights across major US leagues (NFL, NBA, MLB etc). 
+Provides extensive analysis & insights across major US leagues (NFL, NBA, MLB etc).
 Action Network
 
-Covers live odds, line‐movement tracking, sportsbook reviews and legislative updates. 
+Covers live odds, line‐movement tracking, sportsbook reviews and legislative updates.
 Action Network
 
 Why it’s good: Big name, good breadth, reliable for staying current.
@@ -12,7 +12,7 @@ Weakness: More geared toward US markets — less depth for non-US leagues or nic
 
 Odds Shark
 
-Focuses on odds, picks, expert commentary, and live betting lines for many leagues (NFL, NBA, NHL, MLB) and props. 
+Focuses on odds, picks, expert commentary, and live betting lines for many leagues (NFL, NBA, NHL, MLB) and props.
 Odds Shark
 
 Why good: Strong on betting tools and odds tracking; the “find your edge” tagline is accurate.
@@ -21,7 +21,7 @@ Weakness: The “expert picks” side can be hit or miss – always verify data 
 
 Covers.com
 
-Long-standing platform (30+ years) with picks, lines, odds, tools, sportsbook reviews. 
+Long-standing platform (30+ years) with picks, lines, odds, tools, sportsbook reviews.
 Covers.com
 +1
 
@@ -31,7 +31,7 @@ Weakness: Because it’s broad and covers many sports & markets, diving deep int
 
 Swish Analytics
 
-Algorithm-driven predictions & tools for major leagues (NFL, NBA, MLB, NHL). 
+Algorithm-driven predictions & tools for major leagues (NFL, NBA, MLB, NHL).
 Swish Analytics
 
 Why good: More advanced analytics side; good model-driven insights instead of purely opinion.
@@ -40,7 +40,7 @@ Weakness: Models are only as good as their inputs—if underlying data or assump
 
 VSiN (Vegas Sports Information Network)
 
-Offers expert insights, betting splits, real-time odds, and live broadcasts. 
+Offers expert insights, betting splits, real-time odds, and live broadcasts.
 vsin.com
 
 Why good: Strong for getting a “feel” for how the market is moving and what insiders are seeing.
@@ -49,7 +49,7 @@ Weakness: More commentary and less hardcore data modelling compared to some peer
 
 Additional Context & What You Must Consider
 
-There’s academic support showing that machine learning & calibration in sports-betting models matter a lot. For example, one study showed models chosen by calibration (not just accuracy) produced returns of +34% vs negative inaccuracy. 
+There’s academic support showing that machine learning & calibration in sports-betting models matter a lot. For example, one study showed models chosen by calibration (not just accuracy) produced returns of +34% vs negative inaccuracy.
 arXiv
 +1
 
