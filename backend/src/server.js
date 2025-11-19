@@ -62,7 +62,7 @@ app.listen(PORT, () => {
   );
   console.log(`\n⚡ Performance:`);
   console.log(`   Cache TTL:       5 minutes`);
-  console.log(`   Event limit:     2 per request`);
+  console.log(`   Event limit:     5 per request`);
   console.log(`   Request timeout: ${config.timeout}ms`);
   console.log(`\n💡 Tip: Data is cached for 5 minutes to save API quota\n`);
 });

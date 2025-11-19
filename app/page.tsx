@@ -72,8 +72,8 @@ function generateValueSignals(matches: Match[]): ValueSignal[] {
     }
   });
 
-  // Sort by edge (highest first) and limit to top 5
-  return signals.sort((a, b) => b.edge - a.edge).slice(0, 5);
+  // Sort by edge (highest first) and limit to top 10
+  return signals.sort((a, b) => b.edge - a.edge).slice(0, 10);
 }
 
 export default function Home() {

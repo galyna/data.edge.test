@@ -26,6 +26,8 @@ interface MultiSourceComparisonProps {
 
 const MultiSourceComparison = memo(({ match }: MultiSourceComparisonProps) => {
   const [mounted, setMounted] = useState(false);
+  // TODO: Enable chart when real historical data is available
+  const SHOW_HISTORICAL_CHART = false;
 
   useEffect(() => {
     setMounted(true);
@@ -196,15 +198,14 @@ const MultiSourceComparison = memo(({ match }: MultiSourceComparisonProps) => {
         <div className="font-mono text-[10px] text-muted-foreground">{sources.length} analysts</div>
       </div>
 
-      {/* Line Movement Chart */}
-      {mounted && chartData.length > 0 && (
+      {/* Line Movement Chart - Disabled until real historical data is available */}
+      {SHOW_HISTORICAL_CHART && mounted && chartData.length > 0 && (
         <div className="mt-3 border-t border-border pt-3">
           <div className="mb-3 px-4">
             <h4 className="mb-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-foreground">
               <TeamLogo team={match.homeTeam} sport={match.sport.toLowerCase()} size="sm" />
               <span>{match.homeTeam.shortName} WIN ODDS (6H)</span>
             </h4>
-            {/* Compact horizontal legend */}
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-border/50 pt-2 text-[10px]">
               {sources.map((source, index) => {
                 const colors = ["#6b7280", "#9ca3af", "#d1d5db"];

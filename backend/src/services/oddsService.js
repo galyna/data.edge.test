@@ -148,8 +148,8 @@ export class OddsService {
     }
 
     return rawData.map((event) => {
-      // Limit to 3 bookmakers per event
-      const limitedBookmakers = event.bookmakers?.slice(0, 3) || [];
+      // Limit to 10 bookmakers per event
+      const limitedBookmakers = event.bookmakers?.slice(0, 10) || [];
       
       return {
         id: event.id,

@@ -197,8 +197,6 @@ function transformEventToMatch(event: any, sourceName: string): Match {
     id: event.id || `${sourceName}-${Math.random()}`,
     homeTeam,
     awayTeam,
-    homeScore: event.homeScore || 0,
-    awayScore: event.awayScore || 0,
     status: mapStatus(event.status),
     startTime: event.startTime || event.time || event.dateTime || event.commenceTime || new Date().toISOString(),
     sport: event.sport || "football",

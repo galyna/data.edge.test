@@ -312,8 +312,8 @@ async function fetchOdds(selectedSport = "soccer", selectedLeague = "all") {
       }
     });
 
-    // Limit to 2 events to save quota
-    const limitedEvents = allEvents.slice(0, 2);
+    // Limit to 5 events to save quota
+    const limitedEvents = allEvents.slice(0, 5);
     console.log(`[LIMIT] Reduced from ${allEvents.length} to ${limitedEvents.length} events`);
 
     const result = {

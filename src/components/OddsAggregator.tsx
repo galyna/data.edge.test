@@ -83,13 +83,13 @@ const OddsAggregator = memo(({ match }: OddsAggregatorProps) => {
   return (
     <div className="terminal-card p-3">
       <div className="mb-3 flex items-center gap-2">
-        <TrendingUp className="h-4 w-4 text-primary" />
-        <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-foreground">
-          <span>ODDS SUMMARY:</span>
+        <TrendingUp className="h-4 w-4 text-primary flex-shrink-0" />
+        <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-foreground min-h-[24px]">
+          <span className="flex-shrink-0">ODDS SUMMARY:</span>
           <TeamLogo team={match.homeTeam} sport={match.sport.toLowerCase()} size="sm" />
-          <span>{match.homeTeam.shortName}</span>
-          <span className="text-muted-foreground">vs</span>
-          <span>{match.awayTeam.shortName}</span>
+          <span className="truncate max-w-[100px]" title={match.homeTeam.shortName}>{match.homeTeam.shortName}</span>
+          <span className="text-muted-foreground flex-shrink-0">vs</span>
+          <span className="truncate max-w-[100px]" title={match.awayTeam.shortName}>{match.awayTeam.shortName}</span>
           <TeamLogo team={match.awayTeam} sport={match.sport.toLowerCase()} size="sm" />
         </h3>
       </div>
@@ -101,16 +101,16 @@ const OddsAggregator = memo(({ match }: OddsAggregatorProps) => {
         </div>
         
         {/* Home */}
-        <div className="flex items-center justify-between border-l-2 border-primary/50 bg-primary/5 px-2 py-1.5">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between border-l-2 border-primary/50 bg-primary/5 px-2 py-1.5 min-h-[32px]">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <TeamLogo team={match.homeTeam} sport={match.sport.toLowerCase()} size="sm" />
             <span className="text-[10px] font-semibold text-foreground">HOME</span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 flex-shrink-0 ml-2">
             <span className="font-mono text-sm font-bold text-primary">
               {analysis.bestHome.toFixed(2)}
             </span>
-            <span className="text-[9px] text-muted-foreground">
+            <span className="text-[9px] text-muted-foreground truncate max-w-[80px]" title={analysis.bestHomeSource}>
               ({analysis.bestHomeSource})
             </span>
             <div className="flex items-center gap-1">
@@ -124,13 +124,13 @@ const OddsAggregator = memo(({ match }: OddsAggregatorProps) => {
 
         {/* Draw (if exists) */}
         {analysis.bestDraw && (
-          <div className="flex items-center justify-between border-l-2 border-muted bg-muted/20 px-2 py-1.5">
-            <span className="text-[10px] font-semibold text-foreground">DRAW</span>
-            <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between border-l-2 border-muted bg-muted/20 px-2 py-1.5 min-h-[32px]">
+            <span className="text-[10px] font-semibold text-foreground flex-shrink-0">DRAW</span>
+            <div className="flex items-center gap-2 flex-shrink-0 ml-2">
               <span className="font-mono text-sm font-bold text-foreground">
                 {analysis.bestDraw.toFixed(2)}
               </span>
-              <span className="text-[9px] text-muted-foreground">
+              <span className="text-[9px] text-muted-foreground truncate max-w-[80px]" title={analysis.bestDrawSource}>
                 ({analysis.bestDrawSource})
               </span>
               <div className="flex items-center gap-1">
@@ -144,16 +144,16 @@ const OddsAggregator = memo(({ match }: OddsAggregatorProps) => {
         )}
 
         {/* Away */}
-        <div className="flex items-center justify-between border-l-2 border-destructive/50 bg-destructive/5 px-2 py-1.5">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between border-l-2 border-destructive/50 bg-destructive/5 px-2 py-1.5 min-h-[32px]">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <TeamLogo team={match.awayTeam} sport={match.sport.toLowerCase()} size="sm" />
             <span className="text-[10px] font-semibold text-foreground">AWAY</span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 flex-shrink-0 ml-2">
             <span className="font-mono text-sm font-bold text-destructive">
               {analysis.bestAway.toFixed(2)}
             </span>
-            <span className="text-[9px] text-muted-foreground">
+            <span className="text-[9px] text-muted-foreground truncate max-w-[80px]" title={analysis.bestAwaySource}>
               ({analysis.bestAwaySource})
             </span>
             <div className="flex items-center gap-1">
