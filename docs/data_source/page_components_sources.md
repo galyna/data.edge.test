@@ -8,12 +8,12 @@ This document maps each UI component on `app/page.tsx` to specific data sources,
 
 ## Quick Reference: Component Titles & Sources
 
-| Component Code | UI Title | Paid Source | Free Source |
-|----------------|----------|-------------|-------------|
-| `UnifiedSportsFeed` | **UNIFIED SPORTS FEED** | SportsDataIO ($400-1000/mo) | API-Sports (free tier) / TheSportsDB |
-| `MultiSourceComparison` | **ANALYST COMPARISON** | SportsDataIO + STATSCORE TipsterAPI ($700-1800/mo) | TheSportsDB + The Odds API |
-| `OddsAggregator` | **ODDS** | OddsJam / SportsDataIO ($50-400/mo) | The Odds API (free tier) |
-| `ValueRadar` | **VALUE SIGNALS** | STATSCORE TipsterAPI ($300-800/mo) | DIY calculation |
+| Component Code          | UI Title                | Paid Source                                        | Free Source                          |
+| ----------------------- | ----------------------- | -------------------------------------------------- | ------------------------------------ |
+| `UnifiedSportsFeed`     | **UNIFIED SPORTS FEED** | SportsDataIO ($400-1000/mo)                        | API-Sports (free tier) / TheSportsDB |
+| `MultiSourceComparison` | **ANALYST COMPARISON**  | SportsDataIO + STATSCORE TipsterAPI ($700-1800/mo) | TheSportsDB + The Odds API           |
+| `OddsAggregator`        | **ODDS**                | OddsJam / SportsDataIO ($50-400/mo)                | The Odds API (free tier)             |
+| `ValueRadar`            | **VALUE SIGNALS**       | STATSCORE TipsterAPI ($300-800/mo)                 | DIY calculation                      |
 
 **Note:** Component Code refers to the React component name, UI Title is what users see on screen.
 
@@ -27,6 +27,7 @@ This document maps each UI component on `app/page.tsx` to specific data sources,
 **UI Title:** `UNIFIED SPORTS FEED`  
 **Purpose:** Display live sports matches, scores, schedules across multiple sports  
 **Data Requirements:**
+
 - Live scores and match status
 - Team/player names and logos
 - Match schedules (date, time)
@@ -39,6 +40,7 @@ This document maps each UI component on `app/page.tsx` to specific data sources,
 **SportsDataIO** — $300-1000+/month
 
 **What you get:**
+
 - Real-time scores for NBA, NFL, NHL, MLB, Soccer, Tennis
 - Match schedules and results
 - Team and player metadata
@@ -47,6 +49,7 @@ This document maps each UI component on `app/page.tsx` to specific data sources,
 - High request limits (10,000+ req/day depending on plan)
 
 **API Endpoints:**
+
 ```
 GET /scores/live
 GET /schedules/{sport}/{season}
@@ -57,6 +60,7 @@ GET /standings/{league}
 **Update frequency:** Real-time (1-5 second latency)
 
 **Alternative Paid Option:**
+
 - **API-Sports** — $10-50/month (limited sports coverage but cost-effective)
 - **Sportradar** — €€€€ (premium quality, enterprise pricing)
 
@@ -65,6 +69,7 @@ GET /standings/{league}
 **TheSportsDB** — Free (community-driven)
 
 **What you get:**
+
 - Schedules and past results
 - Team logos and metadata
 - Player information
@@ -72,6 +77,7 @@ GET /standings/{league}
 - Historical match data
 
 **API Endpoints:**
+
 ```
 GET /eventsday.php?d={date}&l={league}
 GET /eventspastleague.php?id={leagueId}
@@ -80,6 +86,7 @@ GET /eventslast.php?id={teamId}
 ```
 
 **Limitations:**
+
 - ❌ No real-time live scores
 - ❌ Updates can be delayed (community-maintained)
 - ❌ Limited coverage for smaller leagues
@@ -97,6 +104,7 @@ Use **TheSportsDB** for historical data and metadata, supplement with **API-Spor
 **UI Title:** `ANALYST COMPARISON`  
 **Purpose:** Compare match data from multiple sources, display consensus and discrepancies  
 **Data Requirements:**
+
 - Match data from 2+ sources
 - Odds/predictions from different providers
 - Team statistics and form
@@ -109,12 +117,14 @@ Use **TheSportsDB** for historical data and metadata, supplement with **API-Spor
 **SportsDataIO** (primary) + **STATSCORE TipsterAPI** (secondary)
 
 **SportsDataIO:**
+
 - Live match data and statistics
 - Built-in BAKER predictions engine
 - Win probabilities and recommended bets
 - Game previews and recaps
 
 **STATSCORE TipsterAPI:** — €200-800/month (estimated)
+
 - Pre-game and live betting insights
 - Mathematical model-based predictions
 - 10+ sports, 100+ betting markets
@@ -122,6 +132,7 @@ Use **TheSportsDB** for historical data and metadata, supplement with **API-Spor
 - Contextual tips with reasoning
 
 **API Endpoints:**
+
 ```
 // SportsDataIO
 GET /predictions/{sport}/{season}
@@ -135,6 +146,7 @@ GET /insights/{sport}
 ```
 
 **What you get:**
+
 - Multiple data perspectives on the same match
 - Algorithmic predictions vs. market odds
 - Statistical analysis and trends
@@ -145,27 +157,31 @@ GET /insights/{sport}
 **TheSportsDB** + **The Odds API** (free tier)
 
 **TheSportsDB:**
+
 - Historical match data
 - Team statistics and form
 - Head-to-head records
 
 **The Odds API:** — Free tier (500 requests/month)
+
 - Odds from multiple bookmakers
 - Line movements
 - Implied probabilities
 
 **API Endpoints:**
+
 ```
 // TheSportsDB
 GET /eventslast.php?id={teamId}
 GET /lookupevent.php?id={eventId}
 
-// The Odds API  
+// The Odds API
 GET /v4/sports/{sport}/odds
 GET /v4/sports/{sport}/events
 ```
 
 **Limitations:**
+
 - ❌ No algorithmic predictions
 - ❌ Limited to basic odds comparison
 - ❌ No expert commentary or insights
@@ -183,6 +199,7 @@ Build your own simple prediction model using historical data from TheSportsDB + 
 **UI Title:** `ODDS: [Team A] vs [Team B]`  
 **Purpose:** Display and compare betting odds from multiple bookmakers  
 **Data Requirements:**
+
 - Real-time odds from multiple bookmakers
 - Multiple bet types (moneyline, spread, totals, etc.)
 - Line movements over time
@@ -195,6 +212,7 @@ Build your own simple prediction model using historical data from TheSportsDB + 
 **SportsDataIO Odds Feed** OR **OddsJam** — $49-299/month
 
 **What you get:**
+
 - Odds from 50+ bookmakers
 - Real-time updates (30-60 second refresh)
 - Historical odds data
@@ -204,6 +222,7 @@ Build your own simple prediction model using historical data from TheSportsDB + 
 - API and webhooks support
 
 **API Endpoints:**
+
 ```
 GET /odds/{sport}/markets
 GET /odds/{matchId}/bookmakers
@@ -212,11 +231,13 @@ GET /odds/arbitrage
 ```
 
 **Bookmaker coverage:**
+
 - DraftKings, FanDuel, BetMGM, Caesars
 - Bet365, Pinnacle, Bovada
 - 50+ international bookmakers
 
 **Alternative Paid Option:**
+
 - **Sportmonks Odds Feed** — Similar pricing and features
 
 #### Free Source (Alternative)
@@ -224,12 +245,14 @@ GET /odds/arbitrage
 **The Odds API** — Free tier (500 requests/month)
 
 **What you get:**
+
 - Odds from 15-20 bookmakers
 - Multiple bet types (moneyline, spreads, totals)
 - Recent odds data (up to 3 days history)
 - JSON format, easy integration
 
 **API Endpoints:**
+
 ```
 GET /v4/sports/{sport}/odds
   ?apiKey={key}
@@ -241,6 +264,7 @@ GET /v4/sports/{sport}/events/{eventId}/odds
 ```
 
 **Limitations:**
+
 - ⚠️ 500 requests/month = ~16 per day
 - ❌ Limited historical data
 - ❌ No line movement tracking
@@ -249,6 +273,7 @@ GET /v4/sports/{sport}/events/{eventId}/odds
 - ⚠️ 60-second minimum between requests
 
 **Usage Strategy:**
+
 - Cache odds data aggressively (update every 5-10 minutes)
 - Focus on popular sports/leagues only
 - Use for pre-match odds primarily (live odds consume too many requests)
@@ -261,6 +286,7 @@ GET /v4/sports/{sport}/events/{eventId}/odds
 **UI Title:** `VALUE SIGNALS`  
 **Purpose:** Display betting value signals, alerts, and recommendations  
 **Data Requirements:**
+
 - Algorithmic predictions with probabilities
 - Market odds for comparison
 - Value calculation (prediction vs. odds)
@@ -274,6 +300,7 @@ GET /v4/sports/{sport}/events/{eventId}/odds
 **STATSCORE TipsterAPI** — €200-800/month (estimated)
 
 **What you get:**
+
 - Pre-match and live betting tips
 - Mathematical model predictions
 - Contextual insights and reasoning
@@ -284,6 +311,7 @@ GET /v4/sports/{sport}/events/{eventId}/odds
 - Historical accuracy tracking
 
 **API Endpoints:**
+
 ```
 GET /tipster/predictions/{matchId}
 GET /tipster/value-bets/{sport}
@@ -292,6 +320,7 @@ GET /tipster/performance/{modelId}
 ```
 
 **Signal Types:**
+
 - Win probability discrepancies
 - Over/Under value bets
 - Handicap opportunities
@@ -299,6 +328,7 @@ GET /tipster/performance/{modelId}
 - Market inefficiencies
 
 **Alternative Paid Option:**
+
 - **SportsDataIO BAKER Engine** (included in SportsDataIO subscription)
 - **Sportmonks Predictions Add-on**
 
@@ -320,12 +350,13 @@ Build a simple value detection system by:
    - Home/away performance
 
 3. **Calculate simple value signals**
+
    ```javascript
    // Pseudo-code
    const impliedProbability = 1 / odds;
    const estimatedProbability = calculateFromHistory(team, opponent);
    const valueScore = estimatedProbability - impliedProbability;
-   
+
    if (valueScore > 0.1) {
      signal = "HIGH_VALUE_BET";
      confidence = valueScore * 100;
@@ -339,12 +370,14 @@ Build a simple value detection system by:
    - Recommendation
 
 **What you need to build:**
+
 - Simple prediction model (can use basic statistics)
 - Value calculation logic
 - Signal categorization (high/medium/low value)
 - Performance tracking
 
 **Limitations:**
+
 - ❌ No professional mathematical models
 - ❌ Limited sports knowledge embedded
 - ❌ Manual maintenance required
@@ -352,6 +385,7 @@ Build a simple value detection system by:
 - ⚠️ No live betting signals
 
 **Free Tools to Help:**
+
 - **Python + pandas** for data analysis
 - **scikit-learn** for basic ML models (optional)
 - **Redis/SQLite** for caching and historical data
@@ -378,6 +412,7 @@ TOTAL                                                $700-1500
 **Optimization:** SportsDataIO alone covers 3 of 4 components. Add TipsterAPI only for advanced signals.
 
 **Benefits:**
+
 - ✅ Real-time updates
 - ✅ High accuracy predictions
 - ✅ Comprehensive coverage
@@ -403,6 +438,7 @@ TOTAL                                                $10-50
 ```
 
 **Benefits:**
+
 - ✅ Low cost for testing
 - ✅ Real live scores
 - ✅ Basic odds comparison
@@ -427,6 +463,7 @@ TOTAL                                                $0
 ```
 
 **Limitations:**
+
 - ❌ No real-time scores
 - ❌ Limited request quotas (16-20 req/day total)
 - ❌ Basic predictions only
@@ -503,19 +540,23 @@ TOTAL                                                $0
 ### Free Tier Constraints
 
 **The Odds API:** 500 requests/month
+
 - 16 requests/day
 - Strategy: Cache aggressively, update every 6-12 hours
 
 **TheSportsDB:** ~100 requests/hour
+
 - 2,400 requests/day
 - Strategy: Cache metadata forever, scores for 5-10 minutes
 
 **API-Sports Free Tier:** 100 requests/day
+
 - Strategy: Focus on 1-2 sports only
 
 ### Request Optimization
 
 **UnifiedSportsFeed:**
+
 ```
 - Fetch schedules: 1x per day (morning)
 - Fetch live scores: 1x per 2-5 minutes (only for live matches)
@@ -523,6 +564,7 @@ TOTAL                                                $0
 ```
 
 **MultiSourceComparison:**
+
 ```
 - Fetch on match selection: 1x per match view
 - Cache for 5 minutes
@@ -530,6 +572,7 @@ TOTAL                                                $0
 ```
 
 **OddsAggregator:**
+
 ```
 - Fetch odds: 1x per 10-30 minutes (pre-match)
 - Fetch odds: 1x per 2-5 minutes (live)
@@ -538,6 +581,7 @@ TOTAL                                                $0
 ```
 
 **ValueRadar:**
+
 ```
 - Calculate on-demand (no API calls if using DIY)
 - Or fetch tips: 1x per match (if using TipsterAPI)
@@ -547,6 +591,7 @@ TOTAL                                                $0
 **Total Estimated:** 200-1,100 requests/day
 
 **Free tier supports:** ~140 combined requests/day
+
 - **Conclusion:** Free tier only works for limited demo/testing
 
 ---
@@ -558,16 +603,13 @@ TOTAL                                                $0
 ```typescript
 // lib/api/apiSports.ts
 export async function fetchLiveMatches(sport: string) {
-  const response = await fetch(
-    `https://api-sports.io/v1/${sport}/fixtures?live=all`,
-    {
-      headers: {
-        'x-rapidapi-key': process.env.API_SPORTS_KEY!,
-        'x-rapidapi-host': 'api-sports.io'
-      }
-    }
-  );
-  
+  const response = await fetch(`https://api-sports.io/v1/${sport}/fixtures?live=all`, {
+    headers: {
+      "x-rapidapi-key": process.env.API_SPORTS_KEY!,
+      "x-rapidapi-host": "api-sports.io",
+    },
+  });
+
   const data = await response.json();
   return data.response.map(transformToMatch);
 }
@@ -593,12 +635,12 @@ function transformToMatch(fixture: any): Match {
 export async function fetchMatchOdds(matchId: string) {
   const response = await fetch(
     `https://api.the-odds-api.com/v4/sports/soccer_epl/events/${matchId}/odds?` +
-    `apiKey=${process.env.ODDS_API_KEY}&` +
-    `regions=us,uk&` +
-    `markets=h2h,spreads,totals`,
+      `apiKey=${process.env.ODDS_API_KEY}&` +
+      `regions=us,uk&` +
+      `markets=h2h,spreads,totals`,
     { next: { revalidate: 300 } } // Cache 5 minutes
   );
-  
+
   const data = await response.json();
   return transformOdds(data);
 }
@@ -614,30 +656,30 @@ export function calculateValueSignals(
   historicalData: HistoricalStats
 ): ValueSignal[] {
   const signals: ValueSignal[] = [];
-  
+
   // Calculate implied probability from odds
-  const avgHomeOdds = average(odds.map(o => o.homeWin));
+  const avgHomeOdds = average(odds.map((o) => o.homeWin));
   const impliedHomeProb = 1 / avgHomeOdds;
-  
+
   // Estimate actual probability from historical data
   const estimatedHomeProb = calculateWinProbability(
     historicalData.homeTeamForm,
     historicalData.awayTeamForm,
     historicalData.headToHead
   );
-  
+
   // Find value
   const valueScore = estimatedHomeProb - impliedHomeProb;
-  
+
   if (valueScore > 0.05) {
     signals.push({
-      type: 'HOME_WIN_VALUE',
+      type: "HOME_WIN_VALUE",
       confidence: Math.min(valueScore * 100, 100),
-      recommendation: 'HOME_WIN',
-      reasoning: `Model estimates ${(estimatedHomeProb*100).toFixed(1)}% vs market ${(impliedHomeProb*100).toFixed(1)}%`
+      recommendation: "HOME_WIN",
+      reasoning: `Model estimates ${(estimatedHomeProb * 100).toFixed(1)}% vs market ${(impliedHomeProb * 100).toFixed(1)}%`,
     });
   }
-  
+
   return signals;
 }
 ```
@@ -646,30 +688,33 @@ export function calculateValueSignals(
 
 ## Summary Table: Sources per Component
 
-| Component | UI Title | Paid Source | Free Source | Data Type | Update Freq |
-|-----------|----------|-------------|-------------|-----------|-------------|
-| `UnifiedSportsFeed` | **UNIFIED SPORTS FEED** | SportsDataIO ($400-1000) | API-Sports free / TheSportsDB | Live scores, schedules | Real-time / 5min |
-| `MultiSourceComparison` | **ANALYST COMPARISON** | SportsDataIO + TipsterAPI ($700-1800) | TheSportsDB + Odds API | Stats, predictions | 1-5 min |
-| `OddsAggregator` | **ODDS** | OddsJam / SportsDataIO ($50-400) | The Odds API free | Bookmaker odds | 30-60 sec / 5min |
-| `ValueRadar` | **VALUE SIGNALS** | STATSCORE TipsterAPI ($300-800) | DIY (custom calc) | Value signals | Real-time / on-demand |
+| Component               | UI Title                | Paid Source                           | Free Source                   | Data Type              | Update Freq           |
+| ----------------------- | ----------------------- | ------------------------------------- | ----------------------------- | ---------------------- | --------------------- |
+| `UnifiedSportsFeed`     | **UNIFIED SPORTS FEED** | SportsDataIO ($400-1000)              | API-Sports free / TheSportsDB | Live scores, schedules | Real-time / 5min      |
+| `MultiSourceComparison` | **ANALYST COMPARISON**  | SportsDataIO + TipsterAPI ($700-1800) | TheSportsDB + Odds API        | Stats, predictions     | 1-5 min               |
+| `OddsAggregator`        | **ODDS**                | OddsJam / SportsDataIO ($50-400)      | The Odds API free             | Bookmaker odds         | 30-60 sec / 5min      |
+| `ValueRadar`            | **VALUE SIGNALS**       | STATSCORE TipsterAPI ($300-800)       | DIY (custom calc)             | Value signals          | Real-time / on-demand |
 
 ---
 
 ## Recommendations
 
 ### For Prototyping (Budget: $0-50/month)
+
 ✅ Start with **API-Sports** ($10/month) + **The Odds API** (free)  
 ✅ Build simple DIY value calculator  
 ✅ Use TheSportsDB for metadata  
 ⏱️ Timeline: 1-2 weeks to integrate
 
 ### For Production Launch (Budget: $500-1500/month)
+
 ✅ Use **SportsDataIO** as primary source  
 ✅ Add **STATSCORE TipsterAPI** for advanced signals  
 ✅ Optional: Add **OddsJam** for comprehensive odds  
 ⏱️ Timeline: 3-4 weeks to integrate and test
 
 ### For Enterprise (Budget: $2000+/month)
+
 ✅ Use **Sportradar** for maximum coverage and reliability  
 ✅ Add **STATSCORE TipsterAPI** for predictions  
 ✅ Add **PandaScore** for e-sports  
@@ -681,4 +726,3 @@ export function calculateValueSignals(
 **Document Version:** 1.0  
 **Last Updated:** 2025-11-17  
 **Target Page:** `app/page.tsx`
-

@@ -11,9 +11,11 @@
 ## 1. Core Components (Основные компоненты)
 
 ### 1.1 DataSourceAggregator
+
 **Назначение:** Агрегация данных из множественных API источников
 
 **Функциональность:**
+
 - Нормализация данных из разных источников (Sportradar, SportsDataIO, API-Sports)
 - Мерж данных в единый формат
 - Определение приоритета источников
@@ -21,6 +23,7 @@
 - Кэширование и обновление в реальном времени
 
 **Реализация на Shadcn UI:**
+
 ```typescript
 // Контекст для управления источниками данных
 import { createContext } from 'react';
@@ -58,9 +61,11 @@ import { Badge } from "@/components/ui/badge";
 ---
 
 ### 1.2 UnifiedSportsFeed
+
 **Назначение:** Единый фид для всех видов спорта
 
 **Функциональность:**
+
 - Отображение live scores из всех источников
 - Переключение между видами спорта (Football, NBA, MLB, NHL, Tennis, E-sports)
 - Фильтрация по лигам и турнирам
@@ -68,6 +73,7 @@ import { Badge } from "@/components/ui/badge";
 - Индикация источника данных для каждого матча
 
 **Компоненты Shadcn UI:**
+
 - `Tabs` — переключение видов спорта
 - `Select` — выбор лиги
 - `Table` — отображение матчей
@@ -75,6 +81,7 @@ import { Badge } from "@/components/ui/badge";
 - `Tooltip` — информация об источнике данных
 
 **Структура:**
+
 ```typescript
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -89,7 +96,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
       <TabsTrigger value="tennis">Tennis</TabsTrigger>
       <TabsTrigger value="esports">E-sports</TabsTrigger>
     </TabsList>
-    
+
     <TabsContent value="football">
       <div className="mb-3">
         <Select>
@@ -103,7 +110,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
           </SelectContent>
         </Select>
       </div>
-      
+
       <Table>
         <TableHeader>
           <TableRow>
@@ -125,9 +132,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 ---
 
 ### 1.3 LiveScoreCard (Enhanced)
+
 **Назначение:** Карточка live матча с агрегированными данными
 
 **Функциональность:**
+
 - Отображение счета в реальном времени
 - Индикация источника данных (Sportradar/SportsDataIO/API-Sports)
 - Визуализация разницы данных между источниками
@@ -136,6 +145,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 - Клик для детального просмотра
 
 **Компоненты Shadcn UI:**
+
 - `Card` — контейнер
 - `Badge` — статус и источник
 - `Progress` — владение мячом, статистика
@@ -143,6 +153,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 - `Tooltip` — подсказки
 
 **Дизайн:**
+
 ```typescript
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -159,23 +170,23 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
       Sportradar
     </Badge>
   </div>
-  
+
   <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4 mb-3">
     <div className="text-right">
       <div className="text-sm font-medium">{homeTeam}</div>
       <span className="text-xs text-muted-foreground">{homeForm}</span>
     </div>
-    
+
     <div className="text-center">
       <div className="text-2xl font-bold font-mono">{homeScore} - {awayScore}</div>
     </div>
-    
+
     <div className="text-left">
       <div className="text-sm font-medium">{awayTeam}</div>
       <span className="text-xs text-muted-foreground">{awayForm}</span>
     </div>
   </div>
-  
+
   {/* Stats */}
   <div className="space-y-2">
     <div>
@@ -192,9 +203,11 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 ---
 
 ### 1.4 MultiSourceComparison
+
 **Назначение:** Сравнение данных из разных источников
 
 **Функциональность:**
+
 - Отображение одного и того же события из разных источников
 - Визуализация расхождений (если есть)
 - Выбор приоритетного источника
@@ -202,12 +215,14 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 - Временная шкала обновлений
 
 **Компоненты Shadcn UI:**
+
 - `Table` — сравнительная таблица
 - `Badge` — индикация качества
 - `Alert` — предупреждения о расхождениях
 - `Tooltip` — детали источника
 
 **Структура:**
+
 ```typescript
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -218,7 +233,7 @@ import { AlertTriangle } from "lucide-react";
   <h3 className="text-sm font-semibold mb-3 uppercase">
     Multi-Source Comparison: Arsenal vs Chelsea
   </h3>
-  
+
   {discrepancy && (
     <Alert variant="warning" className="mb-3">
       <AlertTriangle className="h-4 w-4" />
@@ -228,7 +243,7 @@ import { AlertTriangle } from "lucide-react";
       </AlertDescription>
     </Alert>
   )}
-  
+
   <Table>
     <TableHeader>
       <TableRow>
@@ -269,9 +284,11 @@ import { AlertTriangle } from "lucide-react";
 ---
 
 ### 1.5 ScheduleCalendar
+
 **Назначение:** Расписание матчей из всех источников
 
 **Функциональность:**
+
 - Календарный вид с матчами
 - Фильтры по видам спорта, лигам
 - Переключение между календарем и списком
@@ -279,6 +296,7 @@ import { AlertTriangle } from "lucide-react";
 - Напоминания и уведомления
 
 **Компоненты Shadcn UI:**
+
 - `Calendar` — календарь
 - `Card` — карточки матчей
 - `Tabs` — переключение видов
@@ -286,6 +304,7 @@ import { AlertTriangle } from "lucide-react";
 - `Switch` — настройки уведомлений
 
 **Дизайн:**
+
 ```typescript
 import { Calendar } from "@/components/ui/calendar";
 import { Card } from "@/components/ui/card";
@@ -308,13 +327,13 @@ import { Select } from "@/components/ui/select";
       </Select>
     </div>
   </div>
-  
+
   <Tabs defaultValue="calendar">
     <TabsList>
       <TabsTrigger value="calendar">Calendar</TabsTrigger>
       <TabsTrigger value="list">List</TabsTrigger>
     </TabsList>
-    
+
     <TabsContent value="calendar">
       <Calendar
         mode="single"
@@ -323,7 +342,7 @@ import { Select } from "@/components/ui/select";
         className="rounded-md border"
       />
     </TabsContent>
-    
+
     <TabsContent value="list">
       <div className="space-y-2">
         {matches.map(match => (
@@ -340,9 +359,11 @@ import { Select } from "@/components/ui/select";
 ---
 
 ### 1.6 OddsAggregator
+
 **Назначение:** Агрегация коэффициентов из разных источников
 
 **Функциональность:**
+
 - Отображение коэффициентов из всех источников
 - Выявление лучших коэффициентов
 - Движение линий во времени
@@ -350,12 +371,14 @@ import { Select } from "@/components/ui/select";
 - Алерты при значительных изменениях
 
 **Компоненты Shadcn UI:**
+
 - `Table` — таблица коэффициентов
 - `Badge` — лучший коэффициент
 - `Alert` — алерты изменений
 - `ChartContainer` + Recharts — график движения
 
 **Структура:**
+
 ```typescript
 import { Table } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -367,7 +390,7 @@ import { LineChart, Line } from "recharts";
   <h3 className="text-sm font-semibold mb-3 uppercase">
     Odds Comparison: Arsenal vs Chelsea
   </h3>
-  
+
   <Table>
     <TableHeader>
       <TableRow>
@@ -395,7 +418,7 @@ import { LineChart, Line } from "recharts";
       </TableRow>
     </TableBody>
   </Table>
-  
+
   <div className="mt-4">
     <ChartContainer config={chartConfig} className="h-[200px]">
       <LineChart data={oddsHistory}>
@@ -410,27 +433,32 @@ import { LineChart, Line } from "recharts";
 ---
 
 ### 1.7 SportSpecificWidgets
+
 **Назначение:** Специализированные виджеты для разных видов спорта
 
 **Football Widget:**
+
 - Live commentary
 - Formations (4-3-3, 4-4-2)
 - Heat maps
 - Player positions
 
 **NBA Widget:**
+
 - Quarter scores
 - Player stats
 - Team comparisons
 - Play-by-play
 
 **Tennis Widget:**
+
 - Set scores
 - Game-by-game
 - Serve statistics
 - Head-to-head
 
 **Компоненты Shadcn UI:**
+
 - `Card` — контейнер виджета
 - `Tabs` — переключение секций
 - `Progress` — статистика
@@ -439,9 +467,11 @@ import { LineChart, Line } from "recharts";
 ---
 
 ### 1.8 DataQualityIndicator
+
 **Назначение:** Индикация качества данных из источников
 
 **Функциональность:**
+
 - Визуализация latency
 - Показ freshness данных
 - Индикация coverage (какие виды спорта покрывает источник)
@@ -449,12 +479,14 @@ import { LineChart, Line } from "recharts";
 - История аптайма
 
 **Компоненты Shadcn UI:**
+
 - `Badge` — статус источника
 - `Progress` — метрики качества
 - `Tooltip` — детали
 - `Alert` — предупреждения
 
 **Дизайн:**
+
 ```typescript
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -479,7 +511,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
           </TooltipContent>
         </Tooltip>
       </div>
-      
+
       <div className="flex items-center gap-2">
         <Progress value={source.quality} className="w-20 h-2" />
         <span className="text-xs font-mono">{source.quality}%</span>
@@ -496,6 +528,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 ### 2.1 New Layout Structure
 
 **Hero Section:**
+
 - `UnifiedSportsFeed` как главный компонент (full width)
 - Быстрое переключение между видами спорта
 - Live updates counter
@@ -522,6 +555,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 ```
 
 **Sidebar Navigation (Enhanced):**
+
 - All Sports (новая секция)
 - Live Matches
 - Schedule
@@ -544,43 +578,43 @@ const MultiSportDashboard = () => {
   return (
     <div className="min-h-screen bg-background grid-pattern flex">
       <Sidebar />
-      
+
       <div className="flex-1 flex flex-col">
         <Header />
-        
+
         <main className="flex-1 p-3 overflow-auto">
           <div className="max-w-[2000px] mx-auto space-y-3">
-            
+
             {/* Hero: Unified Sports Feed */}
             <div className="col-span-12">
               <UnifiedSportsFeed />
             </div>
-            
+
             {/* Main Grid */}
             <div className="grid grid-cols-12 gap-3">
-              
+
               {/* Multi-Source Comparison */}
               <div className="col-span-8">
                 <MultiSourceComparison />
               </div>
-              
+
               {/* Odds Aggregator */}
               <div className="col-span-4">
                 <OddsAggregator />
               </div>
-              
+
               {/* Schedule Calendar */}
               <div className="col-span-8">
                 <ScheduleCalendar />
               </div>
-              
+
               {/* Data Quality Indicator */}
               <div className="col-span-4">
                 <DataQualityIndicator />
               </div>
-              
+
             </div>
-            
+
           </div>
         </main>
       </div>
@@ -629,20 +663,20 @@ class DataSourceService {
       this.fetchFromSportsDataIO(sport),
       this.fetchFromApiSports(sport),
     ]);
-    
+
     // 2. Normalize data
     const normalized = results
-      .filter(r => r.status === 'fulfilled')
-      .map(r => this.normalizeData(r.value));
-    
+      .filter((r) => r.status === "fulfilled")
+      .map((r) => this.normalizeData(r.value));
+
     // 3. Merge and resolve conflicts
     return this.mergeData(normalized);
   }
-  
+
   private normalizeData(data: any): Match[] {
     // Convert to unified format
   }
-  
+
   private mergeData(sources: Match[][]): Match[] {
     // Merge by match ID, resolve conflicts by priority
   }
@@ -654,27 +688,27 @@ class DataSourceService {
 ```typescript
 // hooks/useMultiSourceData.ts
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 export const useMultiSourceData = (sport: string) => {
   const [data, setData] = useState<Match[]>([]);
   const [sources, setSources] = useState<DataSource[]>([]);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
-  
+
   useEffect(() => {
     const interval = setInterval(async () => {
       const service = new DataSourceService();
       const matches = await service.fetchLiveScores(sport);
       const sourceStatus = await service.getSourcesStatus();
-      
+
       setData(matches);
       setSources(sourceStatus);
       setLastUpdate(new Date());
     }, 5000); // Update every 5 seconds
-    
+
     return () => clearInterval(interval);
   }, [sport]);
-  
+
   return { data, sources, lastUpdate };
 };
 ```
@@ -684,22 +718,26 @@ export const useMultiSourceData = (sport: string) => {
 ## 4. Implementation Checklist
 
 ### Phase 1: Core Components (Week 1-2)
+
 - [ ] `DataSourceAggregator` — базовая агрегация
 - [ ] `UnifiedSportsFeed` — единый фид
 - [ ] `LiveScoreCard` — enhanced версия
 - [ ] `DataQualityIndicator` — индикаторы качества
 
 ### Phase 2: Comparison & Analysis (Week 3-4)
+
 - [ ] `MultiSourceComparison` — сравнение источников
 - [ ] `OddsAggregator` — агрегация коэффициентов
 - [ ] `ScheduleCalendar` — расписание
 
 ### Phase 3: Sport-Specific Features (Week 5-6)
+
 - [ ] `SportSpecificWidgets` — специализированные виджеты
 - [ ] Интеграция с реальными API
 - [ ] Обработка ошибок и фоллбеки
 
 ### Phase 4: Polish & Optimization (Week 7-8)
+
 - [ ] Оптимизация производительности
 - [ ] Кэширование данных
 - [ ] Error handling
@@ -713,10 +751,10 @@ export const useMultiSourceData = (sport: string) => {
 ### 5.1 Color Scheme (уже есть)
 
 ```css
---primary: 150 100% 53%;        /* Зеленый для live и value */
---destructive: 0 100% 63%;       /* Красный для алертов */
---muted: 0 0% 16%;              /* Фон карточек */
---foreground: 0 0% 96%;         /* Основной текст */
+--primary: 150 100% 53%; /* Зеленый для live и value */
+--destructive: 0 100% 63%; /* Красный для алертов */
+--muted: 0 0% 16%; /* Фон карточек */
+--foreground: 0 0% 96%; /* Основной текст */
 ```
 
 ### 5.2 Custom Utilities (добавить)
@@ -779,10 +817,10 @@ export const useMultiSourceData = (sport: string) => {
 ## Заключение
 
 Данный дизайн компонентов позволяет:
+
 - Агрегировать данные из множественных источников
 - Визуализировать качество и расхождения данных
 - Предоставлять единый интерфейс для всех видов спорта
 - Масштабироваться при добавлении новых источников
 
 Все компоненты реализуются на базе Shadcn UI без дополнительных UI-библиотек.
-

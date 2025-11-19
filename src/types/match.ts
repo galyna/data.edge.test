@@ -28,23 +28,23 @@ export interface Match {
   awayTeam: Team;
   status: "live" | "scheduled" | "finished";
   startTime: string;
-  
+
   // Aggregated odds data
   aggregatedOdds: {
     home: number;
     draw?: number;
     away: number;
   };
-  
+
   // Individual source data
   sources: OddsSource[];
-  
+
   // Analytics
   spread: number;
   spreadQuality: "low" | "medium" | "high";
   bestSource: string;
   value: number;
-  
+
   // Additional metadata
   liveData?: {
     homeScore: number;
