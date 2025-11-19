@@ -57,6 +57,10 @@ export function useLiveSportsData(
     try {
       setIsLoading(true);
       setError(null);
+      // Сбрасываем старые данные при смене спорта/лиги
+      setMatches([]);
+      setSources([]);
+      setSummary(null);
 
       const response = await fetch(
         `/api/live-data?sport=${encodeURIComponent(sport)}&league=${encodeURIComponent(league)}`, 
@@ -122,42 +126,71 @@ export function useLiveSportsData(
   };
 }
 
+import { getTeamLogo } from "@/lib/teamLogos";
+
 /**
  * Transform event from any source to Match format
  */
 function transformEventToMatch(event: any, sourceName: string): Match {
   // Если homeTeam и awayTeam уже объекты (из нормализованных данных бэкенда), используем их
   // Иначе создаем базовые объекты Team
-  const homeTeam: Team = typeof event.homeTeam === "object" && event.homeTeam !== null
-    ? {
-        name: event.homeTeam.name || "Unknown",
-        shortName: event.homeTeam.shortName || event.homeTeam.name || "Unknown",
-        logo: event.homeTeam.logo || "",
-      }
-    : {
-        name: typeof event.homeTeam === "string" ? event.homeTeam : "Unknown",
-        shortName: typeof event.homeTeam === "string" ? event.homeTeam.split(" ").slice(0, 2).join(" ") : "Unknown",
-        logo: "",
-      };
+  const homeName = typeof event.homeTeam === "object" && event.homeTeam !== null 
+    ? event.homeTeam.name 
+    : typeof event.homeTeam === "string" ? event.homeTeam : "Unknown";
+    
+  const awayName = typeof event.awayTeam === "object" && event.awayTeam !== null 
+    ? event.awayTeam.name 
+    : typeof event.awayTeam === "string" ? event.awayTeam : "Unknown";
 
-  const awayTeam: Team = typeof event.awayTeam === "object" && event.awayTeam !== null
-    ? {
-        name: event.awayTeam.name || "Unknown",
-        shortName: event.awayTeam.shortName || event.awayTeam.name || "Unknown",
-        logo: event.awayTeam.logo || "",
-      }
-    : {
-        name: typeof event.awayTeam === "string" ? event.awayTeam : "Unknown",
-        shortName: typeof event.awayTeam === "string" ? event.awayTeam.split(" ").slice(0, 2).join(" ") : "Unknown",
-        logo: "",
-      };
+  const sport = event.sport || "soccer";
 
-  // Базовые odds (используем из события если есть, иначе генерируем)
-  let aggregatedOdds = event.aggregatedOdds || {
-    home: 1.8 + Math.random() * 0.4,
-    draw: 3.0 + Math.random() * 0.5,
-    away: 2.0 + Math.random() * 0.5,
+  const homeTeam: Team = {
+    name: homeName,
+    shortName: homeName.split(" ").slice(0, 2).join(" "),
+    logo: getTeamLogo(homeName, sport) || "",
   };
+
+  const awayTeam: Team = {
+    name: awayName,
+    shortName: awayName.split(" ").slice(0, 2).join(" "),
+    logo: getTeamLogo(awayName, sport) || "",
+  };
+
+  // Calculate aggregated odds from sources (if available)
+  let aggregatedOdds = event.aggregatedOdds;
+  
+  if (!aggregatedOdds && event.bookmakers && event.bookmakers.length > 0) {
+    // Calculate average from all bookmakers
+    const homeSum = event.bookmakers.reduce((sum: number, b: any) => {
+      const h2h = b.markets?.find((m: any) => m.key === 'h2h');
+      const homeOutcome = h2h?.outcomes?.find((o: any) => o.name === homeName);
+      return sum + (homeOutcome?.price || 0);
+    }, 0);
+    
+    const awaySum = event.bookmakers.reduce((sum: number, b: any) => {
+      const h2h = b.markets?.find((m: any) => m.key === 'h2h');
+      const awayOutcome = h2h?.outcomes?.find((o: any) => o.name === awayName);
+      return sum + (awayOutcome?.price || 0);
+    }, 0);
+    
+    const drawSum = event.bookmakers.reduce((sum: number, b: any) => {
+      const h2h = b.markets?.find((m: any) => m.key === 'h2h');
+      const drawOutcome = h2h?.outcomes?.find((o: any) => o.name?.toLowerCase().includes('draw'));
+      return sum + (drawOutcome?.price || 0);
+    }, 0);
+    
+    const count = event.bookmakers.length;
+    aggregatedOdds = {
+      home: count > 0 ? homeSum / count : 0,
+      away: count > 0 ? awaySum / count : 0,
+      draw: count > 0 && drawSum > 0 ? drawSum / count : undefined,
+    };
+  }
+  
+  // Fallback to zero if still not available
+  if (!aggregatedOdds) {
+    aggregatedOdds = { home: 0, away: 0, draw: 0 };
+  }
 
   // Base match structure
   const match: Match = {
@@ -190,7 +223,7 @@ function transformEventToMatch(event: any, sourceName: string): Match {
     match.sources = event.bookmakers.map((bookmaker: any) => ({
       sourceId: bookmaker.key || `${sourceName}-${Math.random()}`,
       sourceName: bookmaker.title || bookmaker.name,
-      odds: extractOdds(bookmaker),
+      odds: extractOdds(bookmaker, homeName, awayName),
       timestamp: new Date().toISOString(),
       latency: 0,
     }));
@@ -271,7 +304,7 @@ function mapStatus(
 /**
  * Extract odds from bookmaker data
  */
-function extractOdds(bookmaker: any): {
+function extractOdds(bookmaker: any, homeTeamName: string, awayTeamName: string): {
   home: number;
   away: number;
   draw?: number;
@@ -284,23 +317,31 @@ function extractOdds(bookmaker: any): {
   if (bookmaker.markets) {
     const h2hMarket = bookmaker.markets.find((m: any) => m.key === "h2h");
     if (h2hMarket && h2hMarket.outcomes) {
-      // Try to match by team name first (more reliable for The Odds API)
-      const homeTeamName = bookmaker.home_team || "";
-      const awayTeamName = bookmaker.away_team || "";
       
       h2hMarket.outcomes.forEach((outcome: any) => {
         const outcomeName = outcome.name || "";
         
+        // 1. Exact match with passed team names
         if (outcomeName === homeTeamName) {
           odds.home = outcome.price;
         } else if (outcomeName === awayTeamName) {
           odds.away = outcome.price;
-        } else if (outcomeName.toLowerCase().includes("draw")) {
+        } 
+        // 2. Match with draw
+        else if (outcomeName.toLowerCase().includes("draw")) {
           odds.draw = outcome.price;
-        } else if (outcome.name.toLowerCase().includes("home")) {
+        } 
+        // 3. Fallback: check if outcome name contains 'home' or 'away' (generic)
+        else if (outcomeName.toLowerCase() === "home") {
           odds.home = outcome.price;
-        } else if (outcome.name.toLowerCase().includes("away")) {
+        } else if (outcomeName.toLowerCase() === "away") {
           odds.away = outcome.price;
+        }
+        // 4. Fuzzy match (contains team name)
+        else if (homeTeamName && outcomeName.includes(homeTeamName)) {
+           odds.home = outcome.price;
+        } else if (awayTeamName && outcomeName.includes(awayTeamName)) {
+           odds.away = outcome.price;
         }
       });
     }

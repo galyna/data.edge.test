@@ -1,17 +1,9 @@
 "use client";
 
 import { useMemo, memo } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Match } from "@/types/match";
-import { TrendingUp, AlertCircle } from "lucide-react";
+import { TrendingUp, AlertCircle, Percent } from "lucide-react";
 import { TeamLogo } from "./TeamLogo";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -20,28 +12,50 @@ interface OddsAggregatorProps {
 }
 
 const OddsAggregator = memo(({ match }: OddsAggregatorProps) => {
-  // Memoize best odds calculations - hooks must be called before early returns
-  const { bestHome, bestAway, bestDraw } = useMemo(() => {
+  // Calculate best odds and implied probabilities
+  const analysis = useMemo(() => {
     if (!match?.sources || match.sources.length === 0) {
-      return { bestHome: 0, bestAway: 0, bestDraw: null };
+      return null;
     }
-    return {
-      bestHome: Math.max(...match.sources.map((s) => s.odds.home)),
-      bestAway: Math.max(...match.sources.map((s) => s.odds.away)),
-      bestDraw: match.aggregatedOdds.draw
-        ? Math.max(...match.sources.map((s) => s.odds.draw || 0))
-        : null,
-    };
-  }, [match?.sources, match?.aggregatedOdds.draw]);
 
-  const getBestSource = useMemo(
-    () => (outcome: "home" | "draw" | "away") => {
-      if (outcome === "draw" && !bestDraw) return null;
-      const bestValue = outcome === "home" ? bestHome : outcome === "draw" ? bestDraw! : bestAway;
-      return match?.sources.find((s) => s.odds[outcome] === bestValue)?.sourceName || null;
-    },
-    [match?.sources, bestHome, bestAway, bestDraw]
-  );
+    const bestHome = Math.max(...match.sources.map((s) => s.odds.home));
+    const bestAway = Math.max(...match.sources.map((s) => s.odds.away));
+    const bestDraw = match.aggregatedOdds.draw
+      ? Math.max(...match.sources.map((s) => s.odds.draw || 0))
+      : null;
+
+    const bestHomeSource = match.sources.find((s) => s.odds.home === bestHome)?.sourceName || "";
+    const bestAwaySource = match.sources.find((s) => s.odds.away === bestAway)?.sourceName || "";
+    const bestDrawSource = bestDraw
+      ? match.sources.find((s) => s.odds.draw === bestDraw)?.sourceName || ""
+      : "";
+
+    // Calculate implied probabilities (1 / odds * 100)
+    const homeProbability = bestHome > 0 ? (1 / bestHome) * 100 : 0;
+    const awayProbability = bestAway > 0 ? (1 / bestAway) * 100 : 0;
+    const drawProbability = bestDraw && bestDraw > 0 ? (1 / bestDraw) * 100 : 0;
+
+    // Market efficiency (total implied probability - closer to 100% is better)
+    const totalProbability = homeProbability + awayProbability + (drawProbability || 0);
+    const marketEfficiency = totalProbability > 0 ? (100 / totalProbability) * 100 : 0;
+
+    // Arbitrage check (if total probability < 100%, arbitrage exists)
+    const hasArbitrage = totalProbability < 100;
+
+    return {
+      bestHome,
+      bestAway,
+      bestDraw,
+      bestHomeSource,
+      bestAwaySource,
+      bestDrawSource,
+      homeProbability,
+      awayProbability,
+      drawProbability,
+      marketEfficiency,
+      hasArbitrage,
+    };
+  }, [match?.sources, match?.aggregatedOdds?.draw]);
 
   // Early returns after hooks
   if (!match) {
@@ -55,7 +69,7 @@ const OddsAggregator = memo(({ match }: OddsAggregatorProps) => {
     );
   }
 
-  if (!match.sources || match.sources.length === 0) {
+  if (!analysis) {
     return (
       <div className="terminal-card p-4">
         <div className="py-8 text-center">
@@ -71,7 +85,7 @@ const OddsAggregator = memo(({ match }: OddsAggregatorProps) => {
       <div className="mb-3 flex items-center gap-2">
         <TrendingUp className="h-4 w-4 text-primary" />
         <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-foreground">
-          <span>ODDS:</span>
+          <span>ODDS SUMMARY:</span>
           <TeamLogo team={match.homeTeam} sport={match.sport.toLowerCase()} size="sm" />
           <span>{match.homeTeam.shortName}</span>
           <span className="text-muted-foreground">vs</span>
@@ -80,119 +94,111 @@ const OddsAggregator = memo(({ match }: OddsAggregatorProps) => {
         </h3>
       </div>
 
-      <Table>
-        <TableHeader>
-          <TableRow className="border-border hover:bg-transparent">
-            <TableHead className="h-8 px-2 text-[10px] font-bold uppercase text-foreground">
-              SOURCE
-            </TableHead>
-            <TableHead className="h-8 px-2 text-center text-[10px] font-bold uppercase text-foreground">
-              HOME
-            </TableHead>
-            {match.aggregatedOdds.draw && (
-              <TableHead className="h-8 px-2 text-center text-[10px] font-bold uppercase text-foreground">
-                DRAW
-              </TableHead>
-            )}
-            <TableHead className="h-8 px-2 text-center text-[10px] font-bold uppercase text-foreground">
-              AWAY
-            </TableHead>
-            <TableHead className="h-8 px-2 text-center text-[10px] font-bold uppercase text-foreground">
-              <Tooltip>
-                <TooltipTrigger className="cursor-help">BEST</TooltipTrigger>
-                <TooltipContent>
-                  <p className="text-xs">Indicates best odds for Home (H), Draw (D), or Away (A)</p>
-                </TooltipContent>
-              </Tooltip>
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {match.sources.map((source) => {
-            const isBestHome = source.odds.home === bestHome;
-            const isBestAway = source.odds.away === bestAway;
-            const isBestDraw = bestDraw && source.odds.draw === bestDraw;
-
-            return (
-              <TableRow key={source.sourceId} className="h-8 border-border hover:bg-muted/20">
-                <TableCell className="px-2 text-[10px] font-semibold text-foreground">
-                  {source.sourceName}
-                </TableCell>
-                <TableCell
-                  className={`px-2 text-center font-mono text-[10px] font-semibold ${
-                    isBestHome ? "bg-primary/10 text-primary" : "text-foreground"
-                  }`}
-                >
-                  {source.odds.home.toFixed(2)}
-                </TableCell>
-                {match.aggregatedOdds.draw && (
-                  <TableCell
-                    className={`px-2 text-center font-mono text-[10px] ${
-                      isBestDraw ? "bg-primary/10 font-semibold text-primary" : ""
-                    }`}
-                  >
-                    {source.odds.draw?.toFixed(2) || "-"}
-                  </TableCell>
-                )}
-                <TableCell
-                  className={`px-2 text-center font-mono text-[10px] ${
-                    isBestAway ? "bg-primary/10 font-semibold text-primary" : ""
-                  }`}
-                >
-                  {source.odds.away.toFixed(2)}
-                </TableCell>
-                <TableCell className="px-2 text-center">
-                  {isBestHome && (
-                    <Badge
-                      variant="outline"
-                      className="border-primary/30 bg-primary/20 px-1.5 py-0 text-[9px] text-primary"
-                    >
-                      H
-                    </Badge>
-                  )}
-                  {isBestDraw && (
-                    <Badge
-                      variant="outline"
-                      className="border-primary/30 bg-primary/20 px-1.5 py-0 text-[9px] text-primary"
-                    >
-                      D
-                    </Badge>
-                  )}
-                  {isBestAway && (
-                    <Badge
-                      variant="outline"
-                      className="border-primary/30 bg-primary/20 px-1.5 py-0 text-[9px] text-primary"
-                    >
-                      A
-                    </Badge>
-                  )}
-                  {!isBestHome && !isBestAway && !isBestDraw && (
-                    <span className="text-[10px] text-muted-foreground">-</span>
-                  )}
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-
-      {/* Value Alert */}
-      {match.value > 5 && (
-        <div className="mt-2 border border-border bg-muted/10 p-2">
-          <div className="flex items-start gap-1.5">
-            <AlertCircle className="mt-0.5 h-3 w-3 flex-shrink-0 text-muted-foreground" />
-            <div className="min-w-0 flex-1">
-              <div className="mb-0.5 text-[10px] font-medium text-foreground">
-                Value: +{match.value.toFixed(1)}%
-              </div>
-              <div className="font-mono text-[10px] text-muted-foreground">
-                Best: {getBestSource("home")} {bestHome.toFixed(2)} vs avg{" "}
-                {match.aggregatedOdds.home.toFixed(2)}
-              </div>
+      {/* Best Value Section */}
+      <div className="mb-3 space-y-1.5">
+        <div className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+          Best Value:
+        </div>
+        
+        {/* Home */}
+        <div className="flex items-center justify-between border-l-2 border-primary/50 bg-primary/5 px-2 py-1.5">
+          <div className="flex items-center gap-2">
+            <TeamLogo team={match.homeTeam} sport={match.sport.toLowerCase()} size="sm" />
+            <span className="text-[10px] font-semibold text-foreground">HOME</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="font-mono text-sm font-bold text-primary">
+              {analysis.bestHome.toFixed(2)}
+            </span>
+            <span className="text-[9px] text-muted-foreground">
+              ({analysis.bestHomeSource})
+            </span>
+            <div className="flex items-center gap-1">
+              <Percent className="h-3 w-3 text-muted-foreground" />
+              <span className="font-mono text-[10px] font-semibold text-foreground">
+                {analysis.homeProbability.toFixed(1)}%
+              </span>
             </div>
           </div>
         </div>
-      )}
+
+        {/* Draw (if exists) */}
+        {analysis.bestDraw && (
+          <div className="flex items-center justify-between border-l-2 border-muted bg-muted/20 px-2 py-1.5">
+            <span className="text-[10px] font-semibold text-foreground">DRAW</span>
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-sm font-bold text-foreground">
+                {analysis.bestDraw.toFixed(2)}
+              </span>
+              <span className="text-[9px] text-muted-foreground">
+                ({analysis.bestDrawSource})
+              </span>
+              <div className="flex items-center gap-1">
+                <Percent className="h-3 w-3 text-muted-foreground" />
+                <span className="font-mono text-[10px] font-semibold text-foreground">
+                  {analysis.drawProbability.toFixed(1)}%
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Away */}
+        <div className="flex items-center justify-between border-l-2 border-destructive/50 bg-destructive/5 px-2 py-1.5">
+          <div className="flex items-center gap-2">
+            <TeamLogo team={match.awayTeam} sport={match.sport.toLowerCase()} size="sm" />
+            <span className="text-[10px] font-semibold text-foreground">AWAY</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="font-mono text-sm font-bold text-destructive">
+              {analysis.bestAway.toFixed(2)}
+            </span>
+            <span className="text-[9px] text-muted-foreground">
+              ({analysis.bestAwaySource})
+            </span>
+            <div className="flex items-center gap-1">
+              <Percent className="h-3 w-3 text-muted-foreground" />
+              <span className="font-mono text-[10px] font-semibold text-foreground">
+                {analysis.awayProbability.toFixed(1)}%
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Market Analysis */}
+      <div className="grid grid-cols-2 gap-2 border-t border-border pt-2 text-[10px]">
+        <div className="flex flex-col gap-0.5">
+          <span className="text-muted-foreground">Market Efficiency</span>
+          <span className={`font-mono text-sm font-bold ${
+            analysis.marketEfficiency >= 95 ? "text-positive" : 
+            analysis.marketEfficiency >= 90 ? "text-foreground" : "text-destructive"
+          }`}>
+            {analysis.marketEfficiency.toFixed(1)}%
+          </span>
+          <span className="text-[9px] text-muted-foreground">
+            {analysis.marketEfficiency >= 95 ? "Excellent" : 
+             analysis.marketEfficiency >= 90 ? "Good" : "Poor"}
+          </span>
+        </div>
+        
+        <div className="flex flex-col gap-0.5">
+          <span className="text-muted-foreground">Arbitrage</span>
+          {analysis.hasArbitrage ? (
+            <>
+              <Badge variant="default" className="w-fit text-[10px]">
+                YES
+              </Badge>
+              <span className="text-[9px] text-positive">Opportunity detected!</span>
+            </>
+          ) : (
+            <>
+              <span className="font-mono text-sm font-bold text-muted-foreground">NO</span>
+              <span className="text-[9px] text-muted-foreground">No opportunity</span>
+            </>
+          )}
+        </div>
+      </div>
     </div>
   );
 });
