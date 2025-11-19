@@ -2,5 +2,5 @@ THEODDS_API_KEY=3263039862ea0e8dd65e318347a7b3f3
 NODE_ENV=production
 API_TIMEOUT=5000
 ENABLE_CORS=true
-NEXT_PUBLIC_BACKEND_URL=https://твой-backend-url.vercel.app
+NEXT_PUBLIC_BACKEND_URL=https://data-edge-test-back.vercel.app
 
