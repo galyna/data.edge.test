@@ -10,7 +10,12 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
-    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\""
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "dev:all": "./dev.sh",
+    "restart": "./restart.sh",
+    "stop": "./stop.sh",
+    "backend": "cd backend && npm run dev",
+    "test:api": "cd backend && ./test-theodds.sh"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

@@ -13,22 +13,11 @@ interface SourceData {
 }
 
 interface HeaderProps {
-  selectedSport: string;
-  onSportChange: (sport: string) => void;
   sources?: SourceData[];
   lastUpdate?: string | null;
 }
 
-const sports = [
-  { id: "football", name: "Football", icon: "⚽" },
-  { id: "nba", name: "NBA", icon: "🏀" },
-  { id: "mlb", name: "MLB", icon: "⚾" },
-  { id: "nhl", name: "NHL", icon: "🏒" },
-  { id: "tennis", name: "Tennis", icon: "🎾" },
-  { id: "esports", name: "E-sports", icon: "🎮" },
-] as const;
-
-const Header = memo(({ selectedSport, onSportChange, sources = [], lastUpdate }: HeaderProps) => {
+const Header = memo(({ sources = [], lastUpdate }: HeaderProps) => {
   const _pathname = usePathname();
 
   // Calculate available sources
@@ -50,29 +39,11 @@ const Header = memo(({ selectedSport, onSportChange, sources = [], lastUpdate }:
 
   return (
     <header className="flex h-14 items-center justify-between border-b border-border bg-card px-6">
-      {/* Left: Logo + Navigation */}
+      {/* Left: Logo */}
       <div className="flex items-center gap-6">
         <Link href="/" className="transition-opacity hover:opacity-80">
           <h1 className="text-signal text-base font-bold tracking-tight">DATA EDGE</h1>
         </Link>
-
-        {/* League Filters */}
-        <div className="ml-4 flex items-center gap-1">
-          {sports.map((sport) => (
-            <button
-              key={sport.id}
-              onClick={() => onSportChange(sport.id)}
-              className={cn(
-                "px-2 py-1 text-xs font-medium uppercase tracking-wider transition-all",
-                selectedSport === sport.id
-                  ? "border border-primary/50 bg-primary/20 text-primary"
-                  : "border border-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-              )}
-            >
-              {sport.name}
-            </button>
-          ))}
-        </div>
       </div>
 
       {/* Right: Status & Actions */}

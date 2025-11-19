@@ -51,14 +51,20 @@ app.listen(PORT, () => {
   console.log(`📡 Running on: http://localhost:${PORT}`);
   console.log(`🌍 Environment: ${config.nodeEnv}`);
   console.log(`\n📋 Available endpoints:`);
-  console.log(`   GET  /health              - Health check`);
-  console.log(`   GET  /api/initial         - Fetch all sources`);
-  console.log(`   GET  /api/initial/source/:name - Fetch specific source`);
+  console.log(`   GET    /health                    - Health check`);
+  console.log(`   GET    /api/initial?sport=football - Fetch all sources (with cache)`);
+  console.log(`   GET    /api/initial/source/:name  - Fetch specific source`);
+  console.log(`   GET    /api/initial/cache/stats   - Cache statistics`);
+  console.log(`   DELETE /api/initial/cache         - Clear cache`);
   console.log(`\n⚙️  API Configuration:`);
   console.log(
     `   The Odds:    ${config.apiKeys.theOdds ? "✅ Configured" : "❌ Not configured"}`
   );
-  console.log(`\n⏱  Request timeout: ${config.timeout}ms\n`);
+  console.log(`\n⚡ Performance:`);
+  console.log(`   Cache TTL:       5 minutes`);
+  console.log(`   Event limit:     2 per request`);
+  console.log(`   Request timeout: ${config.timeout}ms`);
+  console.log(`\n💡 Tip: Data is cached for 5 minutes to save API quota\n`);
 });
 
 // Graceful shutdown

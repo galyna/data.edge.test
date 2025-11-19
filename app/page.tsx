@@ -6,6 +6,7 @@ import Header from "@/components/Header";
 import UnifiedSportsFeed from "@/components/UnifiedSportsFeed";
 import OddsAggregator from "@/components/OddsAggregator";
 import ValueRadar from "@/components/ValueRadar";
+import SportsNavigation from "@/components/SportsNavigation";
 import { mockValueSignals } from "@/data/mockMatches";
 import { useLiveSportsData } from "@/hooks/useLiveSportsData";
 import { Match } from "@/types/match";
@@ -17,8 +18,11 @@ const MultiSourceComparison = lazy(() => import("@/components/MultiSourceCompari
 const MatchDetailDialog = lazy(() => import("@/components/MatchDetailDialog"));
 
 export default function Home() {
-  const [selectedSport, setSelectedSport] = useState("football");
-  const { matches, sources, isLoading, lastUpdate } = useLiveSportsData(30000, selectedSport); // Auto refetch every 30s
+  const [selectedSport, setSelectedSport] = useState("soccer");
+  const [selectedLeague, setSelectedLeague] = useState("all");
+  
+  // ⚠️ Автообновление отключено (0) - только один запрос при загрузке для экономии квоты
+  const { matches, sources, isLoading, lastUpdate } = useLiveSportsData(0, selectedSport, selectedLeague); // No auto refetch
 
   // Use optimized Zustand selectors - prevents unnecessary re-renders
   const {
@@ -57,6 +61,10 @@ export default function Home() {
     setSelectedSport(sport);
   }, []);
 
+  const handleLeagueChange = useCallback((league: string) => {
+    setSelectedLeague(league);
+  }, []);
+
   return (
     <div className="grid-pattern flex min-h-screen bg-background">
       {/* Sidebar */}
@@ -66,14 +74,22 @@ export default function Home() {
       <div className="flex flex-1 flex-col">
         {/* Header */}
         <Header 
-          selectedSport={selectedSport} 
-          onSportChange={handleSportChange}
           sources={sources}
           lastUpdate={lastUpdate}
         />
 
         {/* Dashboard Content */}
         <main className="flex-1 overflow-auto p-2">
+          {/* Sports Navigation */}
+          <div className="mx-auto max-w-[2000px]">
+             <SportsNavigation
+                selectedSport={selectedSport}
+                selectedLeague={selectedLeague}
+                onSportChange={handleSportChange}
+                onLeagueChange={handleLeagueChange}
+             />
+          </div>
+
           {isLoading && matches.length === 0 ? (
             <div className="mx-auto max-w-[2000px] space-y-2">
               <Skeleton className="h-96 w-full" />

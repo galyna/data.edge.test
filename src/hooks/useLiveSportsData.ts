@@ -36,11 +36,13 @@ interface UseLiveSportsDataResult {
 /**
  * Hook for fetching live sports data from backend
  * @param autoRefetch - Auto refetch interval in ms (0 to disable)
- * @param sport - Sport filter (football, nba, mlb, nhl, tennis, esports)
+ * @param sport - Sport filter (soccer, basketball, etc.)
+ * @param league - League filter (epl, nba, etc.) - optional, default "all"
  */
 export function useLiveSportsData(
   autoRefetch: number = 0,
-  sport: string = "football"
+  sport: string = "soccer",
+  league: string = "all"
 ): UseLiveSportsDataResult {
   const [matches, setMatches] = useState<Match[]>([]);
   const [sources, setSources] = useState<SourceData[]>([]);
@@ -56,9 +58,12 @@ export function useLiveSportsData(
       setIsLoading(true);
       setError(null);
 
-      const response = await fetch(`/api/live-data?sport=${encodeURIComponent(sport)}`, {
-        cache: "no-store",
-      });
+      const response = await fetch(
+        `/api/live-data?sport=${encodeURIComponent(sport)}&league=${encodeURIComponent(league)}`, 
+        {
+          cache: "no-store",
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -88,7 +93,7 @@ export function useLiveSportsData(
     } finally {
       setIsLoading(false);
     }
-  }, [sport]);
+  }, [sport, league]); // Re-fetch when sport or league changes
 
   // Initial fetch
   useEffect(() => {
@@ -162,7 +167,7 @@ function transformEventToMatch(event: any, sourceName: string): Match {
     homeScore: event.homeScore || 0,
     awayScore: event.awayScore || 0,
     status: mapStatus(event.status),
-    startTime: event.startTime || event.time || event.dateTime || new Date().toISOString(),
+    startTime: event.startTime || event.time || event.dateTime || event.commenceTime || new Date().toISOString(),
     sport: event.sport || "football",
     league: event.league || event.sportTitle || "Unknown League",
     aggregatedOdds,
@@ -173,6 +178,11 @@ function transformEventToMatch(event: any, sourceName: string): Match {
     value: event.value || Math.random() * 10,
     liveData: event.liveData,
   };
+
+  // Preserve bookmakers data from The Odds API for TheOddsMarkets component
+  if (event.bookmakers) {
+    (match as any).bookmakers = event.bookmakers;
+  }
 
   // Add source information
   if (event.bookmakers) {
@@ -274,19 +284,23 @@ function extractOdds(bookmaker: any): {
   if (bookmaker.markets) {
     const h2hMarket = bookmaker.markets.find((m: any) => m.key === "h2h");
     if (h2hMarket && h2hMarket.outcomes) {
+      // Try to match by team name first (more reliable for The Odds API)
+      const homeTeamName = bookmaker.home_team || "";
+      const awayTeamName = bookmaker.away_team || "";
+      
       h2hMarket.outcomes.forEach((outcome: any) => {
-        if (
-          outcome.name.toLowerCase().includes("home") ||
-          outcome.name === bookmaker.home_team
-        ) {
+        const outcomeName = outcome.name || "";
+        
+        if (outcomeName === homeTeamName) {
           odds.home = outcome.price;
-        } else if (
-          outcome.name.toLowerCase().includes("away") ||
-          outcome.name === bookmaker.away_team
-        ) {
+        } else if (outcomeName === awayTeamName) {
           odds.away = outcome.price;
-        } else if (outcome.name.toLowerCase().includes("draw")) {
+        } else if (outcomeName.toLowerCase().includes("draw")) {
           odds.draw = outcome.price;
+        } else if (outcome.name.toLowerCase().includes("home")) {
+          odds.home = outcome.price;
+        } else if (outcome.name.toLowerCase().includes("away")) {
+          odds.away = outcome.price;
         }
       });
     }

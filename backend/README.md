@@ -31,6 +31,20 @@ ENABLE_CORS=true
 1. **The Odds API** - https://the-odds-api.com
    - Free tier: 500 requests/month
    - Paid: от $10/month
+   
+   **Поддерживаемые спорты:**
+   - ⚽ Футбол: EPL, La Liga, Serie A, Bundesliga, Ligue 1, Champions League
+   - 🏀 NBA
+   - ⚾ MLB  
+   - 🏒 NHL
+   - 🎾 Tennis
+   - 🥊 MMA
+   
+   **Поддерживаемые маркеты:**
+   - `h2h` - Head-to-Head (победитель матча)
+   - `spreads` - Форы
+   - `totals` - Тоталы (больше/меньше)
+   - Для NBA: дополнительно `h2h_q1`, `h2h_h1` (четверти/половины)
 
 ## Запуск
 
@@ -143,16 +157,38 @@ backend/
 
 ## Тестирование
 
+### Быстрый тест через скрипт
+```bash
+# Запустите комплексный тест The Odds API
+./test-theodds.sh
+```
+
+### Ручное тестирование
 ```bash
 # Health check
 curl http://localhost:3001/health
 
-# Fetch all sources
-curl http://localhost:3001/api/initial
+# Fetch all football leagues (EPL, La Liga, Serie A, Bundesliga, Ligue 1, UCL)
+curl http://localhost:3001/api/initial?sport=football
+
+# Fetch NBA
+curl http://localhost:3001/api/initial?sport=nba
+
+# Fetch MLB
+curl http://localhost:3001/api/initial?sport=mlb
 
 # Fetch specific source
 curl http://localhost:3001/api/initial/source/odds
+
+# С красивым форматированием (если установлен jq)
+curl http://localhost:3001/api/initial?sport=football | jq '.'
 ```
+
+### Тестирование через браузер
+Откройте в браузере:
+- http://localhost:3001/health
+- http://localhost:3001/api/initial?sport=football
+- http://localhost:3001/api/initial?sport=nba
 
 ## Troubleshooting
 

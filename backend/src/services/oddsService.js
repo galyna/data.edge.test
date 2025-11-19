@@ -58,8 +58,9 @@ export class OddsService {
   /**
    * Fetch odds for a specific sport
    * @param {string} sport - Sport key (e.g., "soccer_epl", "basketball_nba")
+   * @param {string} markets - Markets to fetch (default: "h2h,spreads,totals")
    */
-  async getOdds(sport = "soccer_epl") {
+  async getOdds(sport = "soccer_epl", markets = "h2h,spreads,totals") {
     if (this.isPlaceholderKey()) {
       return {
         available: false,
@@ -76,7 +77,7 @@ export class OddsService {
       };
     }
 
-    const url = config.endpoints.theOdds.odds(sport);
+    const url = config.endpoints.theOdds.odds(sport, markets);
     const data = await safeFetch(url, {}, this.timeout);
 
     if (!data || data.error) {
@@ -109,9 +110,78 @@ export class OddsService {
   }
 
   /**
+   * Fetch scores for a specific sport
+   * @param {string} sport - Sport key
+   */
+  async getScores(sport = "soccer_epl") {
+    if (!this.isConfigured()) {
+      return {
+        available: false,
+        configured: false,
+        error: "API key not configured",
+      };
+    }
+
+    const url = config.endpoints.theOdds.scores(sport);
+    const data = await safeFetch(url, {}, this.timeout);
+
+    if (!data || data.error) {
+      return {
+        available: false,
+        error: data?.message || "Failed to fetch scores",
+      };
+    }
+
+    return {
+      available: true,
+      data: this.normalizeScores(data),
+      rawCount: Array.isArray(data) ? data.length : 0,
+    };
+  }
+
+  /**
    * Normalize Odds API data to common format
    */
   normalizeData(rawData) {
+    if (!Array.isArray(rawData)) {
+      return [];
+    }
+
+    return rawData.map((event) => {
+      // Limit to 3 bookmakers per event
+      const limitedBookmakers = event.bookmakers?.slice(0, 3) || [];
+      
+      return {
+        id: event.id,
+        sport: event.sport_key,
+        sportTitle: event.sport_title,
+        homeTeam: event.home_team,
+        awayTeam: event.away_team,
+        commenceTime: event.commence_time,
+        bookmakers: limitedBookmakers.map((bookmaker) => ({
+          name: bookmaker.key,
+          title: bookmaker.title,
+          lastUpdate: bookmaker.last_update,
+          markets: bookmaker.markets?.map((market) => ({
+            key: market.key,
+            lastUpdate: market.last_update,
+            outcomes: market.outcomes?.map((outcome) => ({
+              name: outcome.name,
+              price: outcome.price,
+              point: outcome.point, // For spreads and totals
+            })),
+          })),
+        })),
+        bookmakerCount: limitedBookmakers.length,
+        source: this.name,
+      };
+    });
+  }
+
+  /**
+   * Normalize Scores API data
+   */
+  normalizeScores(rawData) {
     if (!Array.isArray(rawData)) {
       return [];
     }
@@ -123,18 +193,9 @@ export class OddsService {
       homeTeam: event.home_team,
       awayTeam: event.away_team,
       commenceTime: event.commence_time,
-      bookmakers: event.bookmakers?.map((bookmaker) => ({
-        name: bookmaker.key,
-        title: bookmaker.title,
-        markets: bookmaker.markets?.map((market) => ({
-          key: market.key,
-          outcomes: market.outcomes?.map((outcome) => ({
-            name: outcome.name,
-            price: outcome.price,
-          })),
-        })),
-      })),
-      bookmakerCount: event.bookmakers?.length || 0,
+      completed: event.completed,
+      scores: event.scores,
+      lastUpdate: event.last_update,
       source: this.name,
     }));
   }
