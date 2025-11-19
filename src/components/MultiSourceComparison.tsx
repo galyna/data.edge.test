@@ -26,6 +26,8 @@ interface MultiSourceComparisonProps {
 
 const MultiSourceComparison = memo(({ match }: MultiSourceComparisonProps) => {
   const [mounted, setMounted] = useState(false);
+  // TODO: Enable chart when real historical data is available
+  const SHOW_HISTORICAL_CHART = false;
 
   useEffect(() => {
     setMounted(true);
@@ -33,6 +35,24 @@ const MultiSourceComparison = memo(({ match }: MultiSourceComparisonProps) => {
 
   // Ensure we have sources array (moved before useMemo hooks)
   const sources = useMemo(() => match?.sources || [], [match?.sources]);
+
+  // Recalculate aggregates based on available sources
+  const calculatedAggregates = useMemo(() => {
+    if (!sources || sources.length === 0) return match?.aggregatedOdds || { home: 0, away: 0, draw: 0 };
+    
+    const sum = sources.reduce((acc, s) => ({
+      home: acc.home + (s.odds.home || 0),
+      away: acc.away + (s.odds.away || 0),
+      draw: acc.draw + (s.odds.draw || 0)
+    }), { home: 0, away: 0, draw: 0 });
+
+    const count = sources.length;
+    return {
+      home: count > 0 ? sum.home / count : 0,
+      away: count > 0 ? sum.away / count : 0,
+      draw: count > 0 ? sum.draw / count : 0
+    };
+  }, [sources, match?.aggregatedOdds]);
 
   // Generate historical data for chart (simulate last 6 hours) - only on client to avoid hydration issues
   const chartData = useMemo(() => {
@@ -52,6 +72,9 @@ const MultiSourceComparison = memo(({ match }: MultiSourceComparisonProps) => {
       return seed / 233280;
     };
 
+    // Use calculated consensus
+    const realConsensus = calculatedAggregates.home;
+
     for (let i = points; i >= 0; i--) {
       const time = new Date(now - (i * hours * 60 * 60 * 1000) / points);
       // Use UTC to avoid locale differences between server and client
@@ -59,29 +82,27 @@ const MultiSourceComparison = memo(({ match }: MultiSourceComparisonProps) => {
       const minutes = time.getUTCMinutes().toString().padStart(2, "0");
       const timeLabel = `${hours24}:${minutes}`;
 
-      // Add some trend and variation to make it more interesting
-      const trendFactor = ((points - i) / points) * 0.3; // slight upward trend
-      const waveFactor = Math.sin((i / points) * Math.PI * 2) * 0.15; // sine wave variation
-
+      // Simulate historical trend leading up to current REAL value
+      // We work backwards from the real current value (at i=0)
+      const historicalVariance = i * 0.02; // More variance further back in time
+      
       const point: Record<string, string | number> = {
         time: timeLabel,
-        aggregate:
-          match.aggregatedOdds.home + trendFactor + waveFactor + (seededRandom() - 0.5) * 0.15,
+        aggregate: realConsensus + (Math.sin(i) * historicalVariance),
       };
 
-      sources.forEach((source, idx) => {
-        // Each source has slightly different behavior
-        const sourceWave = Math.sin((i / points) * Math.PI * 2 + idx) * 0.12;
-        const sourceTrend = ((points - i) / points) * 0.25 * (1 + idx * 0.1);
-        point[source.sourceName] =
-          source.odds.home + sourceTrend + sourceWave + (seededRandom() - 0.5) * 0.12;
+      sources.forEach((source) => {
+        // Each source converges to its actual current value
+        // Add some noise that increases as we go back in time
+        const noise = (seededRandom() - 0.5) * historicalVariance * 2;
+        point[source.sourceName] = source.odds.home + noise;
       });
 
       data.push(point);
     }
-
-    return data;
-  }, [match, mounted, sources]);
+    // Reverse to show oldest first
+    return data.reverse();
+  }, [match, mounted, sources, calculatedAggregates]);
 
   const chartConfig = useMemo(() => {
     if (!match || !sources || sources.length === 0) {
@@ -106,7 +127,7 @@ const MultiSourceComparison = memo(({ match }: MultiSourceComparisonProps) => {
     };
   }, [match, sources]);
 
-  // Show list of matches if no match selected
+  // Early returns - must be after all hooks
   if (!match) {
     return (
       <div className="terminal-card p-4">
@@ -132,25 +153,30 @@ const MultiSourceComparison = memo(({ match }: MultiSourceComparisonProps) => {
     );
   }
 
-  // Check for discrepancies
+  // Check for discrepancies (using percentage difference > 5%)
   const hasDiscrepancy = sources.some((source) => {
-    const homeDiff = Math.abs(source.odds.home - match.aggregatedOdds.home);
-    const awayDiff = Math.abs(source.odds.away - match.aggregatedOdds.away);
-    return homeDiff > 0.1 || awayDiff > 0.1;
+    const homeDiff = Math.abs(source.odds.home - calculatedAggregates.home);
+    const homeDiffPercent = calculatedAggregates.home > 0 ? homeDiff / calculatedAggregates.home : 0;
+    
+    const awayDiff = Math.abs(source.odds.away - calculatedAggregates.away);
+    const awayDiffPercent = calculatedAggregates.away > 0 ? awayDiff / calculatedAggregates.away : 0;
+    
+    return homeDiffPercent > 0.05 || awayDiffPercent > 0.05;
   });
 
   const getDiscrepancyMessage = (sourceName?: string) => {
     const targetSource = sourceName
       ? sources.find((s) => s.sourceName === sourceName)
       : sources.find((source) => {
-          const homeDiff = Math.abs(source.odds.home - match.aggregatedOdds.home);
-          return homeDiff > 0.1;
+          const homeDiff = Math.abs(source.odds.home - calculatedAggregates.home);
+          const homeDiffPercent = calculatedAggregates.home > 0 ? homeDiff / calculatedAggregates.home : 0;
+          return homeDiffPercent > 0.05;
         });
 
     if (targetSource) {
-      const diffValue = targetSource.odds.home - match.aggregatedOdds.home;
+      const diffValue = targetSource.odds.home - calculatedAggregates.home;
       const diff = diffValue.toFixed(2);
-      return `${targetSource.sourceName} predicts ${targetSource.odds.home.toFixed(2)} vs consensus ${match.aggregatedOdds.home.toFixed(2)} (diff: ${diffValue > 0 ? "+" : ""}${diff})`;
+      return `${targetSource.sourceName} predicts ${targetSource.odds.home.toFixed(2)} vs consensus ${calculatedAggregates.home.toFixed(2)} (diff: ${diffValue > 0 ? "+" : ""}${diff})`;
     }
     return null;
   };
@@ -172,24 +198,14 @@ const MultiSourceComparison = memo(({ match }: MultiSourceComparisonProps) => {
         <div className="font-mono text-[10px] text-muted-foreground">{sources.length} analysts</div>
       </div>
 
-      {/* Line Movement Chart */}
-      {mounted && chartData.length > 0 && (
+      {/* Line Movement Chart - Disabled until real historical data is available */}
+      {SHOW_HISTORICAL_CHART && mounted && chartData.length > 0 && (
         <div className="mt-3 border-t border-border pt-3">
           <div className="mb-3 px-4">
-            <h4 className="mb-1 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-foreground">
-              ODDS MOVEMENT:
+            <h4 className="mb-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-foreground">
               <TeamLogo team={match.homeTeam} sport={match.sport.toLowerCase()} size="sm" />
-              <span>{match.homeTeam.name} WIN</span>
+              <span>{match.homeTeam.shortName} WIN ODDS (6H)</span>
             </h4>
-            <p className="mb-2 text-[10px] leading-relaxed text-muted-foreground">
-              Shows how odds for{" "}
-              <span className="inline-flex items-center gap-1.5 font-medium text-foreground">
-                {match.homeTeam.name} to win
-              </span>{" "}
-              have changed over the last 6 hours. Each line represents predictions from our
-              analysts. The green line is the aggregated consensus.
-            </p>
-            {/* Compact horizontal legend */}
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-border/50 pt-2 text-[10px]">
               {sources.map((source, index) => {
                 const colors = ["#6b7280", "#9ca3af", "#d1d5db"];
@@ -384,14 +400,19 @@ const MultiSourceComparison = memo(({ match }: MultiSourceComparisonProps) => {
               </TableHead>
               <TableHead className="h-8 px-2 text-center text-[10px] font-bold uppercase text-foreground">
                 <Tooltip>
-                  <TooltipTrigger className="cursor-help">SCORE PREDICTION</TooltipTrigger>
+                  <TooltipTrigger className="cursor-help">MARGIN</TooltipTrigger>
                   <TooltipContent>
-                    <p className="text-xs">Predicted final score</p>
+                    <p className="text-xs">Bookmaker margin (overround) - lower is better</p>
                   </TooltipContent>
                 </Tooltip>
               </TableHead>
               <TableHead className="h-8 px-2 text-center text-[10px] font-bold uppercase text-foreground">
-                STATUS
+                <Tooltip>
+                  <TooltipTrigger className="cursor-help">UPDATED</TooltipTrigger>
+                  <TooltipContent>
+                    <p className="text-xs">Last update time</p>
+                  </TooltipContent>
+                </Tooltip>
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -399,8 +420,26 @@ const MultiSourceComparison = memo(({ match }: MultiSourceComparisonProps) => {
             {sources.map((source, index) => {
               const isDiscrepant =
                 hasDiscrepancy &&
-                (Math.abs(source.odds.home - match.aggregatedOdds.home) > 0.1 ||
-                  Math.abs(source.odds.away - match.aggregatedOdds.away) > 0.1);
+                (Math.abs(source.odds.home - calculatedAggregates.home) / (calculatedAggregates.home || 1) > 0.05 ||
+                 Math.abs(source.odds.away - calculatedAggregates.away) / (calculatedAggregates.away || 1) > 0.05);
+
+              // Calculate bookmaker margin
+              const homeProbability = source.odds.home > 0 ? (1 / source.odds.home) * 100 : 0;
+              const awayProbability = source.odds.away > 0 ? (1 / source.odds.away) * 100 : 0;
+              const drawProbability = source.odds.draw && source.odds.draw > 0 ? (1 / source.odds.draw) * 100 : 0;
+              const totalProbability = homeProbability + awayProbability + drawProbability;
+              const margin = totalProbability - 100;
+
+              // Format timestamp
+              const timeAgo = source.timestamp ? (() => {
+                const now = new Date().getTime();
+                const then = new Date(source.timestamp).getTime();
+                const diffMinutes = Math.floor((now - then) / (1000 * 60));
+                if (diffMinutes < 1) return "now";
+                if (diffMinutes < 60) return `${diffMinutes}m`;
+                const diffHours = Math.floor(diffMinutes / 60);
+                return `${diffHours}h`;
+              })() : "-";
 
               return (
                 <TableRow
@@ -441,66 +480,51 @@ const MultiSourceComparison = memo(({ match }: MultiSourceComparisonProps) => {
                   <TableCell className="px-2 text-center font-mono text-[10px] text-foreground">
                     {source.odds.away.toFixed(2)}
                   </TableCell>
-                  <TableCell className="px-2 text-center font-mono text-[10px] text-foreground">
-                    {source.scorePrediction
-                      ? `${source.scorePrediction.home}-${source.scorePrediction.away}`
-                      : "-"}
+                  <TableCell className="px-2 text-center">
+                    <span className={`font-mono text-[10px] font-semibold ${
+                      margin < 3 ? "text-positive" : 
+                      margin < 5 ? "text-foreground" : "text-destructive"
+                    }`}>
+                      {margin.toFixed(1)}%
+                    </span>
                   </TableCell>
                   <TableCell className="px-2 text-center">
-                    <Tooltip>
-                      <TooltipTrigger>
-                        {index === 0 ? (
-                          <Badge className="border-primary/30 bg-primary/20 px-1.5 py-0 text-[9px] text-primary">
-                            P
-                          </Badge>
-                        ) : (
-                          <Badge variant="outline" className="px-1.5 py-0 text-[9px]">
-                            S
-                          </Badge>
-                        )}
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="text-xs">
-                          {index === 0 ? "Primary Source" : "Secondary Source"}
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
+                    <span className="font-mono text-[9px] text-muted-foreground">
+                      {timeAgo}
+                    </span>
                   </TableCell>
                 </TableRow>
               );
             })}
-            {/* Aggregate row */}
+              {/* Aggregate row */}
             <TableRow className="h-8 border-t-2 border-primary/30 bg-primary/5 hover:bg-primary/10">
-              <TableCell className="px-2 text-[10px] font-bold text-primary">AGGREGATE</TableCell>
+              <TableCell className="px-2 text-[10px] font-bold text-primary">CONSENSUS</TableCell>
               <TableCell className="px-2 text-center font-mono text-[10px] font-bold text-primary">
-                {match.aggregatedOdds.home.toFixed(2)}
+                {calculatedAggregates.home.toFixed(2)}
               </TableCell>
               {match.aggregatedOdds.draw && (
                 <TableCell className="px-2 text-center font-mono text-[10px] font-bold text-primary">
-                  {match.aggregatedOdds.draw.toFixed(2)}
+                  {calculatedAggregates.draw ? calculatedAggregates.draw.toFixed(2) : "-"}
                 </TableCell>
               )}
               <TableCell className="px-2 text-center font-mono text-[10px] font-bold text-primary">
-                {match.aggregatedOdds.away.toFixed(2)}
+                {calculatedAggregates.away.toFixed(2)}
               </TableCell>
-              <TableCell className="px-2 text-center font-mono text-[10px] text-muted-foreground">
+              <TableCell className="px-2 text-center">
                 {(() => {
-                  const predictions = sources
-                    .filter(
-                      (s) =>
-                        s.scorePrediction &&
-                        typeof s.scorePrediction.home === "number" &&
-                        typeof s.scorePrediction.away === "number"
-                    )
-                    .map((s) => s.scorePrediction!);
-                  if (predictions.length === 0) return "-";
-                  const avgHome = Math.round(
-                    predictions.reduce((sum, p) => sum + p.home, 0) / predictions.length
+                  // Calculate average margin
+                  const margins = sources.map(s => {
+                    const h = s.odds.home > 0 ? (1 / s.odds.home) * 100 : 0;
+                    const a = s.odds.away > 0 ? (1 / s.odds.away) * 100 : 0;
+                    const d = s.odds.draw && s.odds.draw > 0 ? (1 / s.odds.draw) * 100 : 0;
+                    return (h + a + d) - 100;
+                  });
+                  const avgMargin = margins.reduce((sum, m) => sum + m, 0) / margins.length;
+                  return (
+                    <span className="font-mono text-[10px] font-bold text-primary">
+                      {avgMargin.toFixed(1)}%
+                    </span>
                   );
-                  const avgAway = Math.round(
-                    predictions.reduce((sum, p) => sum + p.away, 0) / predictions.length
-                  );
-                  return `${avgHome}-${avgAway}`;
                 })()}
               </TableCell>
               <TableCell className="px-2 text-center">

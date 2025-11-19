@@ -2,7 +2,6 @@
 
 import { useState, memo, useMemo, useCallback } from "react";
 import { Team } from "@/types/match";
-import { getTeamLogo } from "@/lib/teamLogos";
 import Image from "next/image";
 
 interface TeamLogoProps {
@@ -28,11 +27,10 @@ export const TeamLogo = memo(({
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
 
-  // Memoize logo URL to avoid recalculation
-  const logoUrl = useMemo(() => getTeamLogo(team, sport), [team, sport]);
+  // Logo URL is already calculated in useLiveSportsData via teamLogos.ts
+  const logoUrl = team.logo;
   const sizePx = sizeMap[size];
   
-  // Memoize callbacks
   const handleError = useCallback(() => {
     setImageError(true);
     setImageLoading(false);
@@ -42,10 +40,25 @@ export const TeamLogo = memo(({
     setImageLoading(false);
   }, []);
 
-  // If image failed to load or is emoji, show emoji fallback
-  if (imageError || (!logoUrl.includes("http") && team.logo)) {
-    const emojiSizeClass = size === "sm" ? "text-lg" : size === "md" ? "text-xl" : "text-2xl";
-    return <span className={`${emojiSizeClass} ${className}`}>{team.logo}</span>;
+  // Fallback to initials if no URL or error
+  if (imageError || !logoUrl || !logoUrl.startsWith("http")) {
+    const initials = team.name
+      .split(" ")
+      .map((n) => n[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase();
+
+    const fontSize = size === "sm" ? "text-[10px]" : size === "md" ? "text-xs" : "text-sm";
+    
+    return (
+      <div 
+        className={`flex items-center justify-center rounded-full bg-muted border border-border ${fontSize} font-bold text-muted-foreground ${className}`}
+        style={{ width: sizePx, height: sizePx }}
+      >
+        {initials}
+      </div>
+    );
   }
 
   return (
@@ -55,7 +68,7 @@ export const TeamLogo = memo(({
     >
       {imageLoading && (
         <div
-          className="absolute inset-0 animate-pulse rounded bg-muted"
+          className="absolute inset-0 animate-pulse rounded-full bg-muted"
           style={{ width: sizePx, height: sizePx }}
         />
       )}
@@ -68,18 +81,8 @@ export const TeamLogo = memo(({
         onError={handleError}
         onLoad={handleLoad}
         unoptimized
-        priority={size === "lg" || size === "xl"} // Priority for larger logos
       />
     </div>
-  );
-}, (prevProps, nextProps) => {
-  // Custom comparison function for better performance
-  return (
-    prevProps.team.name === nextProps.team.name &&
-    prevProps.team.logo === nextProps.team.logo &&
-    prevProps.sport === nextProps.sport &&
-    prevProps.size === nextProps.size &&
-    prevProps.className === nextProps.className
   );
 });
 
