@@ -1,7 +1,9 @@
 "use client";
 
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // Universal Sport IDs
@@ -123,16 +125,37 @@ export default function SportsNavigation({
   onSportChange,
   onLeagueChange
 }: SportsNavigationProps) {
+  const [isLeagueDropdownOpen, setIsLeagueDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   
   // Fallback to "soccer" if selectedSport is not found (e.g. old state "football")
   const activeSportId = SPORTS_CONFIG.some(s => s.id === selectedSport) ? selectedSport : "soccer";
   const currentSportConfig = SPORTS_CONFIG.find(s => s.id === activeSportId);
+  const selectedLeagueName = currentSportConfig?.leagues.find(l => l.id === selectedLeague)?.name || "All";
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsLeagueDropdownOpen(false);
+      }
+    };
+
+    if (isLeagueDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isLeagueDropdownOpen]);
 
   return (
-    <div className="space-y-3 mb-6">
-      {/* Level 1: Main Sports */}
-      <div className="terminal-card p-1">
-        <ScrollArea className="w-full whitespace-nowrap">
+    <div className="relative mb-3">
+      {/* Horizontal layout: Sports + League Dropdown */}
+      <div className="terminal-card p-1 flex items-center gap-2">
+        {/* Level 1: Main Sports */}
+        <ScrollArea className="flex-1 whitespace-nowrap">
           <div className="flex w-max space-x-1 p-1">
             {SPORTS_CONFIG.map((sport) => {
               const isActive = activeSportId === sport.id;
@@ -165,33 +188,60 @@ export default function SportsNavigation({
           </div>
           <ScrollBar orientation="horizontal" className="h-2" />
         </ScrollArea>
+
+        {/* Level 2: League Dropdown Button */}
+        {currentSportConfig && currentSportConfig.leagues.length > 1 && (
+          <div className="relative z-10" ref={dropdownRef}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsLeagueDropdownOpen(!isLeagueDropdownOpen)}
+              className={cn(
+                "h-8 px-3 text-xs border transition-all whitespace-nowrap",
+                isLeagueDropdownOpen
+                  ? "border-primary text-primary bg-secondary/50"
+                  : "border-border text-muted-foreground hover:border-primary/50 hover:text-foreground"
+              )}
+            >
+              <span className="uppercase tracking-wide font-medium">
+                {selectedLeagueName}
+              </span>
+              <ChevronDown className={cn(
+                "ml-2 h-3 w-3 transition-transform",
+                isLeagueDropdownOpen && "rotate-180"
+              )} />
+            </Button>
+          </div>
+        )}
       </div>
 
-      {/* Level 2: Leagues (Sub-navigation) */}
-      {currentSportConfig && currentSportConfig.leagues.length > 1 && (
-        <div className="px-1 animate-in fade-in slide-in-from-top-2 duration-300">
-          <ScrollArea className="w-full whitespace-nowrap">
-            <div className="flex w-max space-x-2 pb-2">
-              {currentSportConfig.leagues.map((league) => {
-                const isActive = selectedLeague === league.id;
-                return (
-                  <button
-                    key={league.id}
-                    onClick={() => onLeagueChange(league.id)}
-                    className={cn(
-                      "text-[10px] uppercase tracking-wide px-3 py-1.5 border transition-all duration-200",
-                      isActive
-                        ? "bg-secondary text-neon-cyan border-neon-cyan shadow-[0_0_5px_rgba(0,255,255,0.15)] font-bold"
-                        : "bg-background/50 text-muted-foreground border-border hover:border-primary/50 hover:text-foreground"
-                    )}
-                  >
-                    {league.name}
-                  </button>
-                );
-              })}
-            </div>
-            <ScrollBar orientation="horizontal" className="h-1.5" />
-          </ScrollArea>
+      {/* Dropdown Menu - Outside card, absolute positioned */}
+      {currentSportConfig && currentSportConfig.leagues.length > 1 && isLeagueDropdownOpen && (
+        <div 
+          className="absolute right-0 top-[calc(100%-0.75rem)] z-50 min-w-[160px] terminal-card border border-primary/30 shadow-[0_0_20px_rgba(0,255,157,0.3)] animate-in fade-in slide-in-from-top-2 duration-200"
+        >
+          <div className="p-1 max-h-[300px] overflow-y-auto">
+            {currentSportConfig.leagues.map((league) => {
+              const isActive = selectedLeague === league.id;
+              return (
+                <button
+                  key={league.id}
+                  onClick={() => {
+                    onLeagueChange(league.id);
+                    setIsLeagueDropdownOpen(false);
+                  }}
+                  className={cn(
+                    "w-full text-left px-3 py-2 text-xs uppercase tracking-wide transition-all duration-150 rounded-none",
+                    isActive
+                      ? "bg-secondary text-neon-cyan font-bold"
+                      : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
+                  )}
+                >
+                  {league.name}
+                </button>
+              );
+            })}
+          </div>
         </div>
       )}
     </div>

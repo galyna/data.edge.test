@@ -104,6 +104,9 @@ const UnifiedSportsFeed = memo(({ matches }: UnifiedSportsFeedProps) => {
                 MATCH
               </TableHead>
               <TableHead className="h-8 px-2 text-center text-[10px] font-bold uppercase text-foreground">
+                LEAGUE
+              </TableHead>
+              <TableHead className="h-8 px-2 text-center text-[10px] font-bold uppercase text-foreground">
                 SCORE
               </TableHead>
               <TableHead className="h-8 px-2 text-center text-[10px] font-bold uppercase text-foreground">
@@ -138,6 +141,11 @@ const UnifiedSportsFeed = memo(({ matches }: UnifiedSportsFeedProps) => {
                       </div>
                     </div>
                   </div>
+                </TableCell>
+                <TableCell className="px-3 text-center">
+                  <span className="text-[10px] uppercase text-muted-foreground truncate block max-w-[100px]">
+                    {match.league}
+                  </span>
                 </TableCell>
                 <TableCell className="px-3 text-center">
                   {match.liveData ? (
