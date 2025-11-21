@@ -11,6 +11,7 @@ import { useLiveSportsData } from "@/hooks/useLiveSportsData";
 import { Match, ValueSignal } from "@/types/match";
 import { useMatchDetail } from "@/store/matchStore";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 // Lazy load heavy components
 const MultiSourceComparison = lazy(() => import("@/components/MultiSourceComparison"));
@@ -79,9 +80,10 @@ function generateValueSignals(matches: Match[]): ValueSignal[] {
 export default function Home() {
   const [selectedSport, setSelectedSport] = useState("soccer");
   const [selectedLeague, setSelectedLeague] = useState("all");
+  const [selectedSource, setSelectedSource] = useState<"sem" | "bill">("sem");
   
   // ⚠️ Автообновление отключено (0) - только один запрос при загрузке для экономии квоты
-  const { matches, sources, isLoading, lastUpdate } = useLiveSportsData(0, selectedSport, selectedLeague); // No auto refetch
+  const { matches, sources, isLoading, lastUpdate, error } = useLiveSportsData(0, selectedSport, selectedLeague, selectedSource); // No auto refetch
 
   // Use optimized Zustand selectors - prevents unnecessary re-renders
   const {
@@ -105,8 +107,24 @@ export default function Home() {
   );
 
   // Initialize selectedMatch with first match that has sources
+  // Also reset if current match is not in the new filtered list
   useEffect(() => {
-    if (!selectedMatch && filteredMatches.length > 0) {
+    if (filteredMatches.length === 0) {
+      // Clear match if no matches available
+      if (selectedMatch) {
+        setSelectedMatch(null);
+      }
+      return;
+    }
+
+    // If selected match exists but is not in filtered matches, clear it
+    if (selectedMatch && !filteredMatches.find((m) => m.id === selectedMatch.id)) {
+      setSelectedMatch(null);
+      return;
+    }
+
+    // Auto-select first match with sources if none selected
+    if (!selectedMatch) {
       const firstMatchWithSources = filteredMatches.find((m) => m.sources && m.sources.length > 0);
       if (firstMatchWithSources) {
         setSelectedMatch(firstMatchWithSources);
@@ -133,6 +151,11 @@ export default function Home() {
     setSelectedMatch(null);
   }, [setSelectedMatch]);
 
+  const handleSourceChange = useCallback((source: "sem" | "bill") => {
+    setSelectedSource(source);
+    setSelectedMatch(null); // Clear selected match when switching sources
+  }, [setSelectedMatch]);
+
   return (
     <div className="grid-pattern flex min-h-screen bg-background">
       {/* Sidebar */}
@@ -148,6 +171,16 @@ export default function Home() {
 
         {/* Dashboard Content */}
         <main className="flex-1 overflow-auto p-2">
+          {/* Source Tabs */}
+          <div className="mx-auto max-w-[2000px] mb-2">
+            <Tabs value={selectedSource} onValueChange={(value) => handleSourceChange(value as "sem" | "bill")}>
+              <TabsList className="grid w-full max-w-md grid-cols-2">
+                <TabsTrigger value="sem">Sem</TabsTrigger>
+                <TabsTrigger value="bill">Bill</TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+
           {/* Sports Navigation */}
           <div className="mx-auto max-w-[2000px]">
              <SportsNavigation
@@ -158,7 +191,19 @@ export default function Home() {
              />
           </div>
 
-          {isLoading && matches.length === 0 ? (
+          {error ? (
+            <div className="mx-auto max-w-[2000px]">
+              <div className="terminal-card p-6 text-center">
+                <h3 className="text-lg font-semibold mb-2 text-red-500">Error Loading Data</h3>
+                <p className="text-sm text-muted-foreground">{error}</p>
+                {selectedSource === "bill" && (
+                  <p className="text-xs text-muted-foreground mt-4">
+                    Sportradar API requires activation. Please check your API key at marketplace.sportradar.com
+                  </p>
+                )}
+              </div>
+            </div>
+          ) : isLoading && matches.length === 0 ? (
             <div className="mx-auto max-w-[2000px] space-y-2">
               <Skeleton className="h-96 w-full" />
               <Skeleton className="h-64 w-full" />

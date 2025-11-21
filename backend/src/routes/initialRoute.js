@@ -1,12 +1,14 @@
 import { Router } from "express";
 import { asyncHandler } from "../middleware/errorHandler.js";
 import { OddsService } from "../services/oddsService.js";
+import { SportradarService } from "../services/sportradarService.js";
 import { cache } from "../utils/cache.js";
 
 const router = Router();
 
 // Initialize services
 const oddsService = new OddsService();
+const sportradarService = new SportradarService();
 
 // Cache TTL: 5 minutes (300 seconds = 300,000 ms)
 const CACHE_TTL = 5 * 60 * 1000;
@@ -109,10 +111,11 @@ const marketsConfig = {
 };
 
 /**
- * GET /api/initial?sport=mlb&league=nba
- * Fetch initial data from all configured sources
+ * GET /api/initial?sport=mlb&league=nba&source=sem|bill
+ * Fetch initial data from configured sources
  * @param {string} sport - Sport filter (soccer, basketball, etc.)
  * @param {string} league - Specific league filter (epl, nba, etc.) - optional
+ * @param {string} source - Source filter: "sem" (The Odds API) or "bill" (Sportradar) - optional, defaults to "sem"
  */
 router.get(
   "/",
@@ -120,9 +123,18 @@ router.get(
     const startTime = Date.now();
     const selectedSport = req.query.sport || "soccer"; // Default to soccer
     const selectedLeague = req.query.league || "all";  // Default to all
+    const selectedSource = req.query.source || "sem";   // Default to "sem" (The Odds API)
 
-    // Fetch from The Odds API
-    const oddsResult = await fetchOdds(selectedSport, selectedLeague);
+    let sourceResult;
+
+    // Fetch from selected source
+    if (selectedSource === "bill") {
+      // Sportradar (Bill)
+      sourceResult = await fetchSportradar(selectedSport, selectedLeague);
+    } else {
+      // The Odds API (Sem) - default
+      sourceResult = await fetchOdds(selectedSport, selectedLeague);
+    }
 
     const duration = Date.now() - startTime;
 
@@ -132,11 +144,12 @@ router.get(
       duration: `${duration}ms`,
       sport: selectedSport,
       league: selectedLeague,
-      sources: [oddsResult],
+      source: selectedSource,
+      sources: [sourceResult],
       summary: {
         totalSources: 1,
-        availableSources: oddsResult.available ? 1 : 0,
-        totalEvents: oddsResult.eventsCount || 0,
+        availableSources: sourceResult.available ? 1 : 0,
+        totalEvents: sourceResult.eventsCount || 0,
       },
     };
 
@@ -157,13 +170,18 @@ router.get(
 
     switch (sourceName.toLowerCase()) {
       case "odds":
+      case "sem":
         result = await fetchOdds();
+        break;
+      case "sportradar":
+      case "bill":
+        result = await fetchSportradar();
         break;
       default:
         return res.status(404).json({
           error: {
             message: `Unknown source: ${sourceName}`,
-            availableSources: ["odds"],
+            availableSources: ["odds", "sem", "sportradar", "bill"],
           },
         });
     }
@@ -340,6 +358,77 @@ async function fetchOdds(selectedSport = "soccer", selectedLeague = "all") {
       name: oddsService.name,
       available: false,
       configured: oddsService.isConfigured(),
+      duration: `${Date.now() - startTime}ms`,
+      eventsCount: 0,
+      error: error.message,
+      cached: false,
+    };
+  }
+}
+
+/**
+ * Fetch data from Sportradar API with caching
+ * @param {string} selectedSport - Sport ID (soccer, basketball, etc.)
+ * @param {string} selectedLeague - League ID (epl, nba, all) - not used for Sportradar yet
+ */
+async function fetchSportradar(selectedSport = "soccer", selectedLeague = "all") {
+  const startTime = Date.now();
+  const cacheKey = `sportradar:${selectedSport}:${selectedLeague}`;
+
+  try {
+    // Check cache first
+    const cachedData = cache.get(cacheKey);
+    if (cachedData) {
+      console.log(`[CACHE] Returning cached data for Sportradar ${selectedSport}/${selectedLeague}`);
+      return {
+        ...cachedData,
+        cached: true,
+        duration: `${Date.now() - startTime}ms (cached)`,
+      };
+    }
+
+    // Fetch from Sportradar
+    const result = await sportradarService.getOdds(selectedSport);
+
+    if (!result.available) {
+      return {
+        name: sportradarService.name,
+        available: false,
+        configured: sportradarService.isConfigured(),
+        duration: `${Date.now() - startTime}ms`,
+        eventsCount: 0,
+        rawCount: 0,
+        events: [],
+        error: result.error || "Failed to fetch from Sportradar",
+        cached: false,
+      };
+    }
+
+    // Limit to 5 events to save quota
+    const limitedEvents = result.data.slice(0, 5);
+    console.log(`[LIMIT] Reduced from ${result.data.length} to ${limitedEvents.length} events`);
+
+    const response = {
+      name: sportradarService.name,
+      available: true,
+      configured: sportradarService.isConfigured(),
+      duration: `${Date.now() - startTime}ms`,
+      eventsCount: limitedEvents.length,
+      rawCount: result.rawCount || 0,
+      events: limitedEvents,
+      error: null,
+      cached: false,
+    };
+
+    // Cache successful results
+    cache.set(cacheKey, response, CACHE_TTL);
+
+    return response;
+  } catch (error) {
+    return {
+      name: sportradarService.name,
+      available: false,
+      configured: sportradarService.isConfigured(),
       duration: `${Date.now() - startTime}ms`,
       eventsCount: 0,
       error: error.message,
