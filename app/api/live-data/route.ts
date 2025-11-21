@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3001";
+const BACKEND_URL = process.env.BACKEND_URL || "http://127.0.0.1:3001";
 
 /**
  * GET /api/live-data?sport=mlb
@@ -11,8 +11,10 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const sport = searchParams.get("sport") || "football";
+    const league = searchParams.get("league") || "all";
+    const source = searchParams.get("source") || "sem";
     
-    const response = await fetch(`${BACKEND_URL}/api/initial?sport=${encodeURIComponent(sport)}`, {
+    const response = await fetch(`${BACKEND_URL}/api/initial?sport=${encodeURIComponent(sport)}&league=${encodeURIComponent(league)}&source=${encodeURIComponent(source)}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
