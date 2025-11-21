@@ -38,11 +38,13 @@ interface UseLiveSportsDataResult {
  * @param autoRefetch - Auto refetch interval in ms (0 to disable)
  * @param sport - Sport filter (soccer, basketball, etc.)
  * @param league - League filter (epl, nba, etc.) - optional, default "all"
+ * @param source - Data source: "sem" (The Odds API) or "bill" (Sportradar) - optional, default "sem"
  */
 export function useLiveSportsData(
   autoRefetch: number = 0,
   sport: string = "soccer",
-  league: string = "all"
+  league: string = "all",
+  source: string = "sem"
 ): UseLiveSportsDataResult {
   const [matches, setMatches] = useState<Match[]>([]);
   const [sources, setSources] = useState<SourceData[]>([]);
@@ -63,7 +65,7 @@ export function useLiveSportsData(
       setSummary(null);
 
       const response = await fetch(
-        `/api/live-data?sport=${encodeURIComponent(sport)}&league=${encodeURIComponent(league)}`, 
+        `/api/live-data?sport=${encodeURIComponent(sport)}&league=${encodeURIComponent(league)}&source=${encodeURIComponent(source)}`, 
         {
           cache: "no-store",
         }
@@ -97,7 +99,7 @@ export function useLiveSportsData(
     } finally {
       setIsLoading(false);
     }
-  }, [sport, league]); // Re-fetch when sport or league changes
+  }, [sport, league, source]); // Re-fetch when sport, league or source changes
 
   // Initial fetch
   useEffect(() => {

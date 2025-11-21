@@ -31,7 +31,7 @@ interface SportConfig {
 export const SPORTS_CONFIG: SportConfig[] = [
   {
     id: "soccer",
-    label: "Soccer",
+    label: "SOCCER",
     leagues: [
       { id: "all", name: "All Leagues" },
       { id: "epl", name: "Premier League" },
@@ -45,7 +45,7 @@ export const SPORTS_CONFIG: SportConfig[] = [
   },
   {
     id: "american_football",
-    label: "Am. Football",
+    label: "FOOTBALL",
     leagues: [
       { id: "all", name: "All" },
       { id: "nfl", name: "NFL" },
@@ -54,7 +54,7 @@ export const SPORTS_CONFIG: SportConfig[] = [
   },
   {
     id: "basketball",
-    label: "Basketball",
+    label: "BASKETBALL",
     leagues: [
       { id: "all", name: "All" },
       { id: "nba", name: "NBA" },
@@ -64,7 +64,7 @@ export const SPORTS_CONFIG: SportConfig[] = [
   },
   {
     id: "baseball",
-    label: "Baseball",
+    label: "BASEBALL",
     leagues: [
       { id: "all", name: "All" },
       { id: "mlb", name: "MLB" },
@@ -73,7 +73,7 @@ export const SPORTS_CONFIG: SportConfig[] = [
   },
   {
     id: "ice_hockey",
-    label: "Hockey",
+    label: "HOCKEY",
     leagues: [
       { id: "all", name: "All" },
       { id: "nhl", name: "NHL" },
@@ -82,7 +82,7 @@ export const SPORTS_CONFIG: SportConfig[] = [
   },
   {
     id: "tennis",
-    label: "Tennis",
+    label: "TENNIS",
     leagues: [
       { id: "all", name: "All" },
       { id: "atp", name: "ATP" },
@@ -92,7 +92,7 @@ export const SPORTS_CONFIG: SportConfig[] = [
   },
   {
     id: "mma",
-    label: "MMA / Boxing",
+    label: "MMA",
     leagues: [
       { id: "all", name: "All" },
       { id: "ufc", name: "UFC" },
@@ -102,7 +102,7 @@ export const SPORTS_CONFIG: SportConfig[] = [
   },
   {
     id: "esports",
-    label: "Esports",
+    label: "ESPORTS",
     leagues: [
       { id: "all", name: "All Events" },
       { id: "lol", name: "LoL" },
@@ -179,7 +179,7 @@ export default function SportsNavigation({
                       : "text-muted-foreground hover:text-foreground hover:bg-secondary/50 hover:border-primary/30"
                   )}
                 >
-                  <span className="uppercase tracking-wider font-bold">
+                  <span className="tracking-wider font-bold">
                     {sport.label}
                   </span>
                 </Button>
