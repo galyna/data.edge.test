@@ -191,7 +191,7 @@ export default function SportsNavigation({
 
         {/* Level 2: League Dropdown Button */}
         {currentSportConfig && currentSportConfig.leagues.length > 1 && (
-          <div className="relative z-10" ref={dropdownRef}>
+          <div className="relative" ref={dropdownRef}>
             <Button
               variant="outline"
               size="sm"
@@ -211,39 +211,40 @@ export default function SportsNavigation({
                 isLeagueDropdownOpen && "rotate-180"
               )} />
             </Button>
+            
+            {/* Dropdown Menu - Inside the ref div for proper click handling */}
+            {isLeagueDropdownOpen && (
+              <div 
+                className="absolute right-0 top-full mt-1 z-[100] min-w-[160px] terminal-card border border-primary/30 shadow-[0_0_20px_rgba(0,255,157,0.3)] animate-in fade-in slide-in-from-top-2 duration-200"
+              >
+                <div className="p-1 max-h-[300px] overflow-y-auto">
+                  {currentSportConfig.leagues.map((league) => {
+                    const isActive = selectedLeague === league.id;
+                    return (
+                      <button
+                        key={league.id}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onLeagueChange(league.id);
+                          setIsLeagueDropdownOpen(false);
+                        }}
+                        className={cn(
+                          "w-full text-left px-3 py-2 text-xs uppercase tracking-wide transition-all duration-150 rounded-none cursor-pointer",
+                          isActive
+                            ? "bg-secondary text-neon-cyan font-bold"
+                            : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
+                        )}
+                      >
+                        {league.name}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
-
-      {/* Dropdown Menu - Outside card, absolute positioned */}
-      {currentSportConfig && currentSportConfig.leagues.length > 1 && isLeagueDropdownOpen && (
-        <div 
-          className="absolute right-0 top-[calc(100%-0.75rem)] z-50 min-w-[160px] terminal-card border border-primary/30 shadow-[0_0_20px_rgba(0,255,157,0.3)] animate-in fade-in slide-in-from-top-2 duration-200"
-        >
-          <div className="p-1 max-h-[300px] overflow-y-auto">
-            {currentSportConfig.leagues.map((league) => {
-              const isActive = selectedLeague === league.id;
-              return (
-                <button
-                  key={league.id}
-                  onClick={() => {
-                    onLeagueChange(league.id);
-                    setIsLeagueDropdownOpen(false);
-                  }}
-                  className={cn(
-                    "w-full text-left px-3 py-2 text-xs uppercase tracking-wide transition-all duration-150 rounded-none",
-                    isActive
-                      ? "bg-secondary text-neon-cyan font-bold"
-                      : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
-                  )}
-                >
-                  {league.name}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

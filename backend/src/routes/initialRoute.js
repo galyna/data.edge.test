@@ -10,8 +10,11 @@ const router = Router();
 const oddsService = new OddsService();
 const sportradarService = new SportradarService();
 
-// Cache TTL: 5 minutes (300 seconds = 300,000 ms)
+// Cache TTL: 5 minutes for The Odds API (300,000 ms)
 const CACHE_TTL = 5 * 60 * 1000;
+
+// Cache TTL: 10 minutes for Sportradar (600,000 ms) - API is slower, data changes less often
+const SPORTRADAR_CACHE_TTL = 10 * 60 * 1000;
 
 /**
  * Map header sport IDs to API sport names
@@ -87,10 +90,11 @@ const sportMapping = {
       ufc: "mma_mixed_martial_arts",
     },
     
-    // Esports (Limited support in Odds API)
+    // Esports - NOT SUPPORTED by The Odds API
     esports: {
-      default: "mma_mixed_martial_arts", // Placeholder
+      default: null, // Not supported
       all: [],
+      notSupported: true,
     },
   },
 };
@@ -261,8 +265,8 @@ async function fetchOdds(selectedSport = "soccer", selectedLeague = "all") {
     // Get sport config from mapping
     const sportConfig = sportMapping.odds[selectedSport];
     
-    // If sport not supported, return empty result
-    if (!sportConfig) {
+    // If sport not supported, return empty result with clear message
+    if (!sportConfig || sportConfig.notSupported) {
       return {
         name: oddsService.name,
         available: false,
@@ -271,7 +275,7 @@ async function fetchOdds(selectedSport = "soccer", selectedLeague = "all") {
         eventsCount: 0,
         rawCount: 0,
         events: [],
-        error: `Sport '${selectedSport}' not supported`,
+        error: `'${selectedSport}' is not supported by The Odds API`,
       };
     }
 
@@ -279,17 +283,33 @@ async function fetchOdds(selectedSport = "soccer", selectedLeague = "all") {
     let sportKeys = [];
     
     if (selectedLeague === "all") {
-      // If "all" selected, use the 'default' key to save quota (single league)
-      // OR use 'all' array if we want to fetch multiple (but careful with quota!)
-      // For now, to be safe with quota, we use 'default' single key
-      sportKeys = [sportConfig.default]; 
+      // For "all", use first league from "all" array to save quota
+      // (fetching all leagues would use too much API quota)
+      if (sportConfig.all?.length > 0) {
+        sportKeys = [sportConfig.all[0]];
+      } else if (sportConfig.default) {
+        sportKeys = [sportConfig.default];
+      } else {
+        return {
+          name: oddsService.name,
+          available: false,
+          configured: oddsService.isConfigured(),
+          duration: `${Date.now() - startTime}ms`,
+          eventsCount: 0,
+          rawCount: 0,
+          events: [],
+          error: `No leagues configured for '${selectedSport}'`,
+        };
+      }
     } else {
       // Use specific league key
       const leagueKey = sportConfig[selectedLeague];
       if (leagueKey) {
         sportKeys = [leagueKey];
+        console.log(`[SEM] Using specific league: ${selectedLeague} -> ${leagueKey}`);
       } else {
         // Fallback to default if league not found
+        console.log(`[SEM] League '${selectedLeague}' not found, using default: ${sportConfig.default}`);
         sportKeys = [sportConfig.default];
       }
     }
@@ -387,8 +407,8 @@ async function fetchSportradar(selectedSport = "soccer", selectedLeague = "all")
       };
     }
 
-    // Fetch from Sportradar
-    const result = await sportradarService.getOdds(selectedSport);
+    // Fetch from Sportradar (with league filter)
+    const result = await sportradarService.getOdds(selectedSport, selectedLeague);
 
     if (!result.available) {
       return {
@@ -418,10 +438,14 @@ async function fetchSportradar(selectedSport = "soccer", selectedLeague = "all")
       events: limitedEvents,
       error: null,
       cached: false,
+      // Additional metadata to verify source
+      apiSource: result.apiSource || "Sportradar Odds Comparison API",
+      generatedAt: result.generatedAt || new Date().toISOString(),
     };
 
-    // Cache successful results
-    cache.set(cacheKey, response, CACHE_TTL);
+    // Cache successful results (longer TTL for Sportradar - API is slow)
+    cache.set(cacheKey, response, SPORTRADAR_CACHE_TTL);
+    console.log(`[CACHE SET] ${cacheKey} (TTL: ${SPORTRADAR_CACHE_TTL / 1000}s)`);
 
     return response;
   } catch (error) {
