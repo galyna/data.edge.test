@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import { config } from "./config.js";
 import initialRoute from "./routes/initialRoute.js";
+import newsRoute from "./routes/newsRoute.js";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
 
 const app = express();
@@ -36,6 +37,7 @@ app.get("/health", (req, res) => {
 
 // API Routes
 app.use("/api/initial", initialRoute);
+app.use("/api/news", newsRoute);
 
 // 404 handler
 app.use(notFoundHandler);
@@ -60,6 +62,9 @@ if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
     console.log(`   GET    /api/initial/source/:name  - Fetch specific source`);
     console.log(`   GET    /api/initial/cache/stats   - Cache statistics`);
     console.log(`   DELETE /api/initial/cache         - Clear cache`);
+    console.log(`   GET    /api/news?sport=&source=   - Fetch news from RSS feeds`);
+    console.log(`   GET    /api/news/sources          - List available sources`);
+    console.log(`   GET    /api/news/sports           - List available sports`);
     console.log(`\n⚙️  API Configuration:`);
     console.log(
       `   The Odds:    ${config.apiKeys.theOdds ? "✅ Configured" : "❌ Not configured"}`
