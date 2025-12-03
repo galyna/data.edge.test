@@ -1,0 +1,68 @@
+# Docker Compose - Development Mode
+# 
+# Usage:
+#   docker-compose -f docker-compose.dev.yml up    # Start with hot-reload
+#   docker-compose -f docker-compose.dev.yml down  # Stop services
+#
+# Features:
+#   - Volume mounts for hot-reload
+#   - Development environment variables
+#   - Source maps enabled
+
+services:
+  # =============================================================================
+  # Frontend - Next.js Development Server
+  # =============================================================================
+  frontend:
+    image: node:20-alpine
+    container_name: data-edge-frontend-dev
+    working_dir: /app
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:3001
+      # Server-side API calls use Docker network hostname
+      - BACKEND_URL=http://backend:3001
+    command: sh -c "npm install && npm run dev"
+    depends_on:
+      - backend
+    networks:
+      - data-edge-network
+
+  # =============================================================================
+  # Backend - Express.js Development Server
+  # =============================================================================
+  backend:
+    image: node:20-alpine
+    container_name: data-edge-backend-dev
+    working_dir: /app
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - ENABLE_CORS=true
+      - FRONTEND_URL=http://localhost:3000
+      - API_TIMEOUT=5000
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+      # API Keys from .env
+      - THEODDS_API_KEY=${THEODDS_API_KEY:-}
+      - SPORTRADAR_API_KEY=${SPORTRADAR_API_KEY:-}
+      - SPORTRADAR_ACCESS_LEVEL=${SPORTRADAR_ACCESS_LEVEL:-t}
+      - SPORTRADAR_PACKAGE_TYPE=${SPORTRADAR_PACKAGE_TYPE:-row}
+    command: sh -c "npm install && npm run dev"
+    networks:
+      - data-edge-network
+
+networks:
+  data-edge-network:
+    driver: bridge
+

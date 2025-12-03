@@ -18,6 +18,10 @@ interface NewsResponse {
   success: boolean;
   articles: NewsArticle[];
   total: number;
+  totalPages: number;
+  page: number;
+  limit: number;
+  hasMore: boolean;
   sport: string;
   source: string | null;
   search: string | null;
@@ -30,33 +34,42 @@ interface UseNewsDataResult {
   isLoading: boolean;
   error: string | null;
   total: number;
+  totalPages: number;
+  currentPage: number;
+  hasMore: boolean;
   lastUpdate: string | null;
   refetch: () => Promise<void>;
+  goToPage: (page: number) => void;
+  nextPage: () => void;
+  prevPage: () => void;
 }
 
 // Backend URL - uses Next.js API route as proxy
 const API_BASE = "/api/news";
 
 /**
- * Hook for fetching news data from backend
+ * Hook for fetching news data from backend with pagination
  * @param sport - Sport filter (football, nba, mlb, tennis, esports, all)
  * @param source - Source filter (ESPN, BBC Sport, etc.)
  * @param search - Search query
- * @param limit - Maximum articles to return
+ * @param limit - Articles per page (default: 10)
  */
 export function useNewsData(
   sport: string = "all",
   source: string | null = null,
   search: string | null = null,
-  limit: number = 20
+  limit: number = 10
 ): UseNewsDataResult {
   const [articles, setArticles] = useState<NewsArticle[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<string | null>(null);
 
-  const fetchNews = useCallback(async () => {
+  const fetchNews = useCallback(async (page: number = currentPage) => {
     try {
       setIsLoading(true);
       setError(null);
@@ -70,6 +83,7 @@ export function useNewsData(
       if (search) {
         params.set("search", search);
       }
+      params.set("page", page.toString());
       params.set("limit", limit.toString());
 
       const response = await fetch(`${API_BASE}?${params.toString()}`, {
@@ -88,29 +102,60 @@ export function useNewsData(
 
       setArticles(data.articles);
       setTotal(data.total);
+      setTotalPages(data.totalPages);
+      setCurrentPage(data.page);
+      setHasMore(data.hasMore);
       setLastUpdate(data.timestamp);
     } catch (err) {
       console.error("Error fetching news:", err);
       setError(err instanceof Error ? err.message : "Unknown error");
       setArticles([]);
       setTotal(0);
+      setTotalPages(0);
+      setHasMore(false);
     } finally {
       setIsLoading(false);
     }
+  }, [sport, source, search, limit, currentPage]);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+    fetchNews(1);
   }, [sport, source, search, limit]);
 
-  // Fetch on mount and when filters change
-  useEffect(() => {
-    fetchNews();
-  }, [fetchNews]);
+  const goToPage = useCallback((page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+      fetchNews(page);
+    }
+  }, [totalPages, fetchNews]);
+
+  const nextPage = useCallback(() => {
+    if (hasMore) {
+      goToPage(currentPage + 1);
+    }
+  }, [hasMore, currentPage, goToPage]);
+
+  const prevPage = useCallback(() => {
+    if (currentPage > 1) {
+      goToPage(currentPage - 1);
+    }
+  }, [currentPage, goToPage]);
 
   return {
     articles,
     isLoading,
     error,
     total,
+    totalPages,
+    currentPage,
+    hasMore,
     lastUpdate,
-    refetch: fetchNews,
+    refetch: () => fetchNews(currentPage),
+    goToPage,
+    nextPage,
+    prevPage,
   };
 }
 

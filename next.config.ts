@@ -3,6 +3,9 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   
+  // Enable standalone output for Docker
+  output: "standalone",
+  
   // Compiler optimizations
   compiler: {
     // Remove console.log in production
@@ -45,6 +48,74 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "images.unsplash.com",
+        pathname: "/**",
+      },
+      // ESPN CDN for news images
+      {
+        protocol: "https",
+        hostname: "a.espncdn.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "a1.espncdn.com",
+        pathname: "/**",
+      },
+      // BBC images
+      {
+        protocol: "https",
+        hostname: "ichef.bbci.co.uk",
+        pathname: "/**",
+      },
+      // Sky Sports images
+      {
+        protocol: "https",
+        hostname: "e0.365dm.com",
+        pathname: "/**",
+      },
+      // Fox Sports images
+      {
+        protocol: "https",
+        hostname: "a57.foxsports.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "b.fssta.com",
+        pathname: "/**",
+      },
+      // CBS Sports images
+      {
+        protocol: "https",
+        hostname: "sportshub.cbsistatic.com",
+        pathname: "/**",
+      },
+      // The Guardian images
+      {
+        protocol: "https",
+        hostname: "i.guim.co.uk",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "media.guim.co.uk",
+        pathname: "/**",
+      },
+      // Yahoo Sports images
+      {
+        protocol: "https",
+        hostname: "s.yimg.com",
+        pathname: "/**",
+      },
+      // NBC Sports images
+      {
+        protocol: "https",
+        hostname: "nbcsports.brightspotcdn.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "www.nbcsports.com",
         pathname: "/**",
       },
     ],
