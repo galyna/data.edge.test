@@ -6,13 +6,14 @@ const router = Router();
 
 /**
  * GET /api/news
- * Fetch news articles with filters
+ * Fetch news articles with filters and pagination
  *
  * Query params:
  * - sport: Sport filter (football, nba, mlb, tennis, esports, nfl, hockey, all)
  * - source: Source filter (ESPN, BBC Sport, Sky Sports, Bleacher Report)
  * - search: Search query for title/description
- * - limit: Maximum articles to return (1-100)
+ * - page: Page number (1-based, default: 1)
+ * - limit: Articles per page (1-50, default: 10)
  */
 router.get(
   "/",
@@ -21,15 +22,18 @@ router.get(
       sport = "all",
       source = null,
       search = null,
-      limit = "20",
+      page = "1",
+      limit = "10",
     } = req.query;
 
-    const limitNum = Math.min(Math.max(parseInt(limit) || 20, 1), 100);
+    const pageNum = Math.max(parseInt(page) || 1, 1);
+    const limitNum = Math.min(Math.max(parseInt(limit) || 10, 1), 50);
 
     const result = await newsService.getNews({
       sport,
       source,
       search,
+      page: pageNum,
       limit: limitNum,
     });
 
@@ -37,6 +41,10 @@ router.get(
       success: result.success,
       articles: result.articles,
       total: result.total,
+      totalPages: result.totalPages,
+      page: pageNum,
+      limit: limitNum,
+      hasMore: result.hasMore,
       sport,
       source,
       search,
@@ -49,14 +57,36 @@ router.get(
 /**
  * GET /api/news/sources
  * Get list of available news sources
+ * 
+ * Query params:
+ * - sport: Filter sources by sport (optional, default: all)
  */
 router.get(
   "/sources",
   asyncHandler(async (req, res) => {
-    const sources = newsService.getSources();
+    const { sport = null } = req.query;
+    const sources = newsService.getSources(sport);
 
     res.json({
       sources,
+      sport: sport || "all",
+      total: sources.length,
+      timestamp: new Date().toISOString(),
+    });
+  })
+);
+
+/**
+ * GET /api/news/sources-by-sport
+ * Get all sources grouped by sport
+ */
+router.get(
+  "/sources-by-sport",
+  asyncHandler(async (req, res) => {
+    const sourcesBySport = newsService.getSourcesBySport();
+
+    res.json({
+      sourcesBySport,
       timestamp: new Date().toISOString(),
     });
   })
@@ -64,7 +94,7 @@ router.get(
 
 /**
  * GET /api/news/sports
- * Get list of available sports
+ * Get list of available sports with source info
  */
 router.get(
   "/sports",
@@ -73,6 +103,7 @@ router.get(
 
     res.json({
       sports,
+      total: sports.length,
       timestamp: new Date().toISOString(),
     });
   })

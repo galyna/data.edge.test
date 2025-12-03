@@ -1,0 +1,58 @@
+# Dependencies
+node_modules
+backend/node_modules
+backend-python/venv
+backend-python/__pycache__
+
+# Build outputs
+.next
+out
+dist
+build
+
+# Development files
+*.log
+.env
+.env.local
+.env.*.local
+backend/.env
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+.docker
+
+# Documentation
+docs
+*.md
+!README.md
+
+# Tests
+coverage
+.nyc_output
+__tests__
+*.test.js
+*.test.ts
+*.spec.js
+*.spec.ts
+
+# Misc
+.cursor
+terminals
+scripts
+*.sh
+

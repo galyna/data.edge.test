@@ -4,7 +4,7 @@ const BACKEND_URL = process.env.BACKEND_URL || "http://127.0.0.1:3001";
 
 /**
  * GET /api/news
- * Proxy endpoint to backend /api/news
+ * Proxy endpoint to backend /api/news with pagination
  */
 export async function GET(request: Request) {
   try {
@@ -12,13 +12,15 @@ export async function GET(request: Request) {
     const sport = searchParams.get("sport") || "all";
     const source = searchParams.get("source") || "";
     const search = searchParams.get("search") || "";
-    const limit = searchParams.get("limit") || "20";
+    const page = searchParams.get("page") || "1";
+    const limit = searchParams.get("limit") || "10";
 
     // Build backend URL
     const params = new URLSearchParams();
     params.set("sport", sport);
     if (source) params.set("source", source);
     if (search) params.set("search", search);
+    params.set("page", page);
     params.set("limit", limit);
 
     const response = await fetch(`${BACKEND_URL}/api/news?${params.toString()}`, {

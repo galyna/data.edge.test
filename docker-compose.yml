@@ -1,0 +1,77 @@
+# Docker Compose - Data Edge Application
+# 
+# Usage:
+#   docker-compose up -d          # Start all services in background
+#   docker-compose up              # Start with logs
+#   docker-compose down            # Stop all services
+#   docker-compose logs -f         # Follow logs
+#   docker-compose build --no-cache # Rebuild images
+#
+# Access:
+#   Frontend: http://localhost:3000
+#   Backend:  http://localhost:3001
+#   API Docs: http://localhost:3001/health
+
+services:
+  # =============================================================================
+  # Frontend - Next.js Application
+  # =============================================================================
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend.Dockerfile
+    container_name: data-edge-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://localhost:3001
+      # Server-side API calls use Docker network hostname
+      - BACKEND_URL=http://backend:3001
+    depends_on:
+      - backend
+    networks:
+      - data-edge-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # =============================================================================
+  # Backend - Express.js API
+  # =============================================================================
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend.Dockerfile
+    container_name: data-edge-backend
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - ENABLE_CORS=true
+      - FRONTEND_URL=http://localhost:3000
+      - API_TIMEOUT=5000
+      # API Keys - set these in .env file or here
+      - THEODDS_API_KEY=${THEODDS_API_KEY:-}
+      - SPORTRADAR_API_KEY=${SPORTRADAR_API_KEY:-}
+      - SPORTRADAR_ACCESS_LEVEL=${SPORTRADAR_ACCESS_LEVEL:-t}
+      - SPORTRADAR_PACKAGE_TYPE=${SPORTRADAR_PACKAGE_TYPE:-row}
+    networks:
+      - data-edge-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  data-edge-network:
+    driver: bridge
+

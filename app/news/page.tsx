@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
 import Image from "next/image";
+import { useRouter, useSearchParams } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
@@ -15,26 +16,108 @@ const SPORTS_CONFIG = [
   { id: "all", label: "All" },
   { id: "football", label: "Football" },
   { id: "nba", label: "NBA" },
-  { id: "mlb", label: "MLB" },
-  { id: "tennis", label: "Tennis" },
-  { id: "esports", label: "E-sports" },
   { id: "nfl", label: "NFL" },
+  { id: "mlb", label: "MLB" },
   { id: "hockey", label: "Hockey" },
+  { id: "tennis", label: "Tennis" },
+  { id: "f1", label: "F1" },
+  { id: "golf", label: "Golf" },
+  { id: "mma", label: "MMA" },
+  { id: "boxing", label: "Boxing" },
+  { id: "cricket", label: "Cricket" },
+  { id: "college", label: "College" },
+  { id: "olympics", label: "Olympics" },
+  { id: "esports", label: "E-sports" },
 ];
-
-// Sources from backend
-const SOURCES = ["All", "ESPN", "BBC Sport", "Sky Sports", "Bleacher Report"];
 
 // Placeholder image for articles without images
 const PLACEHOLDER_IMAGE = "/placeholder.svg";
 
 export default function NewsPage() {
-  const [selectedSport, setSelectedSport] = useState("all");
-  const [selectedSource, setSelectedSource] = useState("All");
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <NewsContent />
+    </Suspense>
+  );
+}
+
+function NewsContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const [selectedSport, setSelectedSport] = useState(searchParams.get("sport") || "all");
+  const [selectedSource, setSelectedSource] = useState(searchParams.get("source") || "All");
+  const [availableSources, setAvailableSources] = useState<string[]>([]);
+  const [sourcesLoading, setSourcesLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [mounted, setMounted] = useState(false);
+
+  // Sync URL with state
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    
+    if (selectedSport && selectedSport !== "all") {
+      params.set("sport", selectedSport);
+    } else {
+      params.delete("sport");
+    }
+
+    if (selectedSource && selectedSource !== "All") {
+      params.set("source", selectedSource);
+    } else {
+      params.delete("source");
+    }
+
+    // Only update if params changed to avoid loops
+    const currentString = searchParams.toString();
+    const newString = params.toString();
+    
+    if (currentString !== newString) {
+      router.replace(`?${newString}`, { scroll: false });
+    }
+  }, [selectedSport, selectedSource, router, searchParams]);
+
+  // Fetch sources for selected sport
+  const fetchSources = useCallback(async (sport: string) => {
+    setSourcesLoading(true);
+    try {
+      const response = await fetch(`/api/news/sources?sport=${sport}`);
+      const data = await response.json();
+      if (data.sources) {
+        setAvailableSources(data.sources);
+      }
+    } catch (error) {
+      console.error("Error fetching sources:", error);
+      setAvailableSources([]);
+    } finally {
+      setSourcesLoading(false);
+    }
+  }, []);
+
+  // Load sources when sport changes
+  useEffect(() => {
+    fetchSources(selectedSport);
+    // Only reset source if the current source is not in the new available sources (handled in fetchSources or manually)
+    // But for now, we want to respect the URL source if it matches the sport, otherwise reset.
+    // However, availableSources is async.
+    // Simpler: If sport changed and source is not "All", check if we need to reset.
+    // If the user manually changes sport, we usually reset source.
+    // But if it comes from URL mount, we want to keep it.
+    
+    // We'll trust the user/URL for now. If they switch sport manually, we might want to reset source.
+    // But we can't easily distinguish manual switch vs initial load here without more state.
+    // The previous code reset it: setSelectedSource("All");
+    
+    // Let's modify to: if the sport in URL changed, we probably don't want to reset source immediately if it was just loaded.
+    // But if selectedSport changes, we should probably reset source unless it's the initial load.
+  }, [selectedSport, fetchSources]);
+
+  const handleSportChange = (sportId: string) => {
+    setSelectedSport(sportId);
+    setSelectedSource("All"); // Reset source when sport changes manually
+  };
 
   // Debounce search query
   useEffect(() => {
@@ -48,12 +131,25 @@ export default function NewsPage() {
     setMounted(true);
   }, []);
 
-  // Fetch news from API
-  const { articles, isLoading, error, total, lastUpdate, refetch } = useNewsData(
+  // Fetch news from API with pagination
+  const { 
+    articles, 
+    isLoading, 
+    error, 
+    total, 
+    totalPages,
+    currentPage,
+    hasMore,
+    lastUpdate, 
+    refetch,
+    goToPage,
+    nextPage,
+    prevPage,
+  } = useNewsData(
     selectedSport,
     selectedSource === "All" ? null : selectedSource,
     debouncedSearch || null,
-    50
+    10 // 10 articles per page
   );
 
   const getTimeAgo = (date: string) => {
@@ -98,7 +194,7 @@ export default function NewsPage() {
                     {SPORTS_CONFIG.map((sport) => (
                       <Button
                         key={sport.id}
-                        onClick={() => setSelectedSport(sport.id)}
+                        onClick={() => handleSportChange(sport.id)}
                         variant={selectedSport === sport.id ? "default" : "outline"}
                         size="sm"
                         className="text-xs"
@@ -112,10 +208,23 @@ export default function NewsPage() {
                 {/* Source Filters */}
                 <div>
                   <span className="mb-2 block text-xs uppercase tracking-wider text-muted-foreground">
-                    Source
+                    {selectedSport === "esports" ? "Discipline" : "Source"} {sourcesLoading && <span className="text-primary">(loading...)</span>}
+                    {!sourcesLoading && availableSources.length > 0 && (
+                      <span className="ml-1 text-muted-foreground/60">
+                        ({availableSources.length} available)
+                      </span>
+                    )}
                   </span>
                   <div className="flex flex-wrap gap-2">
-                    {SOURCES.map((source) => (
+                    <Button
+                      onClick={() => setSelectedSource("All")}
+                      variant={selectedSource === "All" ? "default" : "outline"}
+                      size="sm"
+                      className="text-xs"
+                    >
+                      All
+                    </Button>
+                    {availableSources.map((source) => (
                       <Button
                         key={source}
                         onClick={() => setSelectedSource(source)}
@@ -244,6 +353,109 @@ export default function NewsPage() {
                     getSportLabel={getSportLabel}
                   />
                 ))}
+              </div>
+            )}
+
+            {/* Pagination */}
+            {!error && totalPages > 1 && (
+              <div className="flex items-center justify-center gap-2 py-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={prevPage}
+                  disabled={currentPage === 1 || isLoading}
+                  className="text-xs"
+                >
+                  ← Previous
+                </Button>
+                
+                <div className="flex items-center gap-1">
+                  {(() => {
+                    // Calculate window
+                    const windowSize = 5;
+                    let startPage = Math.max(1, currentPage - 2);
+                    let endPage = Math.min(totalPages, startPage + windowSize - 1);
+                    
+                    // Adjust if we're at the end to show full window if possible
+                    if (endPage - startPage + 1 < windowSize) {
+                      startPage = Math.max(1, endPage - windowSize + 1);
+                    }
+
+                    const pages = [];
+                    // First page
+                    if (startPage > 1) {
+                      pages.push(
+                        <Button
+                          key="page-1"
+                          variant={currentPage === 1 ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => goToPage(1)}
+                          disabled={isLoading}
+                          className="h-8 w-8 p-0 text-xs"
+                        >
+                          1
+                        </Button>
+                      );
+                      if (startPage > 2) {
+                        pages.push(<span key="start-ellipsis" className="px-1 text-muted-foreground">...</span>);
+                      }
+                    }
+
+                    // Window pages
+                    for (let i = startPage; i <= endPage; i++) {
+                      pages.push(
+                        <Button
+                          key={`page-${i}`}
+                          variant={currentPage === i ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => goToPage(i)}
+                          disabled={isLoading}
+                          className="h-8 w-8 p-0 text-xs"
+                        >
+                          {i}
+                        </Button>
+                      );
+                    }
+
+                    // Last page
+                    if (endPage < totalPages) {
+                      if (endPage < totalPages - 1) {
+                        pages.push(<span key="end-ellipsis" className="px-1 text-muted-foreground">...</span>);
+                      }
+                      pages.push(
+                        <Button
+                          key={`page-${totalPages}`}
+                          variant={currentPage === totalPages ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => goToPage(totalPages)}
+                          disabled={isLoading}
+                          className="h-8 w-8 p-0 text-xs"
+                        >
+                          {totalPages}
+                        </Button>
+                      );
+                    }
+
+                    return pages;
+                  })()}
+                </div>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={nextPage}
+                  disabled={!hasMore || isLoading}
+                  className="text-xs"
+                >
+                  Next →
+                </Button>
+              </div>
+            )}
+
+            {/* Page info */}
+            {!error && totalPages > 0 && (
+              <div className="text-center text-xs text-muted-foreground">
+                Page {currentPage} of {totalPages} • {total} articles
               </div>
             )}
 
